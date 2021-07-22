@@ -16,13 +16,8 @@ def opt?(a = nil, b = nil)
     return false
 end
 
-def display_header
-    header = "#{TITLE}#{" " * 16}#{VERSION}"
-    puts "\n", (b = "-" * header.length), header, b, "\n"
-end
-
 if $opts.empty? or $paths.empty? or opt?(*HELP_OPTS)
-    display_header
+    print_header
     puts File.readlines(HELP_PATH)
     return
 end
@@ -48,8 +43,8 @@ for path in $paths do
         # STRUCTURE
         if opt?(*STRUCTURE_OPTS)
             if valid_document?(lines)
-                document = Document.new(lines)
-                document.structure.debug
+                structure = Document.new(lines).structure
+                structure.debug unless structure == nil
             end
         end
         # TIMELINE
