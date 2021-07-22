@@ -16,6 +16,18 @@ Options:
  -m  --median       HTML output compatible with Median EDI client
 ```
 
+++ Building
+
+Requires [OCRA](https://github.com/larsch/ocra)
+
+```
+git clone "https://github.com/mejszin/edi-cli"
+cd ./edi-cli
+rake build
+```
+
+++ Example
+
 Run example EDI message unit tests with ```rake test```
 
 ```
