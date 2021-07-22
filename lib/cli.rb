@@ -1,9 +1,10 @@
 HELP_PATH = "./help.txt"
 
 HELP_OPTS      = ["-h", "--h"]
-TEST_OPTS      = ["-t", "--test"]
+UNIT_TEST_OPTS = ["-u", "--unit"]
 DEBUG_OPTS     = ["-d", "--debug"]
 STRUCTURE_OPTS = ["-s", "--structure"]
+TIMELINE_OPTS  = ["-t", "--timeline"]
 MEDIAN_OPTS    = ["-m", "--median"]
 
 $opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
@@ -15,15 +16,20 @@ def opt?(a = nil, b = nil)
     return false
 end
 
-if $opts.empty? or $paths.empty? or opt?(*HELP_OPTS)
+def display_header
     header = "#{TITLE}#{" " * 16}#{VERSION}"
     puts "\n", (b = "-" * header.length), header, b, "\n"
+end
+
+if $opts.empty? or $paths.empty? or opt?(*HELP_OPTS)
+    display_header
     puts File.readlines(HELP_PATH)
     return
 end
 
-# TEST
-if opt?(*TEST_OPTS)
+# UNIT TEST
+if opt?(*UNIT_TEST_OPTS)
+    display_header
     tests = $paths.map.with_index { |a, i| [nil, a, true] }
     unit_test(tests)
     return
@@ -44,6 +50,12 @@ for path in $paths do
             if valid_document?(lines)
                 document = Document.new(lines)
                 document.structure.debug
+            end
+        end
+        # TIMELINE
+        if opt?(*TIMELINE_OPTS)
+            if valid_document?(lines)
+                puts "TODO : Timeline output"
             end
         end
     rescue => exception
