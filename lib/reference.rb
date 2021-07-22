@@ -1,8 +1,11 @@
 Reference = Struct.new(:value, :ref, :desc, :code)
+# TODO : Move away from Reference struct
+
 Definition = Struct.new(:code, :definition)
 Element = Struct.new(:loc, :code, :title, :value, :desc, :ref, :coded)
 Version = Struct.new(:number, :release, :ref, :code, :title)
-Qualifier = Struct.new(:code, :value, :reference, :description)
+Qualifier = Struct.new(:code, :value, :reference, :definition)
+Tag = Struct.new(:value, :title, :definition)
 
 NULL_VALUES = [nil, [], ""]
 
@@ -48,14 +51,14 @@ end
 
 def lookup_tag(code_list, tag)
     return nil if tag == ""
-    ref, desc = "", ""
+    title, definition = "", ""
     if $code_lists.key?(code_list) && $code_lists[code_list].key?(tag)
-        ref  = $code_lists[code_list][tag]["title"]
-        desc = $code_lists[code_list][tag]["description"]
+        title = $code_lists[code_list][tag]["title"]
+        definition = $code_lists[code_list][tag]["description"]
     else
         return nil
     end
-    return Reference.new(tag, ref, desc, tag)
+    return Tag.new(tag, title, definition)
 end
 
 def lookup_qualifier(code_list, code, value)

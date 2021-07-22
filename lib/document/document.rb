@@ -53,7 +53,7 @@ class Document
 
     def assign_values
         # Get punctuation values from UNA line
-        una = lines[0, 3] == 'UNA' ? lines[0, 9] : nil
+        una = lines[0, 3] == "UNA" ? lines[0, 9] : nil
         @chars = format_punctuation(una)
         # Split by segment terminator
         te = @chars.segment_terminator
@@ -84,7 +84,7 @@ class Document
     def structure
         data = lookup_structure(@message.value, @version.ref)
         unless data == {}
-            Structure.new(self, data).debug
+            return Structure.new(self, data)
         end
     end
     
@@ -98,9 +98,11 @@ class Document
     end
 
     def html
+        output = []
         @lines.each do |line|
-            puts line.html
+            output << line.html
         end
+        return output.join
     end
 
     def timeline

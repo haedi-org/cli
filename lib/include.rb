@@ -46,4 +46,4 @@ require './lib/segments/cdi.rb'
 require './lib/segments/cnt.rb'
 require './lib/segments/moa.rb'
 
-require './lib/run.rb'
+require './lib/cli.rb'

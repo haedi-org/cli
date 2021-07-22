@@ -7,6 +7,7 @@ class Line
         @version = version
         @chars = chars
         @data = @raw.dup
+        @tag = tag
         @elements = []
         # Remove last character if segment terminator
         @data = @data[0..-2] if (@data[-1] == @chars.segment_terminator)
@@ -37,7 +38,7 @@ class Line
         end
         # Assign data qualifier values
         qualifier_exists = defined?(qualifier) && qualifier != nil
-        data_description = qualifier_exists ? qualifier.description : ""
+        data_description = qualifier_exists ? qualifier.definition : ""
         data_reference   = qualifier_exists ? qualifier.reference : ""
         # Return element data type
         return Element.new(
@@ -71,7 +72,7 @@ class Line
         lookup = lookup_tag("EDSD", data_at(0, 0))
         return lookup unless lookup == nil
         # Return with no reference
-        return Reference.new(data_at(0, 0), "", "", data_at(0, 0))
+        return Tag.new(data_at(0, 0), "", "")
     end
 
     def push_elements(elements)
@@ -107,12 +108,11 @@ class Line
         return [code, title, struct.value, struct.ref, struct.desc]
     end
 
-    def header_row(with_ref = true)
-        data = tag
-        if with_ref
-            return ["", "Segment tag", data.value, data.ref, data.desc]
+    def header_row(with_def = true)
+        if with_def
+            return ["", "Segment tag", @tag.value, @tag.title, @tag.definition]
         else
-            return ["", "Segment tag", data.value, data.desc]
+            return ["", "Segment tag", @tag.value, @tag.title]
         end
     end
 

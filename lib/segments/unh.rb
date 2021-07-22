@@ -30,6 +30,9 @@ class UNH < Line
     end
     
     def format_version
+        # Get definition information
+        codes = ["0052", "0054"]
+        definitions = codes.map { |code| define_element_code(code).definition }
         # (0052) Message version number
         @message_version_number = data_at(2, 1)
         # (0054) Message release number
@@ -40,8 +43,8 @@ class UNH < Line
             @message_release_number, 
             @message_version_number +
             @message_release_number,
-            "0052\n0054",
-            "Message version number\nMessage release number"
+            codes.join("\n"),
+            definitions.join("\n")
         )
     end
 

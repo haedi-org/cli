@@ -4,18 +4,24 @@ class UNA < Line
         @line_no = line_no
         @raw = data
         @data = [["UNA"]]
-        # (UNA1) Component data element separator
-        @component_element_seperator = lookup("UNA1", @raw[3])
-        # (UNA2) Data element separator
-        @data_element_seperator = lookup("UNA2", @raw[4])
-        # (UNA3) Decimal mark
-        @decimal_mark = lookup("UNA3", @raw[5])
-        # (UNA4) Release character
-        @release_character = lookup("UNA4", @raw[6])
-        # (UNA5) Repetition separator
-        @repetition_seperator = lookup("UNA5", @raw[7])
-        # (UNA6) Segment terminator
-        @segment_terminator = lookup("UNA6", @raw[8])
+        @elements = []
+        @tag = tag
+        # Push to elements
+        push_elements([
+            # (UNA1) Component data element separator
+            @component_element_seperator = lookup("UNA1", @raw[3]),
+            # (UNA2) Data element separator
+            @data_element_seperator = lookup("UNA2", @raw[4]),
+            # (UNA3) Decimal mark
+            @decimal_mark = lookup("UNA3", @raw[5]),
+            # (UNA4) Release character
+            @release_character = lookup("UNA4", @raw[6]),
+            # (UNA5) Repetition separator
+            @repetition_seperator = lookup("UNA5", @raw[7]),
+            # (UNA6) Segment terminator
+            @segment_terminator = lookup("UNA6", @raw[8]),
+        ])
+        # Assign chars
         @chars = punctuation
     end
 
@@ -29,20 +35,20 @@ class UNA < Line
         return a + b
     end
 
-    def table
-        rows = [header_row(false)]
-        chars = [@component_element_seperator, @data_element_seperator, 
-            @decimal_mark, @release_character, @segment_terminator]
-        chars.each do |char|
-            rows << [char.code, char.ref, char.value, char.desc]
+    def lookup(element_code, data_value)
+        csv = csv_reference(EDIFACT_STRING_ADVICE_PATH, element_code)
+        unless csv == nil
+            element_title = csv[1]
+            data_description = csv[2]
+            return Element.new(
+                [0, 0], element_code, element_title, 
+                data_value, "", data_description, false
+            )
+        else
+            return Element.new(
+                [0, 0], element_code, "", data_value, "", "", false
+            )
         end
-        return rows
-    end
-
-    def lookup(code, value)
-        csv = csv_reference("./codes/edifact_string_advice.csv", code)
-        return Reference.new(value, "", "", code) if csv == []
-        return Reference.new(value, csv[1], csv[2], code)
     end
 
     def punctuation
