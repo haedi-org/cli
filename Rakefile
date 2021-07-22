@@ -1,24 +1,17 @@
 require './lib/paths.rb'
 
+TEST_MESSAGE_PATH = "./data/messages/tests/"
+
 task :default do
     puts "build\tbuild executable using ocra"
     puts "test\trun unit tests"
 end
 
 task :build do
-    puts `ocra edi.rb --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`
-end
-
-task :example do
-    puts `ruby edi.rb --refs #{MESSAGE_PATH}/samples/DESADV_D01B_ecosio.edi`
+    puts `ocra edi.rb --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`.force_encoding(Encoding::UTF_8)
 end
 
 task :test do
-    paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
-    puts `ruby edi.rb --test #{paths.join(" ")}`
-end
-
-task :debug do
-    paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
-    puts `ruby edi.rb --debug #{paths.join(" ")}`
+    paths = Dir[TEST_MESSAGE_PATH + "/*"]
+    puts `ruby edi.rb --unit #{paths.join(" ")}`.force_encoding(Encoding::UTF_8)
 end
