@@ -3,7 +3,7 @@ CLI for EDI parsing, validation and manipulation
 
 ```
 Usage:
- ./cli-edi.exe [options] [arguments]
+ ./edi-cli.exe [options] [arguments]
 
 Arguments:
  paths              One or more path to an EDI file

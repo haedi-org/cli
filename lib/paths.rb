@@ -1,4 +1,4 @@
-OUTPUT_PATH = "./edicli.exe"
+OUTPUT_PATH = "./edi-cli.exe"
 CODE_PATH = "./data/codes/"
 MESSAGE_PATH = "./data/messages/"
 STRUCTURE_PATH = "./data/structures/"
