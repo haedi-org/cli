@@ -85,7 +85,6 @@ def unit_test(tests = TESTS)
         report.each { |r| actual = false if r[1] == false }
         return actual
     end
-    require 'colorize'
     index = 0
     passed = 0
     documents = strip_csv_column(EDIFACT_DOCUMENTS_PATH, 1)
@@ -130,7 +129,6 @@ def html_unit_test(tests = TESTS)
         report.each { |r| actual = false if r[1] == false }
         return actual
     end
-    require 'colorize'
     index = 0
     passed = 0
     documents = strip_csv_column(EDIFACT_DOCUMENTS_PATH, 1)

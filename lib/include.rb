@@ -6,6 +6,8 @@ require 'csv'
 require 'json'
 require 'time'
 
+require 'colorize'
+
 require './lib/paths.rb'
 require './lib/test.rb'
 require './lib/html.rb'
