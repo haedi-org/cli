@@ -8,7 +8,7 @@ task :default do
 end
 
 task :build do
-    puts `ocra edi.rb --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`.force_encoding(Encoding::UTF_8)
+    puts `ocra edi.rb --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`
 end
 
 task :test do
