@@ -24,7 +24,7 @@ end
 
 # UNIT TEST
 if opt?(*UNIT_TEST_OPTS)
-    display_header
+    print_header
     tests = $paths.map.with_index { |a, i| [nil, a, true] }
     unit_test(tests)
     return
