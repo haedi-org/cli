@@ -1,6 +1,7 @@
 HELP_PATH = "./help.txt"
 
-HELP_OPTS      = ["-h", "--h"]
+HELP_OPTS      = ["-h", "--help"]
+PARSE_OPTS     = ["-p", "--parse"]
 UNIT_TEST_OPTS = ["-u", "--unit"]
 DEBUG_OPTS     = ["-d", "--debug"]
 STRUCTURE_OPTS = ["-s", "--structure"]
@@ -38,6 +39,22 @@ for path in $paths do
             if valid_document?(lines)
                 document = Document.new(lines)
                 document.debug
+            end
+        end
+        # PARSE
+        if opt?(*PARSE_OPTS)
+            if valid_document?(lines)
+                table = Document.new(lines).rows
+                for group in table do
+                    for row in group do
+                        for cell in row do
+                            c = cell == row.first ? 16 : 56
+                            print cell.ljust(c, " ")
+                        end
+                        print "\n"
+                    end
+                    print "\n"
+                end
             end
         end
         # STRUCTURE

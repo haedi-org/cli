@@ -87,12 +87,16 @@ class Document
             return Structure.new(self, data)
         end
     end
+
+    def rows
+        return @lines.map { |line| line.rows }
+    end
     
     def debug
         @lines.each do |line|
             line.table.each do |row|
-                cells = row.map { |c| c.length > 16 ? c[0, 16] + "..." : c }
-                puts cells.join("\t, "), "\n"
+                #cells = row.map { |c| c.length > 16 ? c[0, 16] + "..." : c }
+                puts row.join("\t, "), "\n"
             end
         end
     end

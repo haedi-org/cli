@@ -83,6 +83,29 @@ class Line
         puts "[ #{tag.ref} ] #{@raw}\n\n"
     end
 
+    def rows
+        data = []
+        for element in @elements do
+            element_data = ""
+            if element.is_a?(Element)
+                if element.coded && element.ref != ""
+                    element_data = element.ref + " <#{element.value}>"
+                else
+                    element_data = element.value
+                end  
+            end
+            if element.is_a?(Version)
+                element_data = element.ref
+            end
+            data << [
+                element.code,
+                element.title,
+                element_data
+            ]
+        end
+        return data
+    end
+
     def html(codes = [], typed = [], mssge = [], warng = [], error = [])
         return @data.map.with_index { |component, c|
             component.map.with_index { |data, d|

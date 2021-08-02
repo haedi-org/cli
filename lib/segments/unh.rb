@@ -43,8 +43,8 @@ class UNH < Line
             @message_release_number, 
             @message_version_number +
             @message_release_number,
-            codes.join("\n"),
-            definitions.join("\n")
+            codes.join("/"),
+            definitions.join("/")
         )
     end
 
