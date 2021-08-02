@@ -36,40 +36,39 @@ for path in $paths do
         lines = read_document(path)
         # DEBUG
         if opt?(*DEBUG_OPTS)
-            if valid_document?(lines)
-                document = Document.new(lines)
-                document.debug
-            end
+            raise InvalidDocumentError.new unless valid_document?(lines)
+            document = Document.new(lines)
+            document.debug
         end
         # PARSE
         if opt?(*PARSE_OPTS)
-            if valid_document?(lines)
-                table = Document.new(lines).rows
-                for group in table do
-                    for row in group do
-                        for cell in row do
-                            c = cell == row.first ? 16 : 56
-                            print cell.ljust(c, " ")
-                        end
-                        print "\n"
+            raise InvalidDocumentError.new unless valid_document?(lines)
+            table = Document.new(lines).rows
+            for group in table do
+                for row in group do
+                    for cell in row do
+                        print cell.ljust(cell == row.first ? 16 : 56, " ")
                     end
                     print "\n"
                 end
+                print "\n"
             end
         end
         # STRUCTURE
         if opt?(*STRUCTURE_OPTS)
-            if valid_document?(lines)
-                structure = Document.new(lines).structure
-                structure.debug unless structure == nil
-            end
+            raise InvalidDocumentError.new unless valid_document?(lines)
+            structure = Document.new(lines).structure
+            structure.debug unless structure == nil
         end
         # TIMELINE
         if opt?(*TIMELINE_OPTS)
-            if valid_document?(lines)
-                puts "TODO : Timeline output"
-            end
+            raise InvalidDocumentError.new unless valid_document?(lines)
+            puts "TODO : Timeline output"
         end
+    rescue InvalidDocumentError => exception
+        tests = $paths.map.with_index { |a, i| [nil, a, true] }
+        puts ""
+        unit_test(tests)
     rescue => exception
         unless opt?(*MEDIAN_OPTS)
             puts exception.message, exception.backtrace
