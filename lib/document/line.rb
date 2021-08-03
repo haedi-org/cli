@@ -98,9 +98,7 @@ class Line
                 element_data = element.ref
             end
             data << [
-                element.code,
-                element.title,
-                element_data
+                element.code, element.title, element_data
             ]
         end
         return data

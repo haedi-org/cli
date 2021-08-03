@@ -11,6 +11,7 @@ require 'colorize'
 require_relative './paths.rb'
 require_relative './errors.rb'
 require_relative './test.rb'
+require_relative './old_html.rb'
 require_relative './html.rb'
 require_relative './reference.rb'
 

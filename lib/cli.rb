@@ -43,15 +43,19 @@ for path in $paths do
         # PARSE
         if opt?(*PARSE_OPTS)
             raise InvalidDocumentError.new unless valid_document?(lines)
-            table = Document.new(lines).rows
-            for group in table do
-                for row in group do
-                    for cell in row do
-                        print cell.ljust(cell == row.first ? 16 : 56, " ")
+            document = Document.new(lines)
+            unless opt?(*MEDIAN_OPTS)
+                for group in document.rows do
+                    for row in group do
+                        for cell in row do
+                            print cell.ljust(cell == row.first ? 16 : 56, " ")
+                        end
+                        print "\n"
                     end
                     print "\n"
                 end
-                print "\n"
+            else
+                html_reference_table(document)
             end
         end
         # STRUCTURE
