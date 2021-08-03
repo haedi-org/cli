@@ -8,9 +8,6 @@ require 'time'
 
 require 'colorize'
 
-require 'test/unit/assertions'
-include Test::Unit::Assertions
-
 require './lib/paths.rb'
 require './lib/errors.rb'
 require './lib/test.rb'

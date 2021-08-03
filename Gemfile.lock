@@ -2,9 +2,6 @@ GEM
   remote: https://rubygems.org/
   specs:
     colorize (0.8.1)
-    power_assert (2.0.0)
-    test-unit (3.4.4)
-      power_assert
 
 PLATFORMS
   x64-mingw32
@@ -12,7 +9,6 @@ PLATFORMS
 
 DEPENDENCIES
   colorize (~> 0.8.1)
-  test-unit (~> 3.4)
 
 BUNDLED WITH
    2.2.15

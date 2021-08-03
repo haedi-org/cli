@@ -66,9 +66,8 @@ for path in $paths do
             puts "TODO : Timeline output"
         end
     rescue InvalidDocumentError => exception
-        tests = $paths.map.with_index { |a, i| [nil, a, true] }
         puts ""
-        unit_test(tests)
+        unit_test([[nil, path, true]])
     rescue => exception
         unless opt?(*MEDIAN_OPTS)
             puts exception.message, exception.backtrace
