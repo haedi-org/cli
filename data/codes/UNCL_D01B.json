@@ -37458,7 +37458,7 @@
         },
         "BJ": {
             "title": "Serial shipping container code",
-            "description": "Code requested for deletion. 1. This code value will be removed effective with directory D.03A."
+            "description": "A single unique serial number which identifies shipping containers or shipping packages."
         },
         "BK": {
             "title": "Fleet vehicle unit number",

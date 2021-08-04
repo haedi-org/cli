@@ -6,7 +6,7 @@ end
 
 def html_reference_table(document)
     print "<div class=\"columns is-gapless\">"
-    print "<div class=\"column scroller\" style=\"background-color: #F5F5F5\">"
+    print "<div class=\"column scroller is-two-fifths\" style=\"background-color: #F5F5F5\">"
     # Raw data
     print "<span class=\"edi-span\">"
     for line in document.lines do
