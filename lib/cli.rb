@@ -1,4 +1,4 @@
-HELP_PATH = "./help.txt"
+USAGE_PATH = "./usage.txt"
 
 HELP_OPTS      = ["-h", "--help"]
 PARSE_OPTS     = ["-p", "--parse"]
@@ -19,7 +19,7 @@ end
 
 if $opts.empty? or $paths.empty? or opt?(*HELP_OPTS)
     print_header
-    puts File.readlines(HELP_PATH)
+    puts File.readlines(USAGE_PATH)
     return
 end
 
