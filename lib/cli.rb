@@ -38,12 +38,10 @@ for path in $paths do
         if opt?(*DEBUG_OPTS)
             raise InvalidDocumentError.new unless valid_document?(lines)
             document = Document.new(lines)
-            for line in document.lines do
-                if line.tag.value == "RFF"
-                    puts line.reference
-                end
-            end
-            #document.debug
+           #for line in document.lines do
+           #    puts line.date if line.tag.value == "DTM"
+           #end
+            document.debug
         end
         # PARSE
         if opt?(*PARSE_OPTS)
