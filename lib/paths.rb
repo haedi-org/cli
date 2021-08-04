@@ -1,3 +1,4 @@
+RUN_PATH = "./main.rb"
 OUTPUT_PATH = "./edi-cli.exe"
 CODE_PATH = "./data/codes/"
 MESSAGE_PATH = "./data/messages/"

@@ -8,10 +8,10 @@ task :default do
 end
 
 task :build do
-    puts `ocra edi.rb --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`
+    puts `ocra #{RUN_PATH} --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`
 end
 
 task :test do
     paths = Dir[TEST_MESSAGE_PATH + "/*"]
-    puts `ruby edi.rb --unit #{paths.join(" ")}`.force_encoding(Encoding::UTF_8)
+    puts `ruby #{RUN_PATH} --unit #{paths.join(" ")}`.force_encoding(Encoding::UTF_8)
 end
