@@ -38,7 +38,12 @@ for path in $paths do
         if opt?(*DEBUG_OPTS)
             raise InvalidDocumentError.new unless valid_document?(lines)
             document = Document.new(lines)
-            document.debug
+            for line in document.lines do
+                if line.tag.value == "RFF"
+                    puts line.reference
+                end
+            end
+            #document.debug
         end
         # PARSE
         if opt?(*PARSE_OPTS)
@@ -48,7 +53,7 @@ for path in $paths do
                 for group in document.rows do
                     for loc, row in group do
                         code, title, value, data, desc = row
-                        data = data + " <#{value}>"
+                        data = data + " <#{value}>" unless data == value
                         for cell in [code, title, data] do
                             print cell.ljust(cell == row.first ? 16 : 56, " ")
                         end

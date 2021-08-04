@@ -1,4 +1,6 @@
 class RFF < Line
+    attr_reader :reference
+
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)
         # Push to element
