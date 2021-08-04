@@ -1,5 +1,5 @@
 class Line
-    attr_reader :raw
+    attr_reader :raw, :tag
 
     def initialize(data, line_no, version, chars)
         @raw = data
@@ -24,6 +24,8 @@ class Line
     end
 
     def define(position, element_code, is_coded = false, version = nil)
+        # Prepend line number to position
+        position = [@line_no] + position
         # Get element value
         data_value = data_at(*position)
         data_value = data_value.join("\n") if data_value.is_a?(Array)
@@ -47,7 +49,7 @@ class Line
         )
     end
 
-    def data_at(a, b = nil, code = nil, version = nil)
+    def data_at(line, a, b = nil, code = nil, version = nil)
         return nil unless (length_at() > a) && (b == nil || length_at(a) > b)
         return @data[a] if b == nil
         version = @version.ref if version == nil && code != nil
@@ -65,14 +67,16 @@ class Line
     end
 
     def tag
+        loc = [@line_no, 0, 0]
+        title, definition = "", ""
         # Service tags
-        lookup = lookup_tag("40100_0135", data_at(0, 0))
-        return lookup unless lookup == nil
+        title, definition = lookup_tag("40100_0135", data_at(*loc))
+        return Tag.new(loc, data_at(*loc), title, definition) unless title == ""
         # Other tags
-        lookup = lookup_tag("EDSD", data_at(0, 0))
-        return lookup unless lookup == nil
+        title, definition = lookup_tag("EDSD", data_at(*loc))
+        return Tag.new(loc, data_at(*loc), title, definition) unless title == ""
         # Return with no reference
-        return Tag.new(data_at(0, 0), "", "")
+        return Tag.new(loc, data_at(*loc), title, definition)
     end
 
     def push_elements(elements)
@@ -87,18 +91,32 @@ class Line
         data = []
         for element in @elements do
             element_data = ""
+            element_loc = ["na"]
+            element_desc = ""
+            element_value = ""
             if element.is_a?(Element)
+                element_loc = element.loc
+                element_desc = element.desc
+                element_value = element.value
                 if element.coded && element.ref != ""
-                    element_data = element.ref + " <#{element.value}>"
+                    element_data = element.ref
                 else
                     element_data = element.value
-                end  
+                end
             end
             if element.is_a?(Version)
                 element_data = element.ref
+                element_loc = ["ver"]
             end
             data << [
-                element.code, element.title, element_data
+                element_loc, 
+                [
+                    element.code, 
+                    element.title, 
+                    element_value, 
+                    element_data, 
+                    element_desc
+                ]
             ]
         end
         return data
@@ -109,18 +127,18 @@ class Line
             component.map.with_index { |data, d|
                 # Set CSS styling
                 clr, fwt = "#2B2B2B", "normal"
-                clr, fwt = "#2B2B2B", "bold" if [c, d] == [0, 0]
-                clr, fwt = "#3273DC", "bold" if codes.include?([c, d])
-                clr, fwt = "#00D1B2", "bold" if typed.include?([c, d])
-                clr, fwt = "#D512E2", "bold" if mssge.include?([c, d])
-                clr, fwt = "#FFE08A", "bold" if warng.include?([c, d])
-                clr, fwt = "#F14668", "bold" if error.include?([c, d])
+                #clr, fwt = "#2B2B2B", "bold" if [c, d] == [0, 0]
+                #clr, fwt = "#3273DC", "bold" if codes.include?([c, d])
+                #clr, fwt = "#00D1B2", "bold" if typed.include?([c, d])
+                #clr, fwt = "#D512E2", "bold" if mssge.include?([c, d])
+                #clr, fwt = "#FFE08A", "bold" if warng.include?([c, d])
+                #clr, fwt = "#F14668", "bold" if error.include?([c, d])
                 style = "color: #{clr}; font-weight: #{fwt}"
                 # Return <b> tag with CSS styling
-                id = "L-#{@line_no}-#{c}-#{d}"
-                mouseover = "onmouseover='highlightElement(\"#{id}\")'"
-                mouseleave = "onmouseleave='restoreElement(\"#{id}\", \"#{clr}\")'"
-                "<b id='#{id}' class='edi-data' style='#{style}' #{mouseover} #{mouseleave}>#{data}</b>"
+                class_name = "L-#{@line_no}-#{c}-#{d}"
+                mouseover = "onmouseover='highlightElement(\"#{class_name}\")'"
+                mouseleave = "onmouseleave='restoreElement(\"#{class_name}\", \"#{clr}\")'"
+                "<b class='edi-data #{class_name}' style='#{style}' #{mouseover} #{mouseleave}>#{data}</b>"
             }.join(@chars.component_element_seperator)
         }.join(@chars.data_element_seperator) + @chars.segment_terminator
     end

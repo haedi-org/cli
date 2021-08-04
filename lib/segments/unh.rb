@@ -34,9 +34,9 @@ class UNH < Line
         codes = ["0052", "0054"]
         definitions = codes.map { |code| define_element_code(code).definition }
         # (0052) Message version number
-        @message_version_number = data_at(2, 1)
+        @message_version_number = data_at(@line_no, 2, 1)
         # (0054) Message release number
-        @message_release_number = data_at(2, 2)
+        @message_release_number = data_at(@line_no, 2, 2)
         # Return version struct
         return Version.new(
             @message_version_number, 

@@ -6,7 +6,7 @@ UNIT_TEST_OPTS = ["-u", "--unit"]
 DEBUG_OPTS     = ["-d", "--debug"]
 STRUCTURE_OPTS = ["-s", "--structure"]
 TIMELINE_OPTS  = ["-t", "--timeline"]
-MEDIAN_OPTS    = ["-m", "--median"]
+EDICATE_OPTS   = ["-e", "--edicate"]
 
 $opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
 $paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
@@ -44,10 +44,12 @@ for path in $paths do
         if opt?(*PARSE_OPTS)
             raise InvalidDocumentError.new unless valid_document?(lines)
             document = Document.new(lines)
-            unless opt?(*MEDIAN_OPTS)
+            unless opt?(*EDICATE_OPTS)
                 for group in document.rows do
-                    for row in group do
-                        for cell in row do
+                    for loc, row in group do
+                        code, title, value, data, desc = row
+                        data = data + " <#{value}>"
+                        for cell in [code, title, data] do
                             print cell.ljust(cell == row.first ? 16 : 56, " ")
                         end
                         print "\n"
@@ -73,7 +75,7 @@ for path in $paths do
         puts ""
         unit_test([[nil, path, true]])
     rescue => exception
-        unless opt?(*MEDIAN_OPTS)
+        unless opt?(*EDICATE_OPTS)
             puts exception.message, exception.backtrace
         else
             html_error(exception)

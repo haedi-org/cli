@@ -26,10 +26,11 @@ class UNA < Line
     end
 
     def html
-        clr, fwt = "#2B2B2B", "bold"
+        clr, fwt = "#2B2B2B", "normal"
         style = "color: #{clr}; font-weight: #{fwt}"
         a = "<b style='#{style}'>#{@raw[0, 3]}</b>"
-        clr, fwt = "#D512E2", "bold"
+        clr, fwt = "#000000", "normal"
+       #clr, fwt = "#D512E2", "bold"
         style = "color: #{clr}; font-weight: #{fwt}"
         b = "<b style='#{style}'>#{@raw[3..-1]}</b>"
         return a + b

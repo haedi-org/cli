@@ -14,7 +14,7 @@ Options:
  -d  --debug        Attempt to parse file and display cropped data
  -s  --structure    Parse and display EDI document structure
  -t  --timeline     Parse and display chronological information
- -m  --median       HTML output compatible with Median EDI client
+ -e  --edicate      HTML output compatible with Edicate EDI client
 ```
 
 ### Building

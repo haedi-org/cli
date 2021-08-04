@@ -5,7 +5,7 @@ Definition = Struct.new(:code, :definition)
 Element = Struct.new(:loc, :code, :title, :value, :desc, :ref, :coded)
 Version = Struct.new(:number, :release, :ref, :code, :title)
 Qualifier = Struct.new(:code, :value, :reference, :definition)
-Tag = Struct.new(:value, :title, :definition)
+Tag = Struct.new(:loc, :value, :title, :definition)
 
 NULL_VALUES = [nil, [], ""]
 
@@ -55,10 +55,8 @@ def lookup_tag(code_list, tag)
     if $code_lists.key?(code_list) && $code_lists[code_list].key?(tag)
         title = $code_lists[code_list][tag]["title"]
         definition = $code_lists[code_list][tag]["description"]
-    else
-        return nil
     end
-    return Tag.new(tag, title, definition)
+    return title, definition
 end
 
 def lookup_qualifier(code_list, code, value)

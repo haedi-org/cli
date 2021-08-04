@@ -1,9 +1,3 @@
-class String
-    def html_sanitize
-        return self.gsub("<", "&lt;").gsub(">", "&gt;")
-    end
-end
-
 def html_table_row(params, type = "td", cols = 5, classes = "is-info is-light")
     puts "<tr>"
     params << "" until params.length >= cols
