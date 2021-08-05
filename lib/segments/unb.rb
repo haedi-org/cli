@@ -48,12 +48,13 @@ class UNB < Line
             # (0035) Test indicator
             @test_indicator = define([5, 6], "0035", true),
         ])
+        @preparation_date.ref = interpret
     end
 
     # Example (D13A):
     # UNB+UNOC:3+O0013000089TEVES+O0013009096BIP-XPRS-AI-P+170308:2018+000000003'
 
-    def date
+    def interpret
         return nil if @preparation_date == nil
         return case @preparation_date.value.length
             when 6; interpret_date(@preparation_date.value, "101")

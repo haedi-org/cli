@@ -98,11 +98,9 @@ class Line
                 element_loc = element.loc
                 element_desc = element.desc
                 element_value = element.value
-                if (element.coded && element.ref != "") || (self.is_a?(DTM))
-                    element_data = element.ref
-                else
-                    element_data = element.value
-                end
+                use_ref = (element.coded && element.ref != "")
+                use_ref ||= DATE_CODES.include?(element.code)
+                element_data = use_ref ? element.ref : element.value
             end
             if element.is_a?(Version)
                 element_data = element.ref

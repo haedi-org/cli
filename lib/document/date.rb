@@ -1,3 +1,5 @@
+DATE_CODES = ["0017", "2380"]
+
 def interpret_date(d, f)
     str = case f
     when "2"   # DDMMYY
