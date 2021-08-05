@@ -15,19 +15,4 @@ class PIA < Line
             @agency = define([2, 3], "3055", true),
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 1]]
-        typed = [[2, 0]]
-        mssge = [[2, 2], [2, 3]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        @product_identifier.tap { |v| puts "Product = " + v.ref if v != nil }
-        @item_number.tap { |v| puts "Item number = " + v if v != nil }
-        @item_number_type.tap { |v| puts "Number type = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

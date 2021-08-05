@@ -67,20 +67,4 @@ class UNB < Line
         return nil if @preparation_time == nil
         return interpret_date(@preparation_time.value, "401")
     end
-
-    def html
-        coded = [[2, 1], [3, 1], [5, 1], [5, 4], [5, 6]]
-        typed = [[2, 0], [2, 2], [2, 3], [3, 0], [3, 2], [3, 3], [4, 2], [5, 0]]
-        mssge = [[1, 0], [1, 1], [1, 3], [4, 0], [4, 1]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        @syntax_identifier.tap { |v| puts "Syntax = " + v.value if v != nil }
-        @syntax_version.tap { |v| puts "Version = " + v.value if v != nil }
-        @code_list_version.tap { |v| puts "Code list = " + v if v != nil }
-        @character_encoding.tap { |v| puts "Encoding = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

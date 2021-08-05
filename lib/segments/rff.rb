@@ -15,20 +15,4 @@ class RFF < Line
             @version = define([1, 3], "4000"),
         ])
     end
-
-    def html
-        codes = [[1, 0]]
-        typed = [[1, 1]]
-        mssge = [[1, 2], [1, 3]]
-        super(codes, typed, mssge)
-    end
-
-    def debug
-        super
-        @reference.tap { |v| puts "Reference = " + v.ref if v != nil }
-        @reference_number.tap { |v| puts "Reference number = " + v if v != nil }
-        @line_number.tap { |v| puts "Line number = " + v if v != nil }
-        @version.tap { |v| puts "Ref version = " + v if v != nil }
-        puts "\n"
-    end
 end

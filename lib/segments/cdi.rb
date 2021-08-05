@@ -15,16 +15,4 @@ class CDI < Line
             @state = define([2, 3], "7006"),
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 0]]
-        typed = [[2, 3]]
-        mssge = [[2, 1], [2, 2]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

@@ -25,15 +25,4 @@ class MOA < Line
             @status_code = define([1, 4], "4405", true),
         ])
     end
-
-    def html
-        coded = [[1, 0], [1, 3], [1, 4]]
-        typed = [[1, 1], [1, 2]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

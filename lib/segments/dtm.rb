@@ -17,19 +17,6 @@ class DTM < Line
         @date.ref = interpret_date(@date.value, @format.value)
     end
 
-    def html
-        codes = [[1, 0]]
-        typed = [[1, 1]]
-        mssge = [[1, 2]]
-        super(codes, typed, mssge)
-    end
-    
-    def debug
-        super
-        puts "#{@qualifier.ref} = #{@date} (#{@format.ref}) #{interpret}"
-        puts "\n"
-    end
-
     def interpret
         return interpret_date(@date.value, @format.value)
     end

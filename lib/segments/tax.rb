@@ -27,16 +27,4 @@ class TAX < Line
             # (3446) Party tax identification number
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 0]]
-        super(coded)
-    end
-
-    def debug
-        super
-        @tax_function.tap { |v| puts "Function = " + v.ref if v != nil }
-        @tax_type.tap { |v| puts "Type = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

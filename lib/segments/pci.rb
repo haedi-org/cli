@@ -9,16 +9,4 @@ class PCI < Line
             @shipping_marks = define([2, 0], "7102"),
         ])
     end
-
-    def html
-        coded = [[1, 0]]
-        typed = [[2, 0]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @marking_instructions.tap { |v| puts "Marking = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

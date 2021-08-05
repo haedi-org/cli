@@ -23,24 +23,4 @@ class INV < Line
             @instruction = define([5, 4], "4400"),
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [5, 1]]
-        typed = [[5, 4]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @movement_direction.tap { |v| puts "Direction = " + v.ref if v != nil }
-        @inventory_type.tap { |v| puts "Inv type = " + v.ref if v != nil }
-        @movement_reason.tap { |v| puts "Reason = " + v.ref if v != nil }
-        @balance_method.tap { |v| puts "Method = " + v.ref if v != nil }
-        @instruction_qualifier.tap { |v| puts "Qual = " + v.ref if v != nil }
-        @instruction_coded.tap { |v| puts "Coded = " + v.ref if v != nil }
-        @code_list.tap { |v| puts "Code list = " + v.ref if v != nil }
-        @agency.tap { |v| puts "Agency = " + v.ref if v != nil }
-        @instruction.tap { |v| puts "Instruction = " + v if v != nil }
-        puts "\n"
-    end
 end

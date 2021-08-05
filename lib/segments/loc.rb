@@ -15,19 +15,4 @@ class LOC < Line
             @location = define([2, 3], "3244"),
         ])
     end
-
-    def html
-        codes = [[1, 0]]
-        typed = [[2, 0], [2, 3]]
-        mssge = [[2, 1], [2, 2]]
-        super(codes, typed, mssge)
-    end
-
-    def debug
-        super
-        @function.tap { |v| puts "Function = " + v.ref if v != nil }
-        @identification.tap { |v| puts "ID = " + v if v != nil }
-        @location.tap { |v| puts "Location = " + v if v != nil }
-        puts "\n"
-    end
 end

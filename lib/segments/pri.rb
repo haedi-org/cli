@@ -19,21 +19,4 @@ class PRI < Line
             @sub_line_price_changed = define([2, 0], "5213", true),
         ])
     end
-
-    def html
-        coded = [[1, 0], [1, 2], [1, 3], [2, 0]]
-        typed = [[1, 1], [1, 4], [1, 5]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @price.tap { |v| puts "Price = " + v if v != nil }
-        @price_qualifier.tap { |v| puts "Qualifier = " + v.ref if v != nil }
-        @type.tap { |v| puts "Price type = " + v.ref if v != nil }
-        @type_qualifier.tap { |v| puts "Type qualifier = " + v.ref if v != nil }
-        @unit_price_basis.tap { |v| puts "Price basis = " + v if v != nil }
-        @measure_unit.tap { |v| puts "Measure unit = " + v if v != nil }
-        puts "\n"
-    end
 end

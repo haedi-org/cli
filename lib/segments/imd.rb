@@ -26,20 +26,4 @@ class IMD < Line
             @language = define([3, 5], "3453", true),
         ].flatten)
     end
-
-    def html
-        coded = [[1, 0], [2, 0], [3, 5]]
-        typed = [[3, 0], [3, 3], [3, 4]]
-        mssge = [[2, 1], [2, 2], [3, 1], [3, 2]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        @description_type.tap { |v| puts "Desc type = " + v.ref if v != nil }
-        @characteristic.tap { |v| puts "Char = " + v.ref if v != nil }
-        @description_code.tap { |v| puts "Type = " + v if v != nil }
-        @description_agency.tap { |v| puts "Agency = " + v.ref if v != nil }
-        @description.tap { |v| puts "Desc = " + v.join(" ") if v != [] }
-    end
 end

@@ -12,17 +12,4 @@ class GIN < Line
             ],
         ].flatten)
     end
-
-    def html
-        coded = [[1, 0]]
-        typed = [[2, 0], [2, 1]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @identity_qualifier.tap { |v| puts "Identity = " + v.ref if v != nil }
-        @identity_range.tap { |v| puts "Range = " + v.inspect if v != nil }
-        puts "\n"
-    end
 end

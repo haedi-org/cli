@@ -9,18 +9,4 @@ class UNT < Line
             @message_reference = define([2, 0], "0062"),
         ])
     end
-
-    def html
-        coded = []
-        typed = [[2, 0]]
-        mssge = [[1, 0]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        @number_of_segments.tap { |v| puts "Segments = " + v if v != nil }
-        @message_reference.tap { |v| puts "Reference = " + v if v != nil }
-        puts "\n"
-    end
 end

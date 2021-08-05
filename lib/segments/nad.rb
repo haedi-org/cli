@@ -35,28 +35,4 @@ class NAD < Line
             @country = define([9, 0], "3207", true),
         ].flatten)
     end
-    
-    # Example:
-    # NAD+BY+++Customer's name+High Street+Example Town++23436+xx'
-
-    def html
-        codes = [[1, 0], [4, 5], [9, 0]]
-        typed = [[2, 0],
-                 [3, 0], [3, 1], [3, 2], [3, 3], [3, 4],
-                 [4, 0], [4, 1], [4, 2], [4, 3], [4, 4],
-                 [5, 0], [5, 1], [5, 2], [5, 3],
-                 [6, 0], [7, 0], [8, 0]
-                ]
-        mssge = [[2, 1], [2, 2]]
-        super(codes, typed, mssge)
-    end
-
-    def debug
-        super
-        @party_function.tap { |v| puts "Function = " + v.ref if v != nil }
-        @party_id.tap { |v| puts "ID = " + v if v != nil }
-        @code_list.tap { |v| puts "Code list = " + v.ref if v != nil }
-        @agency.tap { |v| puts "Agency = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

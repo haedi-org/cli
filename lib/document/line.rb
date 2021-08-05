@@ -1,5 +1,5 @@
 class Line
-    attr_reader :raw, :tag
+    attr_reader :raw, :tag, :data, :line_no, :chars
 
     def initialize(data, line_no, version, chars)
         @raw = data
@@ -114,54 +114,5 @@ class Line
             ]
         end
         return data
-    end
-
-    def html(codes = [], typed = [], mssge = [], warng = [], error = [])
-        return @data.map.with_index { |component, c|
-            component.map.with_index { |data, d|
-                # Set CSS styling
-                clr, fwt = "#2B2B2B", "normal"
-                #clr, fwt = "#2B2B2B", "bold" if [c, d] == [0, 0]
-                #clr, fwt = "#3273DC", "bold" if codes.include?([c, d])
-                #clr, fwt = "#00D1B2", "bold" if typed.include?([c, d])
-                #clr, fwt = "#D512E2", "bold" if mssge.include?([c, d])
-                #clr, fwt = "#FFE08A", "bold" if warng.include?([c, d])
-                #clr, fwt = "#F14668", "bold" if error.include?([c, d])
-                style = "color: #{clr}; font-weight: #{fwt}"
-                # Return <b> tag with CSS styling
-                class_name = "L-#{@line_no}-#{c}-#{d}"
-                mouseover = "onmouseover='highlightElement(\"#{class_name}\")'"
-                mouseleave = "onmouseleave='restoreElement(\"#{class_name}\", \"#{clr}\")'"
-                "<b class='edi-data #{class_name}' style='#{style}' #{mouseover} #{mouseleave}>#{data}</b>"
-            }.join(@chars.component_element_seperator)
-        }.join(@chars.data_element_seperator) + @chars.segment_terminator
-    end
-
-    def coded_row(code, title, struct)
-        return [code, title, struct.value, struct.ref, struct.desc]
-    end
-
-    def header_row(with_def = true)
-        if with_def
-            return ["", "Segment tag", @tag.value, @tag.title, @tag.definition]
-        else
-            return ["", "Segment tag", @tag.value, @tag.title]
-        end
-    end
-
-    def table
-        rows = [header_row]
-        @elements.each do |e|
-            if e.is_a?(Element)
-                rows << [
-                    e.code, e.title, e.value, e.ref, e.desc
-                ]
-            elsif e.is_a?(Version)
-                rows << [
-                    e.code, e.title, e.ref, e.ref, ""
-                ]
-            end
-        end
-        return rows
     end
 end

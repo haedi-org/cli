@@ -19,15 +19,4 @@ class BGM < Line
             @response_type = define([4, 0], "4343", true),
         ])
     end
-
-    def html
-        coded = [[1, 0], [3, 0], [4, 0]]
-        typed = [[1, 3], [2, 0]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

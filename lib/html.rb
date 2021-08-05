@@ -4,13 +4,28 @@ class String
     end
 end
 
+def html_interactive_segment(line)
+    return line.data.map.with_index { |component, c|
+        component.map.with_index { |data, d|
+            # Set CSS styling
+            clr, fwt = "#2B2B2B", "normal"
+            style = "color: #{clr}; font-weight: #{fwt}"
+            # Return <b> tag with CSS styling
+            class_name = "L-#{line.line_no}-#{c}-#{d}"
+            mouseover = "onmouseover='highlightElement(\"#{class_name}\")'"
+            mouseleave = "onmouseleave='restoreElement(\"#{class_name}\", \"#{clr}\")'"
+            "<b class='edi-data #{class_name}' style='#{style}' #{mouseover} #{mouseleave}>#{data}</b>"
+        }.join(line.chars.component_element_seperator)
+    }.join(line.chars.data_element_seperator) + line.chars.segment_terminator
+end
+
 def html_reference_table(document)
     print "<div class=\"columns is-gapless\">"
     print "<div class=\"column scroller is-two-fifths\" style=\"background-color: #F5F5F5\">"
     # Raw data
     print "<span class=\"edi-span\">"
     for line in document.lines do
-        print line.html, "<br>"
+        print html_interactive_segment(line), "<br>"
     end
     print "</span>"
     # Tabular data

@@ -17,15 +17,4 @@ class FTX < Line
             @free_text = define([4], "4440"),
         ])
     end
-
-    def debug
-        super
-        @text_subject.tap { |v| puts "Subject = " + v.ref if v != nil }
-        @free_text_desc.tap { |v| puts "Description = " + v if v != nil }
-        @free_text_function.tap { |v| puts "Function = " + v if v != nil }
-        @code_list.tap { |v| puts "Code list = " + v.ref if v != nil }
-        @agency.tap { |v| puts "Agency = " + v.ref if v != nil }
-        @free_text.tap { |v| puts "Free text = " + v.join(" ") if v != nil }
-        puts "\n"
-    end
 end

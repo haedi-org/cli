@@ -25,25 +25,4 @@ class MEA < Line
             @significant_digits = define([3, 4], "6432"),
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 0], [2, 1], [2, 2]]
-        typed = [[2, 3], [3, 0], [3, 1], [3, 2], [3, 3], [3, 4]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @purpose.tap { |v| puts "Purpose = " + v.ref if v != nil }
-        @attribute_measured.tap { |v| puts "Measured = " + v.ref if v != nil }
-        @significance.tap { |v| puts "Significance = " + v.ref if v != nil }
-        @attribute_id.tap { |v| puts "Attribute ID = " + v.ref if v != nil }
-        @attribute.tap { |v| puts "Attribute = " + v if v != nil }
-        @unit_code.tap { |v| puts "Unit code = " + v if v != nil }
-        @value.tap { |v| puts "Value = " + v if v != nil }
-        @range_minimum.tap { |v| puts "Range min = " + v if v != nil }
-        @range_maximum.tap { |v| puts "Range max = " + v if v != nil }
-        @significant_digits.tap { |v| puts "Sig. digits = " + v if v != nil }
-        puts "\n"
-    end
 end

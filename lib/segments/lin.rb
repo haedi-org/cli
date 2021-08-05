@@ -17,21 +17,4 @@ class LIN < Line
             @agency = define([3, 3], "3055", true),
         ])
     end
-
-    def html
-        coded = [[1, 0], [2, 0], [3, 1]]
-        typed = [[3, 0]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        @line_item_number.tap { |v| puts "Line item = " + v if v != nil }
-        @action_request.tap { |v| puts "Action request = " + v.ref if v != nil }
-        @item_id.tap { |v| puts "Item ID = " + v if v != nil }
-        @item_type.tap { |v| puts "Item type = " + v.ref if v != nil }
-        @code_list.tap { |v| puts "Code list = " + v.ref if v != nil }
-        @agency.tap { |v| puts "Agency = " + v.ref if v != nil }
-        puts "\n"
-    end
 end

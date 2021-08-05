@@ -26,13 +26,6 @@ class UNH < Line
             @association_code = define([2, 4], "0057", true, @message_version.ref),
         ])
     end
-
-    def html
-        coded = []
-        typed = [[1, 0]]
-        mssge = [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]]
-        super(coded, typed, mssge)
-    end
     
     def format_version
         # Get definition information
@@ -51,13 +44,5 @@ class UNH < Line
             codes.join("/"),
             definitions.join("/")
         )
-    end
-
-    def debug
-        super
-        puts "Message type = " + @message_type.ref
-        puts "Message description = " + @message_type.desc
-        puts "Message version = " + @message_version.ref
-        puts "\n"
     end
 end

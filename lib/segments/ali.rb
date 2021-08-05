@@ -17,14 +17,4 @@ class ALI < Line
             ].compact,
         ].flatten)
     end
-
-    def html
-        coded = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0]]
-        super(coded)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

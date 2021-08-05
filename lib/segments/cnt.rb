@@ -11,15 +11,4 @@ class CNT < Line
             @measure_unit = define([1, 2], "6411"),
         ])
     end
-
-    def html
-        coded = [[1, 0]]
-        typed = [[1, 1], [1, 2]]
-        super(coded, typed)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

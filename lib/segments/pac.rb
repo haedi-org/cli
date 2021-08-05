@@ -35,16 +35,4 @@ class PAC < Line
             @returnable_contents = define([5, 1], "8393", true),
         ])
     end
-
-    def html
-        coded = [[2, 0], [2, 1], [2, 2], [4, 0], [4, 2], [4, 4], [5, 0], [5, 1]]
-        typed = [[1, 0], [3, 0], [3, 3], [4, 1], [4, 3]]
-        mssge = [[3, 1], [3, 2]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        puts "\n"
-    end
 end

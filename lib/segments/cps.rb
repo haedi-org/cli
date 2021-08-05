@@ -11,19 +11,4 @@ class CPS < Line
             @packaging_level = define([3, 0], "7075", true),
         ])
     end
-
-    def html
-        coded = [[3, 0]]
-        typed = []
-        mssge = [[1, 0], [2, 0]]
-        super(coded, typed, mssge)
-    end
-
-    def debug
-        super
-        @hierarchical_number.tap { |v| puts "Number = " + v if v != nil }
-        @hierarchical_parent.tap { |v| puts "Parent = " + v if v != nil }
-        @packaging_level.tap { |v| puts "Level = " + v.ref if v != nil }
-        puts "\n"
-    end
 end
