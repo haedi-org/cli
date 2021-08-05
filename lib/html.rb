@@ -5,6 +5,15 @@ class String
 end
 
 def html_interactive_segment(line)
+    if line.is_a?(UNA)
+        clr, fwt = "#2B2B2B", "normal"
+        style = "color: #{clr}; font-weight: #{fwt}"
+        a = "<b style='#{style}'>#{line.raw[0, 3]}</b>"
+        clr, fwt = "#000000", "normal"
+        style = "color: #{clr}; font-weight: #{fwt}"
+        b = "<b style='#{style}'>#{line.raw[3..-1]}</b>"
+        return a + b
+    end
     return line.data.map.with_index { |component, c|
         component.map.with_index { |data, d|
             # Set CSS styling

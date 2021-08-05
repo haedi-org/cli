@@ -25,17 +25,6 @@ class UNA < Line
         @chars = punctuation
     end
 
-    def html
-        clr, fwt = "#2B2B2B", "normal"
-        style = "color: #{clr}; font-weight: #{fwt}"
-        a = "<b style='#{style}'>#{@raw[0, 3]}</b>"
-        clr, fwt = "#000000", "normal"
-       #clr, fwt = "#D512E2", "bold"
-        style = "color: #{clr}; font-weight: #{fwt}"
-        b = "<b style='#{style}'>#{@raw[3..-1]}</b>"
-        return a + b
-    end
-
     def lookup(element_code, data_value)
         csv = csv_reference(EDIFACT_STRING_ADVICE_PATH, element_code)
         unless csv == nil
