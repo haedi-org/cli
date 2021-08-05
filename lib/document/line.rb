@@ -102,10 +102,6 @@ class Line
                 use_ref ||= DATE_CODES.include?(element.code)
                 element_data = use_ref ? element.ref : element.value
             end
-            if element.is_a?(Version)
-                element_data = element.ref
-                element_loc = ["ver"]
-            end
             data << [
                 element_loc, 
                 [
