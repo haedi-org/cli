@@ -40,7 +40,7 @@ def html_reference_table(document)
     # Tabular data
     print "</div>"
     print "<div class=\"column scroller p-0\">"
-    print "<table class=\"table edi-table\">"
+    print "<table class=\"table is-striped edi-table\">"
     for line in document.lines do
         class_name = "L-#{line.tag.loc.join("-")}"
         print "<tr class=\"#{class_name}\">"

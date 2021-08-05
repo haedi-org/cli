@@ -20,6 +20,7 @@ class Document
                 when "DTM"; DTM.new(*params)
                 when "FTX"; FTX.new(*params)
                 when "GIN"; GIN.new(*params)
+                when "GIR"; GIR.new(*params)
                 when "IMD"; IMD.new(*params)
                 when "INV"; INV.new(*params)
                 when "LIN"; LIN.new(*params)
