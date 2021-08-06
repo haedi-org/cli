@@ -40,19 +40,25 @@ def html_reference_table(document)
     # Tabular data
     print "</div>"
     print "<div class=\"column scroller p-0\">"
-    print "<table class=\"table is-striped edi-table\">"
+    print "<table class=\"table is-striped is-hoverable edi-table\">"
     for line in document.lines do
+        clr, fwt = "#2B2B2B", "normal"
         class_name = "L-#{line.tag.loc.join("-")}"
-        print "<tr class=\"#{class_name}\">"
+        mouseover = "onmouseover='highlightElement(\"#{class_name}\", true)'"
+        mouseleave = "onmouseleave='restoreElement(\"#{class_name}\", \"#{clr}\")'"
+        print "<tr class=\"#{class_name}\" #{mouseover} #{mouseleave}>"
         print "<th style=\"color: inherit\">#{line.tag.value}</th>"
         print "<th style=\"color: inherit\" colspan=\"0\">#{line.tag.title}</th>"
         print "<th style=\"color: inherit\"></th>" #{class_name}</th>"
         print "</tr>"
         for loc, row in line.rows do
             code, title, value, data, desc = row
+            clr, fwt = "#2B2B2B", "normal"
             class_name = "L-#{loc.join("-")}"
+            mouseover = "onmouseover='highlightElement(\"#{class_name}\", true)'"
+            mouseleave = "onmouseleave='restoreElement(\"#{class_name}\", \"#{clr}\")'"
             tag = "<span class=\"tag is-info is-light\">#{value}</span>"
-            print "<tr class=\"#{class_name}\">"
+            print "<tr class=\"#{class_name}\" #{mouseover} #{mouseleave}>"
             print "<td>#{code}</td>"
             print "<td>#{title}</td>"
             if desc == ""

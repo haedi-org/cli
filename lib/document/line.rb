@@ -16,7 +16,7 @@ class Line
             @chars.data_element_seperator, @chars.release_character
         )
         # Split data elements within components
-        @data.map! do |component| 
+        @data.map! do |component|
             component.split_with_release(
                 @chars.component_element_seperator, @chars.release_character
             ) 

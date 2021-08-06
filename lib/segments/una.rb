@@ -27,7 +27,7 @@ class UNA < Line
 
     def lookup(element_code, data_value)
         return Element.new(
-            self, [0, 0], element_code, 
+            self, [0, 0, element_code[3]], element_code, 
             :data_value => data_value, :version => version
         )
     end
