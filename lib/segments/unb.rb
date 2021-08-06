@@ -48,7 +48,7 @@ class UNB < Line
             # (0035) Test indicator
             @test_indicator = define([5, 6], "0035", true),
         ])
-        @preparation_date.ref = interpret
+        @preparation_date.set_interpreted_data(interpret)
     end
 
     # Example (D13A):

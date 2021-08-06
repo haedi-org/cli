@@ -38,10 +38,14 @@ for path in $paths do
         if opt?(*DEBUG_OPTS)
             raise InvalidDocumentError.new unless valid_document?(lines)
             document = Document.new(lines)
-           #for line in document.lines do
-           #    puts line.date if line.tag.value == "DTM"
-           #end
-            document.debug
+            for line in document.lines do
+                if line.is_a?(UNB)
+                    for element in line.elements.each do
+                        puts element.inspect if element.code == "0080"
+                    end
+                end
+            end
+            #document.debug
         end
         # PARSE
         if opt?(*PARSE_OPTS)

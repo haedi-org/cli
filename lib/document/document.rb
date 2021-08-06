@@ -95,9 +95,10 @@ class Document
     
     def debug
         @lines.each do |line|
-            line.table.each do |row|
-                #cells = row.map { |c| c.length > 16 ? c[0, 16] + "..." : c }
-                puts row.join("\t, "), "\n"
+            unless line.is_a?(UNA)
+                line.table.each do |row|
+                    puts row.join("\t, "), "\n"
+                end
             end
         end
     end

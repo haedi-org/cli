@@ -14,7 +14,7 @@ class DTM < Line
             @format = define([1, 2], "2379", true),
         ])
         # Set date reference
-        @date.ref = interpret_date(@date.value, @format.value)
+        @date.set_interpreted_data(interpret_date(@date.value, @format.value))
     end
 
     def interpret

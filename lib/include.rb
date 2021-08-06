@@ -16,6 +16,7 @@ require_relative './html.rb'
 require_relative './reference.rb'
 
 require_relative './document/document.rb'
+require_relative './document/element.rb'
 require_relative './document/structure.rb'
 require_relative './document/punctuation.rb'
 require_relative './document/date.rb'

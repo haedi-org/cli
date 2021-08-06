@@ -2,7 +2,7 @@ Reference = Struct.new(:value, :ref, :desc, :code)
 # TODO : Move away from Reference struct
 
 Definition = Struct.new(:code, :definition)
-Element = Struct.new(:loc, :code, :title, :value, :desc, :ref, :coded)
+#Element = Struct.new(:loc, :code, :title, :value, :desc, :ref, :coded)
 Version = Struct.new(:number, :release, :ref, :code, :title)
 Qualifier = Struct.new(:code, :value, :reference, :definition)
 Tag = Struct.new(:loc, :value, :title, :definition)

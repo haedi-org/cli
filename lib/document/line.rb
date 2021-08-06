@@ -1,5 +1,5 @@
 class Line
-    attr_reader :raw, :tag, :data, :line_no, :chars
+    attr_reader :raw, :tag, :data, :line_no, :chars, :version, :elements
 
     def initialize(data, line_no, version, chars)
         @raw = data
@@ -24,28 +24,9 @@ class Line
     end
 
     def define(position, element_code, is_coded = false, version = nil)
-        # Prepend line number to position
-        position = [@line_no] + position
-        # Get element value
-        data_value = data_at(*position)
-        data_value = data_value.join("\n") if data_value.is_a?(Array)
-        # Return if value is null
-        return nil if NULL_VALUES.include?(data_value)
-        # Get element title definition
-        element_title = define_element_code(element_code).definition
-        # Get coded data from reference if data is coded
-        if is_coded
-            version = @version.ref if version == nil
-            qualifier = qualifier_at(element_code, data_value, version)
-        end
-        # Assign data qualifier values
-        qualifier_exists = defined?(qualifier) && qualifier != nil
-        data_description = qualifier_exists ? qualifier.definition : ""
-        data_reference   = qualifier_exists ? qualifier.reference : ""
-        # Return element data type
         return Element.new(
-            position, element_code, element_title,
-            data_value, data_description, data_reference, is_coded
+            self, position, element_code, 
+            :is_coded => is_coded, :version => version
         )
     end
 
@@ -90,28 +71,19 @@ class Line
     def rows
         data = []
         for element in @elements do
-            element_data = ""
-            element_loc = ["na"]
-            element_desc = ""
-            element_value = ""
-            if element.is_a?(Element)
-                element_loc = element.loc
-                element_desc = element.desc
-                element_value = element.value
-                use_ref = (element.coded && element.ref != "")
+            if (element.is_a?(Element) && (element.data_value != nil))
+                data_description = element.data_description
+                data_value = element.data_value
+                use_ref = (element.is_coded? && element.data_interpreted != "")
                 use_ref ||= DATE_CODES.include?(element.code)
-                element_data = use_ref ? element.ref : element.value
-            end
-            data << [
-                element_loc, 
-                [
-                    element.code, 
-                    element.title, 
-                    element_value, 
-                    element_data, 
-                    element_desc
+                data_interpreted = use_ref ? element.data_interpreted : data_value
+                data << [
+                    element.position, [
+                        element.code, element.definition,
+                        data_value, data_interpreted, data_description
+                    ]
                 ]
-            ]
+            end
         end
         return data
     end

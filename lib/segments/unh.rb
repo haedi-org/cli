@@ -1,5 +1,4 @@
 class UNH < Line
-    attr_reader :message_version
     attr_reader :message_reference
     attr_reader :message_type
     attr_reader :message_version_number
@@ -9,22 +8,26 @@ class UNH < Line
 
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)
-        @message_version = format_version
+        @version = format_version
         # Push to elements
         push_elements([
             # (0062) Message reference number
             @message_reference = define([1, 0], "0062"),
             # (0065) Message type
-            @message_type = define([2, 0], "0065", true, @message_version.ref),
+            @message_type = define([2, 0], "0065", true),
             # (0052) Message version number
             @message_version_number = define([2, 1], "0052"),
             # (0054) Message release number
             @message_release_number = define([2, 2], "0054"),
             # (0051) Controlling agency, coded
-            @controlling_agency = define([2, 3], "0051", true, @message_version.ref),
+            @controlling_agency = define([2, 3], "0051", true),
             # (0057) Association assigned code
-            @association_code = define([2, 4], "0057", true, @message_version.ref),
+            @association_code = define([2, 4], "0057", true),
         ])
+    end
+
+    def message_version
+        return @version
     end
     
     def format_version
