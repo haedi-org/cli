@@ -11,8 +11,8 @@ class LOC < Line
             @code_list = define([2, 1], "1131", true),
             # (3055) Code list responsible agency, coded
             @agency = define([2, 2], "3055", true),
-            # (3244) Place/location
-            @location = define([2, 3], "3244"),
+            # (3224) Place/location
+            @location = define([2, 3], "3224"),
         ])
     end
 end

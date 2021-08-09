@@ -103,14 +103,6 @@ class Document
         end
     end
 
-    def html
-        output = []
-        @lines.each do |line|
-            output << line.html
-        end
-        return output.join
-    end
-
     def timeline
         times = []
         @lines.each do |line|
