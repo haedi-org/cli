@@ -51,5 +51,6 @@ require_relative './segments/inv.rb'
 require_relative './segments/cdi.rb'
 require_relative './segments/cnt.rb'
 require_relative './segments/moa.rb'
+require_relative './segments/cci.rb'
 
 require_relative './cli.rb'

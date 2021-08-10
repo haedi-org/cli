@@ -24,6 +24,7 @@ class Line
     end
 
     def define(position, element_code, is_coded = false, version = nil)
+        return nil if data_at(@line_no, *position).blank?
         return Element.new(
             self, position, element_code, 
             :is_coded => is_coded, :version => version
@@ -31,33 +32,33 @@ class Line
     end
 
     def data_at(line, a, b = nil, code = nil, version = nil)
-        return nil unless (length_at() > a) && (b == nil || length_at(a) > b)
-        return @data[a] if b == nil
-        version = @version.ref if version == nil && code != nil
-        return code == nil ? @data[a][b] : ref(code, data_at(a, b, version))
+        return nil unless (length_at() > a) && (b.blank? || length_at(a) > b)
+        return @data[a] if b.blank?
+        version = @version.ref if version.blank? && (!code.blank?)
+        return code.blank? ? @data[a][b] : ref(code, data_at(a, b, version))
     end
 
     def length_at(index = nil)
-        return index == nil ? @data.length : @data[index].length
+        return index.blank? ? @data.length : @data[index].length
     end
 
     def qualifier_at(code, value, version = @version.ref, list = "UNCL")
-        return nil if value == nil
+        return nil if value.blank?
         code_list = list + "_" + version
         return lookup_qualifier(code_list, code, value)
     end
 
     def tag
         loc = [@line_no, 0, 0]
-        title, definition = "", ""
+        desc = ["", ""]
         # Service tags
-        title, definition = lookup_tag("40100_0135", data_at(*loc))
-        return Tag.new(loc, data_at(*loc), title, definition) unless title == ""
+        desc = lookup_tag("40100_0135", data_at(*loc))
+        return Tag.new(loc, data_at(*loc), *desc) unless desc.first.blank?
         # Other tags
-        title, definition = lookup_tag("EDSD", data_at(*loc))
-        return Tag.new(loc, data_at(*loc), title, definition) unless title == ""
+        desc = lookup_tag("EDSD", data_at(*loc))
+        return Tag.new(loc, data_at(*loc), *desc) unless desc.first.blank?
         # Return with no reference
-        return Tag.new(loc, data_at(*loc), title, definition)
+        return Tag.new(loc, data_at(*loc), *desc)
     end
 
     def push_elements(elements)
@@ -71,19 +72,18 @@ class Line
     def rows
         data = []
         for element in @elements do
-            if (element.is_a?(Element) && (element.data_value != nil))
-                data_description = element.data_description
-                data_value = element.data_value
-                use_ref = (element.is_coded? && element.data_interpreted != "")
-                use_ref ||= DATE_CODES.include?(element.code)
-                data_interpreted = use_ref ? element.data_interpreted : data_value
-                data << [
-                    element.position, [
-                        element.code, element.definition,
-                        data_value, data_interpreted, data_description
-                    ]
+            next unless element.is_a?(Element) && !element.data_value.blank?
+            data_description = element.data_description
+            data_value = element.data_value
+            use_ref = (element.is_coded? && !element.data_interpreted.blank?)
+            use_ref ||= DATE_CODES.include?(element.code)
+            data_interpreted = use_ref ? element.data_interpreted : data_value
+            data << [
+                element.position, [
+                    element.code, element.definition,
+                    data_value, data_interpreted, data_description
                 ]
-            end
+            ]
         end
         return data
     end

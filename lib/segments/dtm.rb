@@ -14,10 +14,15 @@ class DTM < Line
             @format = define([1, 2], "2379", true),
         ])
         # Set date reference
-        @date.set_interpreted_data(interpret_date(@date.value, @format.value))
+        unless @date.blank? or @format.blank?
+            @date.set_interpreted_data(
+                interpret_date(@date.value, @format.value)
+            )
+        end
     end
 
     def interpret
+        return nil if @date.blank? or @format.blank?
         return interpret_date(@date.value, @format.value)
     end
 end

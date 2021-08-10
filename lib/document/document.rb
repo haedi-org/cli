@@ -14,6 +14,7 @@ class Document
                 case line[0, 3]
                 when "ALI"; ALI.new(*params)
                 when "BGM"; BGM.new(*params)
+                when "CCI"; CCI.new(*params)
                 when "CDI"; CDI.new(*params)
                 when "CNT"; CNT.new(*params)
                 when "CPS"; CPS.new(*params)

@@ -107,4 +107,13 @@ class Object
     def is_number?
         to_f.to_s == to_s || to_i.to_s == to_s
     end
+
+    def blank?
+        return true if self == nil
+        return true if self == {}
+        return true if self == false
+        return true if self == ""
+        return true if self == " "
+        return false
+    end
 end
