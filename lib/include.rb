@@ -19,6 +19,7 @@ require_relative './document/document.rb'
 require_relative './document/element.rb'
 require_relative './document/structure.rb'
 require_relative './document/punctuation.rb'
+require_relative './document/segment_rule.rb'
 require_relative './document/date.rb'
 require_relative './document/line.rb'
 

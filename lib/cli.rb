@@ -39,11 +39,7 @@ for path in $paths do
             raise InvalidDocumentError.new unless valid_document?(lines)
             document = Document.new(lines)
             for line in document.lines do
-                if line.is_a?(CCI)
-                    for element in line.elements.each do
-                        puts element.inspect
-                    end
-                end
+                line.debug_rules
             end
             #document.debug
         end

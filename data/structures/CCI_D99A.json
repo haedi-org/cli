@@ -1,0 +1,92 @@
+[
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "7059",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "6313",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "6321",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "6155",
+                "m/c": "C",
+                "repr": "an..17",
+                "coded": true
+            },
+            {
+                "code": "6154",
+                "m/c": "C",
+                "repr": "an..70",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "7037",
+                "m/c": "M",
+                "repr": "an..17",
+                "coded": false
+            },
+            {
+                "code": "1131",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "3055",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "7036",
+                "m/c": "C",
+                "repr": "an..35",
+                "coded": false
+            },
+            {
+                "code": "7036",
+                "m/c": "C",
+                "repr": "an..35",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "4051",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    }
+]

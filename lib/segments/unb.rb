@@ -55,7 +55,8 @@ class UNB < Line
     # UNB+UNOC:3+O0013000089TEVES+O0013009096BIP-XPRS-AI-P+170308:2018+000000003'
 
     def interpret
-        return nil if @preparation_date == nil
+        return nil if @preparation_date.blank?
+        return nil if @preparation_date.value.blank?
         return case @preparation_date.value.length
             when 6; interpret_date(@preparation_date.value, "101")
             when 8; interpret_date(@preparation_date.value, "102")
@@ -64,7 +65,8 @@ class UNB < Line
     end
 
     def time
-        return nil if @preparation_time == nil
+        return nil if @preparation_time.blank?
+        return nil if @preparation_time.value.blank?
         return interpret_date(@preparation_time.value, "401")
     end
 end

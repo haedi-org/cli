@@ -7,7 +7,6 @@ class Line
         @version = version
         @chars = chars
         @data = @raw.dup
-        @tag = tag
         @elements = []
         # Remove last character if segment terminator
         @data = @data[0..-2] if (@data[-1] == @chars.segment_terminator)
@@ -21,55 +20,96 @@ class Line
                 @chars.component_element_seperator, @chars.release_character
             ) 
         end
+        # Assign tag and rules after data is processed
+        @tag = assign_tag()
+        @rules = assign_rules()
     end
 
     def define(position, element_code, is_coded = false, version = nil)
-        return nil if data_at(@line_no, *position).blank?
-        return Element.new(
+        return nil if value_at(*position).blank?
+        element = Element.new(
             self, position, element_code, 
             :is_coded => is_coded, :version => version
         )
+        return element if @rules.blank?
+        element.set_rule(get_rule(*position))
+        return element
     end
 
-    def data_at(line, a, b = nil, code = nil, version = nil)
+    def get_rule(a, b = 0)
+        a = a - 1
+        return {} unless (@rules.length > a)
+        return {} unless (@rules[a]["segments"].length > b)
+        return @rules[a]["segments"][b]
+    end
+
+    def value_at(a, b = nil)
         return nil unless (length_at() > a) && (b.blank? || length_at(a) > b)
-        return @data[a] if b.blank?
-        version = @version.ref if version.blank? && (!code.blank?)
-        return code.blank? ? @data[a][b] : ref(code, data_at(a, b, version))
+        return @data[a][0] if b.blank?
+        return @data[a][b]
+    end
+
+    def qualifier_at(code, value, version = nil, list = "UNCL")
+        version = @version.ref if version.blank? && @version.is_a?(Version)
+        return nil if value.blank? or version.blank?
+        code_list = list + "_" + version
+        return lookup_qualifier(code_list, code, value)
+    end
+
+    def data_at(a, b = nil, code = nil, version = nil)
+        value = value_at(a, b)
+        return value if value.blank?
+        version = @version.ref if version.blank? && (!code == nil)
+        return code.blank? ? value : qualifier_at(code, value)
     end
 
     def length_at(index = nil)
         return index.blank? ? @data.length : @data[index].length
     end
 
-    def qualifier_at(code, value, version = @version.ref, list = "UNCL")
-        return nil if value.blank?
-        code_list = list + "_" + version
-        return lookup_qualifier(code_list, code, value)
-    end
-
-    def tag
-        loc = [@line_no, 0, 0]
+    def assign_tag()
+        data = value_at(0)
+        loc = [@line_no, 0, nil]
         desc = ["", ""]
         # Service tags
-        desc = lookup_tag("40100_0135", data_at(*loc))
-        return Tag.new(loc, data_at(*loc), *desc) unless desc.first.blank?
+        desc = lookup_tag("40100_0135", data)
+        return Tag.new(loc, data, *desc) unless desc.first.blank?
         # Other tags
-        desc = lookup_tag("EDSD", data_at(*loc))
-        return Tag.new(loc, data_at(*loc), *desc) unless desc.first.blank?
+        desc = lookup_tag("EDSD", data)
+        return Tag.new(loc, data, *desc) unless desc.first.blank?
         # Return with no reference
-        return Tag.new(loc, data_at(*loc), *desc)
+        return Tag.new(loc, data, *desc)
+    end
+
+    def assign_rules()
+        return {} if @version == nil
+        rule_name = @tag.value + "_" + @version.ref
+        rule_path = SEGMENT_RULES_PATH + rule_name + JSON_EXT
+        rule_data = read_json(rule_path)
+        return rule_data.blank? ? {} : rule_data
     end
 
     def push_elements(elements)
-        elements.compact.each { |e| @elements << e }
+        elements.compact.flatten.each { |e| @elements << e }
     end
 
-    def debug
-        puts "[ #{tag.ref} ] #{@raw}\n\n"
+    def debug_rules()
+        unless @rules.blank?
+            for element in @elements do
+                puts element.code
+                unless element.rule.blank?
+                    puts element.rule.max_length?
+                    puts element.rule.mandatory?
+                end
+            end
+        end
     end
 
-    def rows
+    def debug()
+        puts "[ #{tag.value} ] #{@raw}\n\n"
+    end
+
+    def rows()
         data = []
         for element in @elements do
             next unless element.is_a?(Element) && !element.data_value.blank?

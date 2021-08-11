@@ -4,8 +4,9 @@ class UNA < Line
         @line_no = line_no
         @raw = data
         @data = [["UNA"]]
+        @tag = assign_tag()
+        @rules = assign_rules()
         @elements = []
-        @tag = tag
         # Push to elements
         push_elements([
             # (UNA1) Component data element separator

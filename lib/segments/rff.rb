@@ -12,7 +12,7 @@ class RFF < Line
             # (1156) Line number
             @line_number = define([1, 2], "1156"),
             # (4000) Reference version number
-            @version = define([1, 3], "4000"),
+            @reference_version = define([1, 3], "4000"),
         ])
     end
 end

@@ -98,6 +98,14 @@ def read_document(path)
     #return lines.join.gsub("\n", "").gsub("\r", "")
 end
 
+def read_json(path)
+    return nil unless File.file?(path)
+    file = File.open(path)
+    json = JSON.load(file)
+    file.close
+    return json
+end
+
 def strip_csv_column(path, column)
     lines = File.readlines(path, :encoding => 'utf-8')
     return lines.map! { |line| line.split(",")[column] }
@@ -110,10 +118,18 @@ class Object
 
     def blank?
         return true if self == nil
-        return true if self == {}
         return true if self == false
         return true if self == ""
         return true if self == " "
+        return true if self == []
+        return true if self == {}
         return false
+    end
+end
+
+class Array
+    def without_first
+        return [] if self.empty?
+        return self[1..-1]
     end
 end
