@@ -128,8 +128,14 @@ class Object
 end
 
 class Array
-    def without_first
+    def tail
         return [] if self.empty?
         return self[1..-1]
+    end
+end
+
+class String
+    def first(length = 1)
+        return self[0, length]
     end
 end

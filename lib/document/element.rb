@@ -23,7 +23,7 @@ class Element
     end
 
     def get_data_value(segment)
-        data_value = segment.value_at(*@position.without_first)
+        data_value = segment.value_at(*@position.tail)
         data_value = data_value.join("\n") if data_value.is_a?(Array)
         return data_value
     end

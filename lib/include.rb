@@ -54,4 +54,6 @@ require_relative './segments/cnt.rb'
 require_relative './segments/moa.rb'
 require_relative './segments/cci.rb'
 
+require_relative './document/segment_map.rb'
+
 require_relative './cli.rb'
