@@ -11,10 +11,10 @@ class Document
         @lines.map!.with_index do |line, line_no|
             begin
                 params = [line, line_no, @version, @chars]
-                if SEGMENT_MAP.include?(line.first(3))
-                    SEGMENT_MAP[line.first(3)].new(*params)
-                else
+                unless SEGMENT_MAP.include?(line.first(3))
                     Line.new(*params)
+                else
+                    SEGMENT_MAP[line.first(3)].new(*params)
                 end
             rescue => exception
                 html_error(exception)
@@ -27,7 +27,7 @@ class Document
 
     def assign_values
         # Get punctuation values from UNA line
-        una = lines[0, 3] == "UNA" ? lines[0, 9] : nil
+        una = lines.first(3) == "UNA" ? lines.first(9) : nil
         @chars = format_punctuation(una)
         # Split by segment terminator
         te = @chars.segment_terminator
