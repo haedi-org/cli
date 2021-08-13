@@ -18,7 +18,7 @@ def opt?(a = nil, b = nil)
     return false
 end
 
-if $opts.empty? or ($paths.empty? && !opt?(*IDLE_OPTS)) or opt?(*HELP_OPTS)
+if $opts.empty? or ($paths.empty? && !opt?(*HEADLESS_OPTS)) or opt?(*HELP_OPTS)
     out = []
     out << print_header
     out << File.readlines(USAGE_PATH)
