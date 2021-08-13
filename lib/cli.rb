@@ -6,7 +6,7 @@ UNIT_TEST_OPTS = ["-u", "--unit"]
 DEBUG_OPTS     = ["-d", "--debug"]
 STRUCTURE_OPTS = ["-s", "--structure"]
 TIMELINE_OPTS  = ["-t", "--timeline"]
-IDLE_OPTS      = ["-i", "--idle"]
+HEADLESS_OPTS  = ["-l", "--headless"]
 EDICATE_OPTS   = ["-e", "--edicate"]
 
 $opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
@@ -22,7 +22,7 @@ if $opts.empty? or ($paths.empty? && !opt?(*IDLE_OPTS)) or opt?(*HELP_OPTS)
     out = []
     out << print_header
     out << File.readlines(USAGE_PATH)
-    puts out.flatten.join("\n")
+    puts out.flatten.join
     return
 end
 
@@ -98,7 +98,7 @@ def clear_stdin()
     $stdin.getc while $stdin.ready?
 end
 
-if opt?(*IDLE_OPTS)
+if opt?(*HEADLESS_OPTS)
     $stdout.sync = true
     begin
         until false
