@@ -80,6 +80,7 @@ def valid_document?(data)
 end
 
 def unit_test(tests = TESTS)
+    out = []
     def valid_report?(report)
         actual = true
         report.each { |r| actual = false if r[1] == false }
@@ -109,21 +110,23 @@ def unit_test(tests = TESTS)
         color = is_failure ? :red : :green
         title = "Scenario #{(index += 1).to_s.rjust(2, "0")}. [#{File.basename(path)}]"
         title += " \"#{scenario}\"" unless scenario == nil or scenario == ""
-        puts title.colorize(color)
+        out << title.colorize(color)
         # Print report
         for desc, actual, output in report do
             symbol = actual ? "✓".colorize(:green) : "✗".colorize(:red)
             output = (output.empty? ? desc : output.join(", ")).colorize(actual ? :light_green : :light_red)
-            puts "  #{symbol} #{output}"
+            out << "  #{symbol} #{output}"
         end
-        puts ""
+        out << ""
     end
-    puts "Completed #{tests.length} scenario(s)."
-    puts "#{passed} passed; #{tests.length-passed} failed.", "\n"
+    out << "Completed #{tests.length} scenario(s)."
+    out << ["#{passed} passed; #{tests.length - passed} failed.", "\n"]
+    return out
 end
 
 #<div class="notification is-success"></div>
 def html_unit_test(tests = TESTS)
+    out = []
     def valid_report?(report)
         actual = true
         report.each { |r| actual = false if r[1] == false }
@@ -153,12 +156,14 @@ def html_unit_test(tests = TESTS)
             output = (output.empty? ? desc : output.join(", "))
             icon_type = actual ? "fas fa-check-circle" : "fas fa-times-circle"
             icon = "<i class=\"#{icon_type}\" style=\"padding-right: 8px\"></i>"
-            puts "<div class=\"notification p-2 m-0 #{style}\">#{icon}#{output}</div>"
+            out << "<div class=\"notification p-2 m-0 #{style}\">#{icon}#{output}</div>"
         end
     end
+    return out
 end
 
 def website_unit_test(tests = TESTS)
+    out = []
     def valid_report?(report)
         actual = true
         report.each { |r| actual = false if r[1] == false }
@@ -187,19 +192,20 @@ def website_unit_test(tests = TESTS)
         # Print scenario
         color = expected ? "green" : "red"
         flag = expected ? "VALID" : "INVALID"
-        puts "Scenario #{(index += 1).to_s.rjust(2, "0")} #{scenario} ... <em class=\"#{color}\">#{flag}</em>"
-        puts " " * 12 + "<a href=\"#{path}\">#{File.basename(path)}</a> ... #{Date.today.strftime("%d/%m/%y")}"
-        puts ""
+        out << "Scenario #{(index += 1).to_s.rjust(2, "0")} #{scenario} ... <em class=\"#{color}\">#{flag}</em>"
+        out << " " * 12 + "<a href=\"#{path}\">#{File.basename(path)}</a> ... #{Date.today.strftime("%d/%m/%y")}"
+        out << ""
         # Print report
         for desc, actual, output in report do
             symbol = actual ? "`" : "x"
             color = actual ? "green" : "red"
-            puts " " * 12 + "<em class=\"#{color}\">#{symbol}</em> <em class=\"light-#{color}\">#{output.join(", ")}</em>"
+            out << " " * 12 + "<em class=\"#{color}\">#{symbol}</em> <em class=\"light-#{color}\">#{output.join(", ")}</em>"
         end
-        puts ""
+        out << ""
     end
-    puts "Completed #{tests.length} scenario(s)."
-    puts "#{passed} passed; #{tests.length-passed} failed.", "\n"
+    out << "Completed #{tests.length} scenario(s)."
+    out << ["#{passed} passed; #{tests.length-passed} failed.", "\n"]
+    return out
 end
 
 

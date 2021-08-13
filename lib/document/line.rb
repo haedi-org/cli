@@ -94,19 +94,23 @@ class Line
     end
 
     def debug_rules()
+        out = []
         unless @rules.blank?
             for element in @elements do
-                puts element.code
+                out << element.code
                 unless element.rule.blank?
-                    puts element.rule.max_length?
-                    puts element.rule.mandatory?
+                    out << element.rule.max_length?
+                    out << element.rule.mandatory?
                 end
             end
         end
+        return out
     end
 
     def debug()
-        puts "[ #{tag.value} ] #{@raw}\n\n"
+        out = []
+        out << "[ #{tag.value} ] #{@raw}\n\n"
+        return out
     end
 
     def rows()

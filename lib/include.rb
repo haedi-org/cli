@@ -5,6 +5,7 @@ Bundler.setup(:default, :ci)
 require 'csv'
 require 'json'
 require 'time'
+require 'io/wait'
 
 require 'colorize'
 

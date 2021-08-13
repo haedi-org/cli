@@ -67,13 +67,15 @@ class Document
     end
     
     def debug
+        out = []
         @lines.each do |line|
             unless line.is_a?(UNA)
                 line.table.each do |row|
-                    puts row.join("\t, "), "\n"
+                    out += [row.join("\t, "), "\n"]
                 end
             end
         end
+        return out
     end
 
     def timeline
