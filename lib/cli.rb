@@ -9,6 +9,9 @@ TIMELINE_OPTS  = ["-t", "--timeline"]
 HEADLESS_OPTS  = ["-l", "--headless"]
 EDICATE_OPTS   = ["-e", "--edicate"]
 
+QUIT_COMMAND = 'q'
+RECENT_LOG_PATH = './recent.log'
+
 $opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
 $paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
 
@@ -98,12 +101,18 @@ def clear_stdin()
     $stdin.getc while $stdin.ready?
 end
 
+def quit_notty()
+    File.open(RECENT_LOG_PATH, 'w+') { |f| f.puts Time.now.to_s }
+    exit
+end
+
 if opt?(*HEADLESS_OPTS)
     $stdout.sync = true
     begin
         until false
             input = STDIN.gets
             clear_stdin()
+            quit_notty() if input == QUIT_COMMAND
             unless input == nil
                 paths = input.chomp.split(" ").map { |arg| File.file?(arg) ? arg : nil }.compact
                 puts process_paths(paths).flatten.join unless paths.empty?
