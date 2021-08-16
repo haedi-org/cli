@@ -60,7 +60,8 @@ def process_paths(paths)
                             code, title, value, data, desc = row
                             data = data + " <#{value}>" unless data == value
                             for cell in [code, title, data] do
-                                out << cell.ljust(cell == row.first ? 16 : 56, " ")
+                                width = cell == row.first ? 16 : 56
+                                out << cell.ljust(width, " ")
                             end
                             out << "\n"
                         end
@@ -112,7 +113,9 @@ if opt?(*HEADLESS_OPTS)
             clear_stdin()
             quit_notty() if input == QUIT_COMMAND
             unless input == nil
-                paths = input.chomp.split(" ").map { |arg| File.file?(arg) ? arg : nil }.compact
+                paths = input.chomp.split(" ").map do |arg| 
+                    File.file?(arg) ? arg : nil 
+                end.compact
                 puts process_paths(paths).flatten.join unless paths.empty?
             end
         end
@@ -120,7 +123,6 @@ if opt?(*HEADLESS_OPTS)
         out += [exception.message, exception.backtrace]
         puts out.flatten.join("\n")
     end
-
 else
     out = process_paths($paths)
     puts out.flatten.join("\n")
