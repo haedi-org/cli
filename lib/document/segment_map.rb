@@ -6,6 +6,7 @@ SEGMENT_MAP = {
     "CNT" => CNT,
     "CPS" => CPS,
     "DTM" => DTM,
+    "ERC" => ERC,
     "FTX" => FTX,
     "GIN" => GIN,
     "GIR" => GIR,

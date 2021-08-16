@@ -39,14 +39,8 @@ end
 def lookup_structure(message, version)
     path = "#{STRUCTURE_PATH}/#{message}_#{version}.json"
     path = "#{STRUCTURE_PATH}/#{message}.json" unless File.file?(path)
-    if File.file?(path)
-        file = File.open(path)
-        data = JSON.load(file)
-        file.close
-    else
-        data = {}
-    end
-    return data
+    json = read_json(path)
+    return json == nil ? {} : json
 end
 
 def lookup_tag(code_list, tag)
