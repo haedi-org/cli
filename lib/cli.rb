@@ -1,5 +1,3 @@
-USAGE_PATH = "./usage.txt"
-
 HELP_OPTS      = ["-h", "--help"]
 PARSE_OPTS     = ["-p", "--parse"]
 UNIT_TEST_OPTS = ["-u", "--unit"]
@@ -10,7 +8,6 @@ HEADLESS_OPTS  = ["-l", "--headless"]
 EDICATE_OPTS   = ["-e", "--edicate"]
 
 QUIT_COMMAND = 'q'
-RECENT_LOG_PATH = './recent.log'
 
 $opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
 $paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
@@ -35,6 +32,7 @@ if opt?(*UNIT_TEST_OPTS)
     out << print_header
     tests = $paths.map.with_index { |a, i| [nil, a, true] }
     out << unit_test(tests)
+    puts out.flatten.join("\n")
     return
 end
 

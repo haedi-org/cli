@@ -12,3 +12,8 @@ EDIFACT_SERVICE_ELEMENTS_PATH = "#{CODE_PATH}/edifact_service_elements.csv"
 EDIFACT_STRING_ADVICE_PATH = "#{CODE_PATH}/edifact_string_advice.csv"
 
 JSON_EXT = ".json"
+
+USAGE_PATH = "./usage.txt"
+RECENT_LOG_PATH = './recent.log'
+
+TEST_MESSAGE_PATH = "./data/messages/tests/"
