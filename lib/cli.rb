@@ -2,6 +2,7 @@ HELP_OPTS      = ["-h", "--help"]
 PARSE_OPTS     = ["-p", "--parse"]
 UNIT_TEST_OPTS = ["-u", "--unit"]
 DEBUG_OPTS     = ["-d", "--debug"]
+INFO_OPTS      = ["-i", "--info"]
 STRUCTURE_OPTS = ["-s", "--structure"]
 TIMELINE_OPTS  = ["-t", "--timeline"]
 HEADLESS_OPTS  = ["-l", "--headless"]
@@ -50,6 +51,14 @@ def process_paths(paths)
                 end
                 #document.debug
             end
+            # INFO
+            if opt?(*INFO_OPTS)
+                raise InvalidDocumentError.new unless valid_document?(lines)
+                document = Document.new(lines)
+                for key, value in document.info do
+                    out << [key.to_s.unkey.rpad(48), value].join
+                end
+            end
             # PARSE
             if opt?(*PARSE_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
@@ -61,7 +70,7 @@ def process_paths(paths)
                             data = data + " <#{value}>" unless data == value
                             for cell in [code, title, data] do
                                 width = cell == row.first ? 16 : 56
-                                out << cell.ljust(width, " ")
+                                out << cell.rpad(width)
                             end
                             out << "\n"
                         end

@@ -1,6 +1,7 @@
 class DTM < Line
     attr_reader :date
     attr_reader :qualifier
+    attr_reader :format
 
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)

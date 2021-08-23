@@ -59,4 +59,8 @@ class Element
     def value
         return @data_value
     end
+
+    def interpreted
+        return @data_interpreted
+    end
 end

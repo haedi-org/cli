@@ -1,5 +1,6 @@
 class RFF < Line
     attr_reader :reference
+    attr_reader :reference_number
 
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)

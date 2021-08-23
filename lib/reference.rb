@@ -129,7 +129,38 @@ class Array
 end
 
 class String
+    def titleize(slash = true)
+        temp = self.downcase
+        # By forward slash
+        temp = temp.split(/\//).map { |w| w.weak_titleize }.join("/") if slash
+        # By space
+        temp = temp.split(/ |\_|\-/).map { |w| w.weak_titleize }.join(" ")
+        return temp 
+    end
+
+    def weak_titleize
+        # Don't lowercase letters that are not the first letter of string
+        # e.g. abc => Abc, abC => AbC, ABc => ABc, abc def => Abc def
+        return self.chars.map.with_index { |l, i| i == 0 ? l.upcase : l }.join
+    end
+
     def first(length = 1)
         return self[0, length]
+    end
+    
+    def key
+        return self.gsub(" ", "_").downcase
+    end
+
+    def unkey
+        return self.gsub("_", " ").titleize
+    end
+
+    def lpad(n)
+        return self.rjust(n, " ")
+    end
+
+    def rpad(n)
+        return self.ljust(n, " ")
     end
 end

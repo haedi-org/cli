@@ -78,6 +78,33 @@ class Document
         return out
     end
 
+    def info
+        data = {}
+        for line in @lines do
+            # Message header segment information
+            if line.is_a?(UNH)
+                data[:message_reference] = line.message_reference.value
+                data[:message_type] = line.message_type.value
+                data[:message_version] = line.message_version.ref
+                unless line.controlling_agency.blank?
+                    data[:controlling_agency] = line.controlling_agency.value
+                end
+                unless line.association_code.blank?
+                    data[:association_code] = line.association_code.value
+                end
+            end
+            # Date/time/period segment information
+            if line.is_a?(DTM) && (!line.qualifier.data_interpreted.blank?)
+                data[line.qualifier.data_interpreted] = line.date.data_interpreted
+            end
+            # Reference segment information
+            if line.is_a?(RFF) && (!line.reference.data_interpreted.blank?)
+                data[line.reference.data_interpreted] = line.reference_number.value
+            end
+        end
+        return data
+    end
+
     def timeline
         times = []
         @lines.each do |line|
