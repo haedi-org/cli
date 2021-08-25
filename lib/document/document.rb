@@ -81,6 +81,11 @@ class Document
     def info
         data = {}
         for line in @lines do
+            # Interchange header segment information
+            if line.is_a?(UNB)
+                data[:sender_identifier] = line.sender_id.value
+                data[:recipient_identifier] = line.recipient_id.value
+            end
             # Message header segment information
             if line.is_a?(UNH)
                 data[:message_reference] = line.message_reference.value
@@ -94,12 +99,12 @@ class Document
                 end
             end
             # Date/time/period segment information
-            if line.is_a?(DTM) && (!line.qualifier.data_interpreted.blank?)
-                data[line.qualifier.data_interpreted] = line.date.data_interpreted
+            if line.is_a?(DTM) && (!line.qualifier.interpreted.blank?)
+                data[line.qualifier.interpreted] = line.date.interpreted
             end
             # Reference segment information
-            if line.is_a?(RFF) && (!line.reference.data_interpreted.blank?)
-                data[line.reference.data_interpreted] = line.reference_number.value
+            if line.is_a?(RFF) && (!line.reference.interpreted.blank?)
+                data[line.reference.interpreted] = line.reference_number.value
             end
         end
         return data

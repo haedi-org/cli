@@ -1,4 +1,7 @@
 class UNB < Line
+    attr_reader :sender_id
+    attr_reader :recipient_id
+    
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)
         # Push to elements

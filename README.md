@@ -10,6 +10,7 @@ Arguments:
 
 Options:
  -u  --unit         Parse and display unit test results
+ -i  --info         Parse and display critical information
  -p  --parse        Parse and display segment reference data
  -d  --debug        Attempt to parse file and display cropped data
  -s  --structure    Parse and display EDI document structure
