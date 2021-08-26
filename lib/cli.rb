@@ -43,7 +43,7 @@ if opt?(*UNIT_TEST_OPTS)
     out << print_header
     tests = $paths.map.with_index { |a, i| [nil, a, true] }
     out << unit_test(tests)
-    puts out.flatten.join("\n")
+    print out.flatten.join("\n")
     return
 end
 
@@ -137,14 +137,14 @@ if opt?(*HEADLESS_OPTS)
             unless input == nil
                 $paths = extract_paths(input.words)
                 $opts = extract_tags(input.words)
-                puts process_paths($paths).flatten.join unless $paths.empty?
+                print process_paths($paths).flatten.join unless $paths.empty?
             end
         end
     rescue => exception
         out += [exception.message, exception.backtrace]
-        puts out.flatten.join("\n")
+        print out.flatten.join("\n")
     end
 else
     out = process_paths($paths)
-    puts out.flatten.join("\n")
+    print out.flatten.join("\n")
 end
