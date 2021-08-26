@@ -34,14 +34,16 @@ def html_interactive_segment(line)
     end
     return line.data.map.with_index { |component, c|
         component.map.with_index { |data, d|
-            clr, fwt = "#2B2B2B", "normal"
-            # Return <b> tag with CSS styling
             class_name = "L-#{line.line_no}-#{c}-#{d}"
+            clr, fwt = "#2B2B2B", "normal"
+            onmouseover = "highlightElement(#{class_name.quote})"
+            onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
+            # Return <b> tag with CSS styling
             data.html_tag("b", 
                 :cl => "edi-data #{class_name}",
                 :st => "color: #{clr}; font-weight: #{fwt}",
-                :onmouseover => "highlightElement(\"#{class_name}\")",
-                :onmouseleave => "restoreElement(\"#{class_name}\", \"#{clr}\")"
+                :onmouseover => onmouseover,
+                :onmouseleave => onmouseleave
             )
         }.join(line.chars.component_element_seperator)
     }.join(line.chars.data_element_seperator) + line.chars.segment_terminator
@@ -93,12 +95,12 @@ def html_reference_table(document)
             # Build row
             clr, fwt = "#2B2B2B", "normal"
             class_name = "L-#{loc.join("-")}"
-            onmouseover = "highlightElement(#{class_name.quote}, true)", 
+            onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
             html_tabular_data += row.html_tag("tr", 
                 :cl => class_name,
                 :onmouseover => onmouseover,
-                :onmouseleave =>onmouseleave
+                :onmouseleave => onmouseleave
             )
         end
     end

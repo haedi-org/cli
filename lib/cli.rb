@@ -137,14 +137,19 @@ if opt?(*HEADLESS_OPTS)
             unless input == nil
                 $paths = extract_paths(input.words)
                 $opts = extract_tags(input.words)
-                print process_paths($paths).flatten.join unless $paths.empty?
+                unless $paths.empty?
+                    print process_paths($paths).flatten.join
+                    print "END" if opt?(*EDICATE_OPTS)
+                end
             end
         end
     rescue => exception
         out += [exception.message, exception.backtrace]
         print out.flatten.join("\n")
+        print "END" if opt?(*EDICATE_OPTS)
     end
 else
     out = process_paths($paths)
     print out.flatten.join("\n")
+    print "END" if opt?(*EDICATE_OPTS)
 end
