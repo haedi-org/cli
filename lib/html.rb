@@ -80,33 +80,25 @@ def html_reference_table(document)
         # Data rows
         for loc, vals in line.rows do
             code, title, value, data, desc = vals
-            # Build tag
+            # Build tag and abbr
             tag = value.html_tag("span", :cl => "tag is-info is-light")
+            abbr = data.html_tag("abbr", :ti => desc)
             # Build row data
             row = String.new
             row += code.html_tag("td")
             row += title.html_tag("td")
-            if desc == ""
-                if (value != data) && (value != "")
-                    row += [data, tag].join(" ").html_tag("td")
-                else
-                    row += data.html_tag("td")
-                end
-            else
-                abbr = data.html_tag("abbr", :ti => desc)
-                if (value != data) && (value != "")
-                    row += [abbr, tag].join(" ").html_tag("td")
-                else
-                    row += abbr.html_tag("td")
-                end
-            end
+            is_diff = (value != data) && (value != "")
+            data_dom = desc == "" ? data : abbr
+            row += (is_diff ? [data_dom, tag].join(" ") : data).html_tag("td")
             # Build row
             clr, fwt = "#2B2B2B", "normal"
             class_name = "L-#{loc.join("-")}"
+            onmouseover = "highlightElement(#{class_name.quote}, true)", 
+            onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
             html_tabular_data += row.html_tag("tr", 
                 :cl => class_name,
-                :onmouseover => "highlightElement(#{class_name.quote}, true)", 
-                :onmouseleave => "restoreElement(#{class_name.quote}, #{clr.quote})"
+                :onmouseover => onmouseover,
+                :onmouseleave =>onmouseleave
             )
         end
     end
