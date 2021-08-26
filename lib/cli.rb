@@ -10,8 +10,18 @@ EDICATE_OPTS   = ["-e", "--edicate"]
 
 QUIT_COMMAND = 'q'
 
-$opts = ARGV.map { |arg| arg[0] == "-" ? arg : nil }.compact
-$paths = ARGV.map { |arg| File.file?(arg) ? arg : nil }.compact
+def extract_paths(arr)
+    paths = arr.map { |arg| File.file?(arg) ? arg : nil }
+    return paths.compact
+end
+
+def extract_tags(arr)
+    tags = arr.map { |arg| arg[0] == "-" ? arg : nil }.compact
+    return tags.compact
+end
+
+$opts = extract_tags(ARGV)
+$paths = extract_paths(ARGV)
 
 def opt?(a = nil, b = nil)
     return true if (a != nil) && $opts.include?(a)
@@ -49,14 +59,17 @@ def process_paths(paths)
                 for line in document.lines do
                     out << line.debug_rules
                 end
-                #document.debug
             end
             # INFO
             if opt?(*INFO_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
-                for key, value in document.info do
-                    out << [key.to_s.unkey.rpad(48), value].join
+                unless opt?(*EDICATE_OPTS)
+                    for key, value in document.info do
+                        out << [key.to_s.unkey.rpad(48), value].join
+                    end
+                else
+                    out << html_document_information(document)
                 end
             end
             # PARSE
@@ -118,14 +131,13 @@ if opt?(*HEADLESS_OPTS)
     $stdout.sync = true
     begin
         until false
-            input = STDIN.gets
+            input = STDIN.gets.chomp
             clear_stdin()
             quit_notty() if input == QUIT_COMMAND
             unless input == nil
-                paths = input.chomp.split(" ").map do |arg| 
-                    File.file?(arg) ? arg : nil 
-                end.compact
-                puts process_paths(paths).flatten.join unless paths.empty?
+                $paths = extract_paths(input.words)
+                $opts = extract_tags(input.words)
+                puts process_paths($paths).flatten.join unless $paths.empty?
             end
         end
     rescue => exception

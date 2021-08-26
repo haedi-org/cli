@@ -7,7 +7,8 @@ Version = Struct.new(:number, :release, :ref, :code, :title)
 Qualifier = Struct.new(:code, :value, :reference, :definition)
 Tag = Struct.new(:loc, :value, :title, :definition)
 
-NULL_VALUES = [nil, [], ""]
+EMPTY_STRING = ""
+NULL_VALUES = [nil, [], EMPTY_STRING]
 
 $code_lists = {}
 Dir["#{CODE_PATH}/*.json"].each do |path|
@@ -119,6 +120,10 @@ class Object
         return true if self == {}
         return false
     end
+
+    def quote(punc = "\"")
+        return self.to_s.encap(punc, punc)
+    end
 end
 
 class Array
@@ -162,5 +167,17 @@ class String
 
     def rpad(n)
         return self.ljust(n, " ")
+    end
+
+    def encap(a, b)
+        return a + self + b
+    end
+
+    def words
+        return self.split(" ")
+    end
+
+    def flatten
+        return self
     end
 end
