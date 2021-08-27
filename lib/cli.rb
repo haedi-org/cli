@@ -105,7 +105,14 @@ def process_paths(paths)
             # TIMELINE
             if opt?(*TIMELINE_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
-                out << "TODO : Timeline output"
+                document = Document.new(lines)
+                unless opt?(*EDICATE_OPTS)
+                    for key, value in curate_document_timeline(document) do
+                        out << [key.to_s.unkey.rpad(48), value].join
+                    end
+                else
+                    out << html_timeline(document)
+                end
             end
         rescue InvalidDocumentError => exception
             out << ""

@@ -135,6 +135,10 @@ class Array
         return [] if self.empty?
         return self[1..-1]
     end
+
+    def words
+        return self.join(" ")
+    end
 end
 
 class String
@@ -143,7 +147,7 @@ class String
         # By forward slash
         temp = temp.split(/\//).map { |w| w.weak_titleize }.join("/") if slash
         # By space
-        temp = temp.split(/ |\_|\-/).map { |w| w.weak_titleize }.join(" ")
+        temp = temp.split(/ |\_|\-/).map { |w| w.weak_titleize }.words
         return temp 
     end
 

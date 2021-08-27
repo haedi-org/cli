@@ -1,6 +1,8 @@
 class UNB < Line
     attr_reader :sender_id
     attr_reader :recipient_id
+    attr_reader :preparation_date
+    attr_reader :preparation_time
     
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)

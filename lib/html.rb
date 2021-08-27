@@ -95,7 +95,7 @@ def html_reference_table(document)
             row += title.html("td")
             is_diff = (value != data) && (value != "")
             data_dom = desc == "" ? data : abbr
-            row += (is_diff ? [data_dom, tag].join(" ") : data).html("td")
+            row += (is_diff ? [data_dom, tag].words : data).html("td")
             # Build row
             clr, fwt = "#2B2B2B", "normal"
             class_name = "L-#{loc.join("-")}"
@@ -140,7 +140,10 @@ def html_document_information(document)
             .html("div", :cl => "message_body")
         out << [header, body]
             .flatten.join
-            .html("table", :cl => "table is-borderless is-fullwidth")
+            .html("table", 
+                :cl => "table is-borderless is-fullwidth",
+                :st => "background-color: inherit; border-radius: inherit"
+            )
             .html("article", :cl => "message block is-small is-link")
     end
     return out
@@ -148,16 +151,39 @@ def html_document_information(document)
         .html("div", :cl => "scroller p-4")
 end
 
+def html_timeline(document)
+    items = []
+    # Start timeline heading
+    items << "Start"
+        .html("span", :cl => "tag is-medium is-primary")
+        .html("header", :cl => "timeline-header")
+    # Ordered date/time markers
+    for caption, time in curate_document_timeline(document) do
+        marker = String.new.html("div", :cl => "timeline-marker")
+        content = [time.html("p", :cl => "heading"), caption.html("p")]
+            .join.html("div", :cl => "timeline-content")
+        items << [marker, content].join.html("div", :cl => "timeline-item")
+    end
+    # End timeline heading
+    items << "End"
+        .html("span", :cl => "tag is-medium is-primary")
+        .html("header", :cl => "timeline-header")
+    return items
+        .flatten.join
+        .html("div", :cl => "timeline is-centered", :st => "padding: 32px")
+        .html("div", :cl => "scroller")
+end
+
 def html_error(error)
     # Error message
     message_title = [
         "Exception error".html("b"), error.class.to_s.encap("(", "):")
-    ].join(" ")
+    ].words
     message = error.message.to_s.html_sanitize
     # Error traceback
     trace_title = [
         "Traceback".html("b"), "(most recent call last):"
-    ].join(" ")
+    ].words
     trace = error.backtrace.map.with_index do |e, i| 
         prefix = "#{(error.backtrace.length - i)}: from ".rjust(16, " ")
         prefix + e.html_sanitize

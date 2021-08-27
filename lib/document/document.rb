@@ -20,7 +20,7 @@ class Document
                     SEGMENT_MAP[line.first(3)].new(*params)
                 end
             rescue => exception
-                html_error(exception)
+               #html_error(exception)
                #puts exception
                #puts exception.backtrace
                 exit

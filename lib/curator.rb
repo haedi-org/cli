@@ -48,3 +48,35 @@ def curate_document_key_info(document)
     end
     return data
 end
+
+def curate_document_timeline(document)
+    data = []
+    for line in document.lines do
+        # Interchange header segment information
+        if line.is_a?(UNB)
+            unless (line.preparation_date.interpreted.blank?)
+                data << [
+                    line.preparation_date.definition,
+                    line.preparation_date.interpreted
+                ]
+            end
+            unless (line.preparation_time.interpreted.blank?)
+                data << [
+                    line.preparation_time.definition,
+                    line.preparation_time.interpreted
+                ]
+            end
+        end
+        # Date/time/period segment information
+        if line.is_a?(DTM) && (!line.qualifier.interpreted.blank?)
+            data << [
+                line.qualifier.interpreted,
+                line.date.interpreted
+            ]
+        end
+    end
+    # Sort date/times in ascending order
+    data.sort! { |a, b| Time.parse(a.last) <=> Time.parse(a.last) }
+    # Return date
+    return data
+end
