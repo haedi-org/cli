@@ -5,14 +5,18 @@ class String
         return self.gsub("<", "&lt;").gsub(">", "&gt;")
     end
     
-    def html_tag(tag, ti: nil, id: nil, cl: nil, st: nil, 
+    def html(tag, ti: nil, id: nil, cl: nil, st: nil, 
         colspan: nil, onmouseover: nil, onmouseleave:nil)
-        open_tag, arr = "<" + tag, [
-            ["id", id&.quote], ["class", cl&.quote], ["style", st&.quote],
-            ["title", ti&.quote], ["colspan", colspan&.quote],
+        arr = [
+            ["id", id&.quote], 
+            ["class", cl&.quote], 
+            ["style", st&.quote],
+            ["title", ti&.quote], 
+            ["colspan", colspan&.quote],
             ["onmouseover", onmouseover&.quote("'")],
-            ["onmouseleave", onmouseleave&.quote("'")]
+            ["onmouseleave", onmouseleave&.quote("'")],
         ]
+        open_tag = "<" + tag
         for arg, var in arr do
             open_tag += " #{arg}=#{var}" unless var.blank?
         end
@@ -25,11 +29,11 @@ def html_interactive_segment(line)
         # Tag
         clr, fwt = "#2B2B2B", "normal"
         style = "color: #{clr}; font-weight: #{fwt}"
-        a = line.raw[0, 3].html_tag("b", :st => style)
+        a = line.raw[0, 3].html("b", :st => style)
         # Characters
         clr, fwt = "#000000", "normal"
         style = "color: #{clr}; font-weight: #{fwt}"
-        b = line.raw[3..-1].html_tag("b", :st => style)
+        b = line.raw[3..-1].html("b", :st => style)
         return a + b
     end
     return line.data.map.with_index { |component, c|
@@ -39,7 +43,7 @@ def html_interactive_segment(line)
             onmouseover = "highlightElement(#{class_name.quote})"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
             # Return <b> tag with CSS styling
-            data.html_tag("b", 
+            data.html("b", 
                 :cl => "edi-data #{class_name}",
                 :st => "color: #{clr}; font-weight: #{fwt}",
                 :onmouseover => onmouseover,
@@ -57,8 +61,8 @@ def html_reference_table(document)
         html_raw_data += HTML_LINE_BREAK
     end
     html_raw_data = html_raw_data
-        .html_tag("span", :cl => "edi-span")
-        .html_tag("div", 
+        .html("span", :cl => "edi-span")
+        .html("div", 
             :cl => "column scroller is-two-fifths", 
             :st => "background-color: #F5F5F5"
         )
@@ -70,11 +74,11 @@ def html_reference_table(document)
         # Build row data
         class_name = "L-#{line.tag.loc.join("-")}"
         row = String.new
-        row += line.tag.value.html_tag("th", :st => "color: inherit")
-        row += line.tag.title.html_tag("th", :st => "color: inherit", :colspan => 0)
-        row += String.new.html_tag("th", :st => "color: inherit")
+        row += line.tag.value.html("th", :st => "color: inherit")
+        row += line.tag.title.html("th", :st => "color: inherit", :colspan => 0)
+        row += String.new.html("th", :st => "color: inherit")
         # Build row
-        html_tabular_data += row.html_tag("tr",
+        html_tabular_data += row.html("tr",
             :cl => class_name,
             :onmouseover => "highlightElement(#{class_name.quote}, true)",
             :onmouseleave => "restoreElement(#{class_name.quote}, #{clr.quote})"
@@ -83,21 +87,21 @@ def html_reference_table(document)
         for loc, vals in line.rows do
             code, title, value, data, desc = vals
             # Build tag and abbr
-            tag = value.html_tag("span", :cl => "tag is-info is-light")
-            abbr = data.html_tag("abbr", :ti => desc)
+            tag = value.html("span", :cl => "tag is-info is-light")
+            abbr = data.html("abbr", :ti => desc)
             # Build row data
             row = String.new
-            row += code.html_tag("td")
-            row += title.html_tag("td")
+            row += code.html("td")
+            row += title.html("td")
             is_diff = (value != data) && (value != "")
             data_dom = desc == "" ? data : abbr
-            row += (is_diff ? [data_dom, tag].join(" ") : data).html_tag("td")
+            row += (is_diff ? [data_dom, tag].join(" ") : data).html("td")
             # Build row
             clr, fwt = "#2B2B2B", "normal"
             class_name = "L-#{loc.join("-")}"
             onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
-            html_tabular_data += row.html_tag("tr", 
+            html_tabular_data += row.html("tr", 
                 :cl => class_name,
                 :onmouseover => onmouseover,
                 :onmouseleave => onmouseleave
@@ -105,11 +109,11 @@ def html_reference_table(document)
         end
     end
     html_tabular_data = html_tabular_data
-        .html_tag("table", :cl => "table is-striped is-hoverable edi-table")
-        .html_tag("div", :cl => "column scroller p-0")
+        .html("table", :cl => "table is-striped is-hoverable edi-table")
+        .html("div", :cl => "column scroller p-0")
     # Return combined HTML elements
     return [html_raw_data, html_tabular_data].join
-        .html_tag("div", :cl => "columns is-gapless")
+        .html("div", :cl => "columns is-gapless")
 end
 
 def html_document_information(document)
@@ -117,40 +121,51 @@ def html_document_information(document)
     for tag, data in curate_document_key_info(document) do
         caption = lookup_tag(tag.to_s.upcase).first
         header = (caption == "" ? tag.to_s.upcase : caption)
-            .html_tag("h1")
-            .html_tag("div", :cl => "message-header")
+            .html("h1")
+            .html("div", :cl => "message-header")
         body = []
         for key, value in data do
             key = key
                 .to_s.unkey
-                .html_tag("td", :st => "width: 40%")
+                .html("td", :st => "width: 40%")
             value = value
-                .html_tag("b")
-                .html_tag("td")
+                .html("b")
+                .html("td")
             body << [key, value]
                 .flatten.join
-                .html_tag("tr")
+                .html("tr")
         end
         body = body
             .flatten.join
-            .html_tag("div", :cl => "message_body")
+            .html("div", :cl => "message_body")
         out << [header, body]
             .flatten.join
-            .html_tag("table", :cl => "table is-borderless is-fullwidth")
-            .html_tag("article", :cl => "message block is-small is-link")
+            .html("table", :cl => "table is-borderless is-fullwidth")
+            .html("article", :cl => "message block is-small is-link")
     end
     return out
         .flatten.join
-        .html_tag("div", :cl => "scroller p-4")
+        .html("div", :cl => "scroller p-4")
 end
 
-
-
-# <article class="message">
-#   <div class="message-header">
-#     # TAG
-#   </div>
-#   <div class="message-body">
-#     # DATA
-#   </div>
-# </article>
+def html_error(error)
+    # Error message
+    message_title = [
+        "Exception error".html("b"), error.class.to_s.encap("(", "):")
+    ].join(" ")
+    message = error.message.to_s.html_sanitize
+    # Error traceback
+    trace_title = [
+        "Traceback".html("b"), "(most recent call last):"
+    ].join(" ")
+    trace = error.backtrace.map.with_index do |e, i| 
+        prefix = "#{(error.backtrace.length - i)}: from ".rjust(16, " ")
+        prefix + e.html_sanitize
+    end
+    # Contruct body
+    return [message_title, message, trace_title, trace.join("\n")]
+        .flatten.join("\n")
+        .html("span", :st => "font-size: 0.8em; line-height: 0.8em")
+        .html("div", :cl => "notification is-danger is-small block")
+        .html("div", :cl => "is-fullwidth scroller p-4")
+end

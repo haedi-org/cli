@@ -71,26 +71,6 @@ def html_timeline(times)
     puts "</div>"
 end
 
-def html_error(error)
-    puts "<div class=\"notification is-danger is-small\"><span><b>Exception error</b> (#{error.class}):"
-    puts error.message.to_s.html_sanitize
-    backtrace = error.backtrace.map.with_index do |e, i| 
-        prefix = "#{(error.backtrace.length - i)}: from ".rjust(16, " ")
-        prefix + e.html_sanitize
-    end
-    puts "<br><b>Traceback</b> (most recent call last):"
-    puts backtrace.join("\n")
-    puts "</span></div>"
-
-   #puts "<article class=\"message is-danger is-small\">"
-   #puts "<div class=\"message-body\">"
-   #puts "<p>#{error}</p>"
-   #puts "<br>"
-   #puts "<p>#{backtrace.join("<br>")}</p>"
-   #puts "</div>"
-   #puts "</article>"
-end
-
 #<article class="message is-danger">
 #  <div class="message-header">
 #    <p>Danger</p>
