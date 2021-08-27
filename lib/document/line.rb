@@ -72,12 +72,7 @@ class Line
         loc = [@line_no, 0, nil]
         desc = ["", ""]
         # Service tags
-        desc = lookup_tag("40100_0135", data)
-        return Tag.new(loc, data, *desc) unless desc.first.blank?
-        # Other tags
-        desc = lookup_tag("EDSD", data)
-        return Tag.new(loc, data, *desc) unless desc.first.blank?
-        # Return with no reference
+        desc = lookup_tag(data)
         return Tag.new(loc, data, *desc)
     end
 

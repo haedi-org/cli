@@ -1,5 +1,8 @@
 class Document
-    attr_reader :raw, :lines, :version, :message
+    attr_reader :raw
+    attr_reader :lines
+    attr_reader :version
+    attr_reader :message
 
     def initialize(lines)
         @raw = lines.dup
@@ -76,38 +79,6 @@ class Document
             end
         end
         return out
-    end
-
-    def info
-        data = {}
-        for line in @lines do
-            # Interchange header segment information
-            if line.is_a?(UNB)
-                data[:sender_identifier] = line.sender_id.value
-                data[:recipient_identifier] = line.recipient_id.value
-            end
-            # Message header segment information
-            if line.is_a?(UNH)
-                data[:message_reference] = line.message_reference.value
-                data[:message_type] = line.message_type.value
-                data[:message_version] = line.message_version.ref
-                unless line.controlling_agency.blank?
-                    data[:controlling_agency] = line.controlling_agency.value
-                end
-                unless line.association_code.blank?
-                    data[:association_code] = line.association_code.value
-                end
-            end
-            # Date/time/period segment information
-            if line.is_a?(DTM) && (!line.qualifier.interpreted.blank?)
-                data[line.qualifier.interpreted] = line.date.interpreted
-            end
-            # Reference segment information
-            if line.is_a?(RFF) && (!line.reference.interpreted.blank?)
-                data[line.reference.interpreted] = line.reference_number.value
-            end
-        end
-        return data
     end
 
     def timeline

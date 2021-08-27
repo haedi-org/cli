@@ -65,8 +65,11 @@ def process_paths(paths)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
                 unless opt?(*EDICATE_OPTS)
-                    for key, value in document.info do
-                        out << [key.to_s.unkey.rpad(48), value].join
+                    for tag, data in curate_document_key_info(document) do
+                        out << lookup_tag(tag.to_s.upcase).first
+                        for key, value in data do
+                            out << [key.to_s.unkey.rpad(48), value].join
+                        end
                     end
                 else
                     out << html_document_information(document)

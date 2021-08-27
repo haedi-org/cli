@@ -15,6 +15,7 @@ require_relative './test.rb'
 require_relative './old_html.rb'
 require_relative './html.rb'
 require_relative './reference.rb'
+require_relative './curator.rb'
 
 require_relative './document/document.rb'
 require_relative './document/element.rb'

@@ -114,13 +114,43 @@ end
 
 def html_document_information(document)
     out = []
-    for key, value in document.info do
-        key = key.to_s.unkey.html_tag("td")
-        value = value.html_tag("td")
-        out << [key, value].join.html_tag("tr")
+    for tag, data in curate_document_key_info(document) do
+        caption = lookup_tag(tag.to_s.upcase).first
+        header = (caption == "" ? tag.to_s.upcase : caption)
+            .html_tag("h1")
+            .html_tag("div", :cl => "message-header")
+        body = []
+        for key, value in data do
+            key = key
+                .to_s.unkey
+                .html_tag("td", :st => "width: 40%")
+            value = value
+                .html_tag("b")
+                .html_tag("td")
+            body << [key, value]
+                .flatten.join
+                .html_tag("tr")
+        end
+        body = body
+            .flatten.join
+            .html_tag("div", :cl => "message_body")
+        out << [header, body]
+            .flatten.join
+            .html_tag("table", :cl => "table is-borderless is-fullwidth")
+            .html_tag("article", :cl => "message block is-small is-link")
     end
     return out
         .flatten.join
-        .html_tag("table", :cl => "table is-borderless")
-        .html_tag("div", :cl => "scroller")
+        .html_tag("div", :cl => "scroller p-4")
 end
+
+
+
+# <article class="message">
+#   <div class="message-header">
+#     # TAG
+#   </div>
+#   <div class="message-body">
+#     # DATA
+#   </div>
+# </article>

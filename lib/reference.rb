@@ -44,12 +44,16 @@ def lookup_structure(message, version)
     return json == nil ? {} : json
 end
 
-def lookup_tag(code_list, tag)
+def lookup_tag(tag)
     return nil if tag == ""
+    code_lists = ["40100_0135", "EDSD"]
     title, definition = "", ""
-    if $code_lists.key?(code_list) && $code_lists[code_list].key?(tag)
-        title = $code_lists[code_list][tag]["title"]
-        definition = $code_lists[code_list][tag]["description"]
+    for code_list in code_lists do
+        if $code_lists.key?(code_list) && $code_lists[code_list].key?(tag)
+            title = $code_lists[code_list][tag]["title"]
+            definition = $code_lists[code_list][tag]["description"]
+        end
+        return title, definition unless title == ""
     end
     return title, definition
 end

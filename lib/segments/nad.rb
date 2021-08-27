@@ -1,4 +1,7 @@
 class NAD < Line
+    attr_reader :party_function
+    attr_reader :party_id
+    
     def initialize(data, line_no, version, chars)
         super(data, line_no, version, chars)
         # Push to elements
