@@ -181,15 +181,15 @@ def html_error(error)
     ].words
     message = error.message.to_s.html_sanitize
     # Error traceback
-    trace_title = [
+    traceback_title = [
         "Traceback".html("b"), "(most recent call last):"
     ].words
-    trace = error.backtrace.map.with_index do |e, i| 
+    traceback = error.backtrace.map.with_index do |e, i| 
         prefix = "#{(error.backtrace.length - i)}: from ".rjust(16, " ")
         prefix + e.html_sanitize
     end
     # Contruct body
-    return [message_title, message, trace_title, trace.join("\n")]
+    return [message_title, message, traceback_title, traceback.join("\n")]
         .flatten.join("\n")
         .html("span", :st => "font-size: 0.8em; line-height: 0.8em")
         .html("div", :cl => "notification is-danger is-small block")
