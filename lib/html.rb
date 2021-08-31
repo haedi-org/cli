@@ -1,4 +1,5 @@
 HTML_LINE_BREAK = "<br>"
+NBSP = "&nbsp;"
 
 class String
     def html_sanitize
@@ -39,7 +40,12 @@ def html_interactive_segment(line)
     return line.data.map.with_index { |component, c|
         component.map.with_index { |data, d|
             class_name = "L-#{line.line_no}-#{c}-#{d}"
-            clr, fwt = "#2B2B2B", "normal"
+            element = line.element_at(c, d)
+            if (element.blank?) || (element.is_valid? == true)
+                clr, fwt = "#2B2B2B", "normal"
+            else
+                clr, fwt = "#F14668", "bold"
+            end
             onmouseover = "highlightElement(#{class_name.quote})"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
             # Return <b> tag with CSS styling
@@ -87,17 +93,25 @@ def html_reference_table(document)
         for loc, vals in line.rows do
             code, title, value, data, desc, valid = vals
             # Build tag and abbr
-            tag = value.html("span", :cl => "tag is-info is-light")
-            abbr = data.html("abbr", :ti => desc)
+            value_tag, valid_tag = String.new, String.new
+            # Add value tag if interpreted value is different to raw value
+            if (value != data) && (value != "")
+                value_tag = value.html("span", :cl => "tag is-info is-light")
+            end
+            # Add invalid tag if value is an incorrect data type
+            unless valid == true
+                valid_tag = valid.message.html("span", :cl => "tag is-danger")
+            end
+            # Add abbr to data if there is a description to be read
+            data = desc.blank? ? data : data.html("abbr", :ti => desc)
             # Build row data
             row = String.new
             row += code.html("td")
             row += title.html("td")
-            is_diff = (value != data) && (value != "")
-            data_dom = desc == "" ? data : abbr
-            row += (is_diff ? [data_dom, tag].words : data).html("td")
+            row += [data, value_tag, valid_tag].join(NBSP).html("td")
             # Build row
-            clr, fwt = "#2B2B2B", "normal"
+            clr = valid == true ? "#2B2B2B" : "#F14668"
+            fwt = valid == true ? "normal" : "bold"
             class_name = "L-#{loc.join("-")}"
             onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"

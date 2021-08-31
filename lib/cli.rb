@@ -84,8 +84,8 @@ def process_paths(paths)
                         for loc, row in group do
                             line = ""
                             code, title, value, data, desc, valid = row
-                            data = data + " <#{value}>" unless data == value
-                            data = data + " <INVALID>" unless valid
+                            data += " <#{value}>" unless data == value
+                            data += " <#{valid.message}>" unless valid == true
                             for cell in [code, title, data] do
                                 width = cell == row.first ? 16 : 56
                                 line += cell.rpad(width)

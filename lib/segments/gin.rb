@@ -24,7 +24,9 @@ class GIN < Line
                     else
                         true
                 end
-                identity_number.set_validity(validity)
+                identity_number.set_validity(
+                    validity ? true : InvalidSSCCError.new
+                )
             end
         end
     end

@@ -63,6 +63,13 @@ class Line
         return code.blank? ? value : qualifier_at(code, value)
     end
 
+    def element_at(a, b = 0)
+        for element in @elements do
+            return element if element.position == [@line_no, a, b]
+        end
+        return nil
+    end
+
     def length_at(index = nil)
         return index.blank? ? @data.length : @data[index].length
     end
