@@ -82,13 +82,15 @@ def process_paths(paths)
                 unless opt?(*EDICATE_OPTS)
                     for group in document.rows do
                         for loc, row in group do
-                            code, title, value, data, desc = row
+                            line = ""
+                            code, title, value, data, desc, valid = row
                             data = data + " <#{value}>" unless data == value
+                            data = data + " <INVALID>" unless valid
                             for cell in [code, title, data] do
                                 width = cell == row.first ? 16 : 56
-                                out << cell.rpad(width)
+                                line += cell.rpad(width)
                             end
-                            out << "\n"
+                            out << line
                         end
                         out << "\n"
                     end

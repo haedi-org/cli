@@ -8,6 +8,7 @@ class String
         sum = data.map.with_index { |c, i| c.to_i * (i % 2 == 0 ? 3 : 1) }.sum
         expected_check_digit = 10 - (sum % 10)
         # Return bool
+        # puts [self, given_check_digit, expected_check_digit].inspect
         return given_check_digit == expected_check_digit
     end
 

@@ -20,6 +20,15 @@ class Element
         @element_definition = define_element_code(element_code).definition
         @data_description, @data_interpreted = get_referenced_data(segment)
         @rule = nil
+        @valid = true
+    end
+
+    def is_valid?
+        return @valid
+    end
+
+    def set_validity(bool)
+        @valid = bool
     end
 
     def get_data_value(segment)

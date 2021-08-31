@@ -85,7 +85,7 @@ def html_reference_table(document)
         )
         # Data rows
         for loc, vals in line.rows do
-            code, title, value, data, desc = vals
+            code, title, value, data, desc, valid = vals
             # Build tag and abbr
             tag = value.html("span", :cl => "tag is-info is-light")
             abbr = data.html("abbr", :ti => desc)

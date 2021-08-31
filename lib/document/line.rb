@@ -114,13 +114,14 @@ class Line
             next unless element.is_a?(Element) && !element.data_value.blank?
             data_description = element.data_description
             data_value = element.data_value
+            data_valid = element.is_valid?
             use_ref = (element.is_coded? && !element.data_interpreted.blank?)
             use_ref ||= DATE_CODES.include?(element.code)
             data_interpreted = use_ref ? element.data_interpreted : data_value
             data << [
                 element.position, [
                     element.code, element.definition,
-                    data_value, data_interpreted, data_description
+                    data_value, data_interpreted, data_description, data_valid
                 ]
             ]
         end

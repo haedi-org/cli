@@ -11,5 +11,21 @@ class GIN < Line
                 define([2, 1], "7402"),
             ],
         ].flatten)
+        # Validate identity number
+        validate_identity_numbers()
+    end
+
+    def validate_identity_numbers()
+        for identity_number in @identity_range do
+            if identity_number.is_a?(Element)
+                validity = case @identity_qualifier.value
+                    when 'BJ' # GS1 serial shipping container code
+                        identity_number.value.is_sscc?
+                    else
+                        true
+                end
+                identity_number.set_validity(validity)
+            end
+        end
     end
 end
