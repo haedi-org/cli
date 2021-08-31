@@ -118,7 +118,9 @@ end
 
 def html_document_information(document)
     out = []
+    index = 0
     for tag, data in curate_document_key_info(document) do
+        color_tag = (index += 1) % 2 == 0 ? "is-primary" : "is-link"
         caption = lookup_tag(tag.to_s.upcase).first
         header = (caption == "" ? tag.to_s.upcase : caption)
             .html("h1")
@@ -144,7 +146,7 @@ def html_document_information(document)
                 :cl => "table is-borderless is-fullwidth",
                 :st => "background-color: inherit; border-radius: inherit"
             )
-            .html("article", :cl => "message block is-small is-link")
+            .html("article", :cl => "message block is-small #{color_tag}")
     end
     return out
         .flatten.join

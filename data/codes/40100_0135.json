@@ -47,6 +47,10 @@
         "title": "Interactive interchange trailer",
         "description": "To end and check the completeness of an interchange."
     },
+    "UNA": {
+        "title": "Service string advice",
+        "description": "This segment is used to define the characters selected for use as delimiters and indicators in the rest of the interchange."
+    },
     "UNB": {
         "title": "Interchange header",
         "description": "To identify an interchange."
