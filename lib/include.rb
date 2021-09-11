@@ -1,3 +1,5 @@
+ENV["BUNDLE_GEMFILE"] = ROOT_DIR + "/Gemfile"
+
 require 'rubygems'
 require 'bundler'
 Bundler.setup(:default, :ci)

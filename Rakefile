@@ -1,4 +1,5 @@
-require './lib/paths.rb'
+ROOT_DIR = __dir__
+require_relative './lib/paths.rb'
 
 task :default do
     puts "build\tbuild executable using ocra"
@@ -6,7 +7,7 @@ task :default do
 end
 
 task :build do
-    puts `ocra #{RUN_PATH} --output #{OUTPUT_PATH} --gemfile Gemfile --gem-minimal`
+    puts `ocra #{RUN_PATH} #{INCLUDE_PATH} --output #{OUTPUT_PATH} --gemfile Gemfile --gem-guess`
 end
 
 task :test do
