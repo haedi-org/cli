@@ -1,4 +1,4 @@
-ROOT_DIR = __dir__
+# ROOT_DIR = __dir__
 require_relative './lib/paths.rb'
 
 task :default do
@@ -7,7 +7,13 @@ task :default do
 end
 
 task :build do
-    puts `ocra #{RUN_PATH} #{INCLUDE_PATH} --output #{OUTPUT_PATH} --gemfile Gemfile --gem-guess`
+    params = [
+        RUN_PATH,
+        "--output", OUTPUT_PATH,
+        "--console",
+        "--gemfile", "Gemfile"
+    ]
+    puts `ocra #{params.join(" ")}`
 end
 
 task :test do

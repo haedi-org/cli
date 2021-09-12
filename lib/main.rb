@@ -7,6 +7,6 @@ def print_header
     puts "\n", (b = "-" * header.length), header, b, "\n"
 end
 
-ENV["OCRA_EXECUTABLE"].tap { |d| ROOT_DIR = d ? File.dirname(d) : __dir__ }
+ENV["OCRA_EXECUTABLE"].tap { |d| Dir.chdir(File.dirname(d)) if d }
 
-require_relative './lib/include.rb'
+require_relative './include.rb'
