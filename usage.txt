@@ -12,5 +12,5 @@ Options:
  -s  --structure    Parse and display EDI document structure
  -t  --timeline     Parse and display chronological information
  -l  --headless     Continually read-in paths without terminal
- -e  --edicate      HTML output compatible with Edicate EDI client
+ --html             HTML output compatible with EDI client
  

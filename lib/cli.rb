@@ -6,7 +6,7 @@ INFO_OPTS      = ["-i", "--info"]
 STRUCTURE_OPTS = ["-s", "--structure"]
 TIMELINE_OPTS  = ["-t", "--timeline"]
 HEADLESS_OPTS  = ["-l", "--headless"]
-EDICATE_OPTS   = ["-e", "--edicate"]
+HTML_OPTS   = ["--html"]
 
 QUIT_COMMAND = 'q'
 
@@ -64,7 +64,7 @@ def process_paths(paths)
             if opt?(*INFO_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
-                unless opt?(*EDICATE_OPTS)
+                unless opt?(*HTML_OPTS)
                     for tag, data in curate_document_key_info(document) do
                         out << lookup_tag(tag.to_s.upcase).first
                         for key, value in data do
@@ -79,7 +79,7 @@ def process_paths(paths)
             if opt?(*PARSE_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
-                unless opt?(*EDICATE_OPTS)
+                unless opt?(*HTML_OPTS)
                     for group in document.rows do
                         for loc, row in group do
                             line = ""
@@ -108,7 +108,7 @@ def process_paths(paths)
             if opt?(*TIMELINE_OPTS)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
-                unless opt?(*EDICATE_OPTS)
+                unless opt?(*HTML_OPTS)
                     for key, value in curate_document_timeline(document) do
                         out << [key.to_s.unkey.rpad(48), value].join
                     end
@@ -120,7 +120,7 @@ def process_paths(paths)
             out << ""
             out << unit_test([[nil, path, true]])
         rescue => exception
-            unless opt?(*EDICATE_OPTS)
+            unless opt?(*HTML_OPTS)
                 out += [exception.message, exception.backtrace]
             else
                 out << html_error(exception)
@@ -151,17 +151,17 @@ if opt?(*HEADLESS_OPTS)
                 $opts = extract_tags(input.words)
                 unless $paths.empty?
                     print process_paths($paths).flatten.join
-                    print "END" if opt?(*EDICATE_OPTS)
+                    print "END" if opt?(*HTML_OPTS)
                 end
             end
         end
     rescue => exception
         out += [exception.message, exception.backtrace]
         print out.flatten.join("\n")
-        print "END" if opt?(*EDICATE_OPTS)
+        print "END" if opt?(*HTML_OPTS)
     end
 else
     out = process_paths($paths)
     print out.flatten.join("\n")
-    print "END" if opt?(*EDICATE_OPTS)
+    print "END" if opt?(*HTML_OPTS)
 end
