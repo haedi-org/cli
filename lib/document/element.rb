@@ -70,6 +70,7 @@ class Element
     end
 
     def interpreted
+        return value if @data_interpreted.blank?
         return @data_interpreted
     end
 end

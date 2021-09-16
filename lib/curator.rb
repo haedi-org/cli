@@ -25,24 +25,30 @@ def curate_document_key_info(document)
             end
         end
         # Date/time/period segment information
-        if line.is_a?(DTM) && (!line.qualifier.interpreted.blank?)
-            data[:dtm] = {} unless data.key?(:dtm)
-            data[:dtm].tap do |d|
-                d[line.qualifier.interpreted] = line.date.interpreted
+        if line.is_a?(DTM)
+            unless line.qualifier.blank? || line.date.interpreted.blank?
+                data[:dtm] = {} unless data.key?(:dtm)
+                key = line.qualifier.interpreted
+                value = line.date.interpreted
+                data[:dtm][key] = value
             end
         end
         # Reference segment information
-        if line.is_a?(RFF) && (!line.reference.interpreted.blank?)
-            data[:rff] = {} unless data.key?(:rff)
-            data[:rff].tap do |d|
-                d[line.reference.interpreted] = line.reference_number.value
+        if line.is_a?(RFF)
+            unless line.reference.blank? || line.reference_number.blank?
+                data[:rff] = {} unless data.key?(:rff)
+                key = line.reference.interpreted
+                value = line.reference_number.interpreted
+                data[:rff][key] = value
             end
         end
         # Name and address information
-        if line.is_a?(NAD) && (!line.party_function.interpreted.blank?)
-            data[:nad] = {} unless data.key?(:nad)
-            data[:nad].tap do |d|
-                d[line.party_function.interpreted] = line.party_id.value
+        if line.is_a?(NAD)
+            unless line.party_function.blank? || line.party_id.blank?
+                data[:nad] = {} unless data.key?(:nad)
+                key = line.party_function.interpreted
+                value = line.party_id.value
+                data[:nad][key] = value
             end
         end
     end
