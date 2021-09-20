@@ -57,7 +57,11 @@ def process_paths(paths)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
                 for line in document.lines do
-                    out << line.debug_rules
+                    if line.is_a?(CTA)
+                        for element in line.elements do
+                            out << element.interpreted
+                        end
+                    end
                 end
             end
             # INFO

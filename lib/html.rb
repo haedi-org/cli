@@ -75,6 +75,7 @@ def html_reference_table(document)
     # Tabular data
     html_tabular_data = String.new
     for line in document.lines do
+        # next unless (line.is_a?(CTA)) or (line.is_a?(COM))
         # Header row
         clr, fwt = "#2B2B2B", "normal"
         # Build row data
