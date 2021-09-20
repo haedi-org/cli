@@ -81,8 +81,8 @@ def curate_document_timeline(document)
             ]
         end
     end
-    # Remove any non DateTime elements
-    data = data.map { |a, b| b.is_datetime? ? [a, b] : nil }.compact
+    # Remove any non DateTime elements or duplicates
+    data = data.map { |a, b| b.is_datetime? ? [a, b] : nil }.compact.uniq
     # Sort date/times in ascending order
     data.sort! { |a, b| Time.parse(a.last) <=> Time.parse(a.last) }
     # Return date
