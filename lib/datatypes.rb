@@ -1,4 +1,9 @@
 class String
+    def is_datetime?
+        check = DateTime.parse(self) rescue nil
+        return check != nil
+    end
+
     def is_sscc?
         return false unless self.is_number?
         return false unless self.length == 18
