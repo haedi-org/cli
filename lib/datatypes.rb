@@ -3,10 +3,11 @@ NUMBERS = *("0".."9")
 
 class String
     def is_alphanumeric?
-        for char in self.upcase.chars do
-            return false unless (ALPHABET + NUMBERS).include?(char)
-        end
         return true
+        #for char in self.upcase.chars do
+        #    return false unless (ALPHABET + NUMBERS).include?(char)
+        #end
+        #return true
     end
 
     def is_numeric?
