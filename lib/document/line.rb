@@ -1,5 +1,5 @@
 class Line
-    attr_reader :raw, :tag, :data, :line_no, :chars, :version, :elements
+    attr_reader :raw, :tag, :data, :line_no, :chars, :version, :elements, :valid
 
     def initialize(data, line_no, version, chars)
         @raw = data
@@ -23,6 +23,20 @@ class Line
         # Assign tag and rules after data is processed
         @tag = assign_tag()
         @rules = assign_rules()
+        @valid = true
+    end
+
+    def is_valid?
+        return @valid == true
+    end
+
+    def set_validity(bool)
+        @valid = bool
+    end
+
+    def message
+        return nil if self.is_valid?
+        return @valid.message
     end
 
     def define(position, element_code, is_coded = false, version = nil)
@@ -86,23 +100,55 @@ class Line
     def assign_rules()
         return {} if @version == nil
         rule_name = @tag.value + "_" + @version.ref
-        rule_path = SEGMENT_RULES_PATH + rule_name + JSON_EXT
+        rule_path = SEGMENT_RULES_PATH + "/" + rule_name + JSON_EXT
+        unless File.file?(rule_path)
+            rule_path = SEGMENT_RULES_PATH + "/"  + @tag.value + JSON_EXT
+        end
         rule_data = read_json(rule_path)
         return rule_data.blank? ? {} : rule_data
     end
 
     def push_elements(elements)
         elements.compact.flatten.each { |e| @elements << e }
+        self_validate()
+    end
+
+    def self_validate()
+        unless @rules.blank?
+            self.set_validity(true)
+            @rules.each_with_index do |rules, a|
+                rules["segments"].each_with_index do |rule, b|
+                    element = element_at(a + 1, b)
+                    unless element.blank?
+                        # Element exists
+                        element.self_validate()
+                    else
+                        # Element doesn't exist
+                        if SegmentRule.new(rule).mandatory?
+                            self.set_validity(MandatoryFieldError.new)
+                        end
+                    end
+                end
+            end
+        end
     end
 
     def debug_rules()
         out = []
         unless @rules.blank?
-            for element in @elements do
-                out << element.code
-                unless element.rule.blank?
-                    out << element.rule.max_length?
-                    out << element.rule.mandatory?
+            out << ""
+            out << self.raw
+            @rules.each_with_index do |rules, a|
+                rules["segments"].each_with_index do |rule, b|
+                    element = element_at(a + 1, b)
+                    out << rule.inspect
+                    unless element.blank?
+                        out << element.value
+                    else
+                        if SegmentRule.new(rule).mandatory?
+                            self.set_validity(MandatoryFieldError.new)
+                        end
+                    end
                 end
             end
         end

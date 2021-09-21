@@ -3,17 +3,20 @@ class EFI < Line
         super(data, line_no, version, chars)
         # Push to elements
         push_elements([
-    # TODO
-    #        # (5245) Percentage qualifier
-    #        @percentage_qualifier = define([1, 0], "5245", true),
-    #        # (5482) Percentage
-    #        @percentage = define([1, 1], "5482"),
-    #        # (5249) Percentage basis, coded
-    #        @percentage_basis = define([1, 2], "5249", true),
-    #        # (1131) Code list qualifier
-    #        @code_list = define([1, 3], "1131", true),
-    #        # (3055) Code list responsible agency, coded
-    #        @agency = define([1, 4], "3055", true)
+            # (1508) File name
+            @file_name = define([1, 0], "1508"),
+            # (7008) Item description
+            @item_description = define([1, 1], "7008"),
+            # (1516) File format
+            @file_format = define([2, 0], "1516"),
+            # (1056) Version
+            @file_version = define([2, 1], "1056"),
+            # (1503) Data format, coded	
+            @data_format_qualifier = define([2, 2], "1503", true),
+            # (1502) Data format
+            @data_format = define([2, 3], "1502"),
+            # (1050) Sequence number
+            @sequence_number = define([3, 0], "1050")
         ])
     end
 end

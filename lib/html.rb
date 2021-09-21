@@ -41,7 +41,12 @@ def html_interactive_segment(line)
         component.map.with_index { |data, d|
             class_name = "L-#{line.line_no}-#{c}-#{d}"
             element = line.element_at(c, d)
-            if (element.blank?) || (element.is_valid? == true)
+            unless line.is_valid?
+                is_normal = false
+            else
+                is_normal = (element.blank? || element.is_valid? == true)
+            end
+            if is_normal
                 clr, fwt = "#2B2B2B", "normal"
             else
                 clr, fwt = "#F14668", "bold"
@@ -63,7 +68,10 @@ def html_reference_table(document)
     # Raw data
     html_raw_data = String.new
     for line in document.lines do
-        html_raw_data += html_interactive_segment(line)
+        clr = line.is_valid? ? "#2B2B2B" : "#F14668"
+        html_raw_data += html_interactive_segment(line).html("b",
+            :st => "font-weight: normal; color: #{clr}"
+        )
         html_raw_data += HTML_LINE_BREAK
     end
     html_raw_data = html_raw_data
@@ -83,7 +91,11 @@ def html_reference_table(document)
         row = String.new
         row += line.tag.value.html("th", :st => "color: inherit")
         row += line.tag.title.html("th", :st => "color: inherit", :colspan => 0)
-        row += String.new.html("th", :st => "color: inherit")
+        unless line.is_valid?
+            row += line.message.html("span", :cl => "tag is-danger").html("th")
+        else
+            row += String.new.html("th", :st => "color: inherit")
+        end
         # Build row
         html_tabular_data += row.html("tr",
             :cl => class_name,
@@ -111,8 +123,8 @@ def html_reference_table(document)
             row += title.html("td")
             row += [data, value_tag, valid_tag].join(NBSP).html("td")
             # Build row
-            clr = valid == true ? "#2B2B2B" : "#F14668"
-            fwt = valid == true ? "normal" : "bold"
+            clr = (line.is_valid? && valid == true) ? "#2B2B2B" : "#F14668"
+            fwt = (line.is_valid? && valid == true) ? "normal" : "bold"
             class_name = "L-#{loc.join("-")}"
             onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"

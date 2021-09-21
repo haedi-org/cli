@@ -57,10 +57,9 @@ def process_paths(paths)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
                 for line in document.lines do
-                    if line.is_a?(CTA)
-                        for element in line.elements do
-                            out << element.interpreted
-                        end
+                    if line.is_a?(COM)
+                        #puts line.debug_rules
+                        out << line.debug_rules
                     end
                 end
             end
@@ -84,19 +83,22 @@ def process_paths(paths)
                 raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
                 unless opt?(*HTML_OPTS)
-                    for group in document.rows do
-                        for loc, row in group do
-                            line = ""
+                    for line in document.lines do
+                        raw = line.raw
+                        raw += " <#{line.message}>" unless line.is_valid?
+                        out << [raw, ""]
+                        for loc, row in line.rows do
+                            line_text = ""
                             code, title, value, data, desc, valid = row
                             data += " <#{value}>" unless data == value
                             data += " <#{valid.message}>" unless valid == true
                             for cell in [code, title, data] do
                                 width = cell == row.first ? 16 : 56
-                                line += cell.rpad(width)
+                                line_text += cell.rpad(width)
                             end
-                            out << line
+                            out << line_text
                         end
-                        out << "\n"
+                        out << "" unless line.rows.empty?
                     end
                 else
                     out << html_reference_table(document)

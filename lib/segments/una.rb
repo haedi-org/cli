@@ -24,6 +24,7 @@ class UNA < Line
         ])
         # Assign chars
         @chars = punctuation
+        @valid = true
     end
 
     def lookup(element_code, data_value)

@@ -1,0 +1,20 @@
+[
+    {
+        "m/c": "M",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "3148",
+                "m/c": "M",
+                "repr": "an..512",
+                "coded": false
+            },
+            {
+                "code": "3155",
+                "m/c": "M",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    }
+]

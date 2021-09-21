@@ -66,7 +66,7 @@ class Document
     end
 
     def rows
-        return @lines.map { |line| line.rows }
+        return @lines.map { |line| [line.tag, line.rows] }
     end
     
     def debug

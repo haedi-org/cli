@@ -53,6 +53,23 @@ class Element
         @rule = SegmentRule.new(rule) unless rule.blank?
     end
 
+    def self_validate()
+        unless @rule.blank?
+            # Check data value is alphanumeric
+            if @rule.alphanumeric? and (!@data_value.is_alphanumeric?)
+                set_validity(FieldRepresentationError.new)
+            end
+            # Check data value is numeric
+            if @rule.numeric? and (!@data_value.is_numeric?)
+                set_validity(FieldRepresentationError.new)
+            end
+            # Check length of data value
+            if @rule.max_length? < @data_value.length
+                set_validity(FieldLengthError.new)
+            end
+        end
+    end
+
     def is_coded?
         return @is_coded
     end
@@ -72,5 +89,9 @@ class Element
     def interpreted
         return value if @data_interpreted.blank?
         return @data_interpreted
+    end
+
+    def empty?
+        return ((@data_value == nil) or (@data_value == ""))
     end
 end
