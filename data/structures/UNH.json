@@ -1,0 +1,182 @@
+[
+    {
+        "m/c": "M",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0062",
+                "m/c": "M",
+                "repr": "an..14",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "M",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0065",
+                "m/c": "M",
+                "repr": "an..6",
+                "coded": true
+            },
+            {
+                "code": "0052",
+                "m/c": "M",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "0054",
+                "m/c": "M",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "0051",
+                "m/c": "M",
+                "repr": "an..3",
+                "coded": true
+            },
+            {
+                "code": "0057",
+                "m/c": "C",
+                "repr": "an..6",
+                "coded": false
+            },
+            {
+                "code": "0110",
+                "m/c": "C",
+                "repr": "an..6",
+                "coded": false
+            },
+            {
+                "code": "0113",
+                "m/c": "C",
+                "repr": "an..6",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0068",
+                "m/c": "C",
+                "repr": "an..35",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0070",
+                "m/c": "M",
+                "repr": "n..2",
+                "coded": false
+            },
+            {
+                "code": "0073",
+                "m/c": "C",
+                "repr": "a1",
+                "coded": false
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0115",
+                "m/c": "M",
+                "repr": "an..14",
+                "coded": false
+            },
+            {
+                "code": "0116",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0118",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0051",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0121",
+                "m/c": "M",
+                "repr": "an..14",
+                "coded": false
+            },
+            {
+                "code": "0122",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0124",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0051",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    },
+    {
+        "m/c": "C",
+        "repeat": "1",
+        "segments": [
+            {
+                "code": "0127",
+                "m/c": "M",
+                "repr": "an..14",
+                "coded": false
+            },
+            {
+                "code": "0128",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0130",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": false
+            },
+            {
+                "code": "0051",
+                "m/c": "C",
+                "repr": "an..3",
+                "coded": true
+            }
+        ]
+    }
+]

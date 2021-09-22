@@ -48,9 +48,10 @@ class Element
         @data_interpreted = value
     end
 
-    def set_rule(rule)
+    def set_rule(rule, parent = {})
         @rule = rule if rule.is_a?(SegmentRule)
-        @rule = SegmentRule.new(rule) unless rule.blank?
+        inherited_m_c = parent.key?("m/c") ? parent["m/c"] : "C"
+        @rule = SegmentRule.new(rule, inherited_m_c) unless rule.blank?
     end
 
     def self_validate()
@@ -63,8 +64,12 @@ class Element
             if @rule.numeric? and (!@data_value.is_numeric?)
                 set_validity(FieldRepresentationError.new)
             end
-            # Check length of data value
-            if @rule.max_length? < @data_value.length
+            # Check length of data value for variable length
+            if @rule.variable_length? && (@rule.length < @data_value.length)
+                set_validity(FieldLengthError.new)
+            end
+            # Check length of data value for fixed length
+            if @rule.fixed_length? && (@rule.length != @data_value.length)
                 set_validity(FieldLengthError.new)
             end
         end

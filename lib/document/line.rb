@@ -46,7 +46,7 @@ class Line
             :is_coded => is_coded, :version => version
         )
         return element if @rules.blank?
-        element.set_rule(get_rule(*position))
+        element.set_rule(*get_rule(*position))
         return element
     end
 
@@ -54,7 +54,7 @@ class Line
         a = a - 1
         return {} unless (@rules.length > a)
         return {} unless (@rules[a]["segments"].length > b)
-        return @rules[a]["segments"][b]
+        return [@rules[a]["segments"][b], @rules[a]]
     end
 
     def value_at(a, b = nil)
