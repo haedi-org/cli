@@ -8,7 +8,8 @@ TIMELINE_OPTS  = ["-t", "--timeline"]
 HEADLESS_OPTS  = ["-l", "--headless"]
 HTML_OPTS   = ["--html"]
 
-QUIT_COMMAND = 'q'
+QUIT_COMMAND = "q"
+STDOUT_FINISH = "END"
 
 def extract_paths(arr)
     paths = arr.map { |arg| File.file?(arg) ? arg : nil }
@@ -54,14 +55,15 @@ def process_paths(paths)
             lines = read_document(path)
             # DEBUG
             if opt?(*DEBUG_OPTS)
-                raise InvalidDocumentError.new unless valid_document?(lines)
-                document = Document.new(lines)
-                for line in document.lines do
-                    if line.is_a?(COM)
-                        #puts line.debug_rules
-                        out << line.debug_rules
-                    end
-                end
+                $dictionary.debug
+                #raise InvalidDocumentError.new unless valid_document?(lines)
+                #document = Document.new(lines)
+                #for line in document.lines do
+                #    if line.is_a?(COM)
+                #        #puts line.debug_rules
+                #        out << line.debug_rules
+                #    end
+                #end
             end
             # INFO
             if opt?(*INFO_OPTS)
@@ -157,17 +159,17 @@ if opt?(*HEADLESS_OPTS)
                 $opts = extract_tags(input.words)
                 unless $paths.empty?
                     print process_paths($paths).flatten.join
-                    print "END" if opt?(*HTML_OPTS)
+                    print STDOUT_FINISH if opt?(*HTML_OPTS)
                 end
             end
         end
     rescue => exception
         out += [exception.message, exception.backtrace]
         print out.flatten.join("\n")
-        print "END" if opt?(*HTML_OPTS)
+        print STDOUT_FINISH if opt?(*HTML_OPTS)
     end
 else
     out = process_paths($paths)
     print out.flatten.join("\n")
-    print "END" if opt?(*HTML_OPTS)
+    print STDOUT_FINISH if opt?(*HTML_OPTS)
 end
