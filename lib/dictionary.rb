@@ -25,6 +25,7 @@ class Dictionary
 
     def segment_specification(tag, version, standard = "un_edifact")
         data = retrieve_un_edifact_data("EDSD", version)
+        # TODO: Replace component data references with EDCD data
         return data.key?(tag) ? data[tag] : {}
     end
 
