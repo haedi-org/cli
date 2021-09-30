@@ -1,0 +1,35 @@
+SEGMENT, entire line
+e.g. LOC+9+MYPKG:139:6'
+
+SEGMENT_TAG, first element in segment
+e.g. LOC
+
+SEGMENT_NAME, name associated with segment tag
+e.g. Place/location Identification
+
+ELEMENT, single data point
+e.g. 9
+
+COMPOSITE_ELEMENT, multiple data points in group
+e.g. MYPKG:139
+
+CODED_ELEMENT, an element with a value that can be used as a cross-reference
+e.g. 9 (=> Port)
+
+ELEMENT_CODE, a code to identify element in standard
+e.g. 1131
+
+ELEMENT_NAME, name associated with element code
+e.g. Code list identification code
+
+ELEMENT_DESC, description associated with element code
+e.g. Identification of a code list
+
+ELEMENT_DATA_VALUE, raw data value representing element in segment
+e.g. 9
+
+ELEMENT_DATA_NAME, cross-referenced data value (for coded elements)
+e.g. Port
+
+ELEMENT_DATA_DESC, cross-referenced description value (for coded elements)
+e.g. A location for having means of transport to load or discharge cargo.

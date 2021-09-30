@@ -3,7 +3,7 @@
 #   eded/ "element list with name/desc/repr"  (e.g. EDED_D97A.json)  
 #   edmd/ "message structure"                 (e.g. EDMD_APERAK_D97A)
 #   edsd/ "segment specs"                     (e.g. EDSD_D97A.json)
-#   uncl/ "coded data reference"              (e.g. UNCL_D00A.json)  
+#   uncl/ "coded data reference"              (e.g. UNCL_D00A.json)
 
 class Dictionary
     def initialize(dir = DATA_PATH)
@@ -23,9 +23,28 @@ class Dictionary
         puts segment_specification("LIN", "D97A")
     end
 
+    def coded_data_reference(code, value, version, standard = "un_edifact")
+        return {} if (version == nil) or (value == nil)
+        data = retrieve_un_edifact_data("UNCL", version)
+        return {} if data.dig(code, value) == nil
+        return data[code][value]
+    end
+    
+    def element_specification(code, version, standard = "un_edifact")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("EDED", version)
+        return data.key?(code) ? data[code] : {}
+    end
+
+    def composite_specification(code, version, standard = "un_edifact")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("EDCD", version)
+        return data.key?(code) ? data[code] : {}
+    end
+
     def segment_specification(tag, version, standard = "un_edifact")
+        return {} if version == nil
         data = retrieve_un_edifact_data("EDSD", version)
-        # TODO: Replace component data references with EDCD data
         return data.key?(tag) ? data[tag] : {}
     end
 

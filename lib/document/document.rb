@@ -6,26 +6,62 @@ class Document
 
     def initialize(lines)
         @raw = lines.dup
-        @lines = @raw.map { |line| line.chomp }.join
-        @version = nil
-        # Get critical values from document and reformat
-        assign_values
-        # Create line object dependant on tag
-        @lines.map!.with_index do |line, line_no|
+        @segments = @raw.map { |line| line.chomp }.join
+        @version = "D97A" # nil
+        # 
+        set_critical_values
+        # Create segment objects
+        @segments.map!.with_index do |segment, line_no|
             begin
-                params = [line, line_no, @version, @chars]
-                unless SEGMENT_MAP.include?(line.first(3))
-                    Line.new(*params)
-                else
-                    SEGMENT_MAP[line.first(3)].new(*params)
-                end
+                params = [segment, line_no, @version, @chars]
+                Segment.new(*params)
             rescue => exception
-                #html_error(exception)
                 puts exception
                 puts exception.backtrace
-                exit
             end
         end
+
+
+    #    # Get critical values from document and reformat
+    #    assign_values
+    #    # Create line object dependant on tag
+    #    @lines.map!.with_index do |line, line_no|
+    #        begin
+    #            params = [line, line_no, @version, @chars]
+    #            unless SEGMENT_MAP.include?(line.first(3))
+    #                Line.new(*params)
+    #            else
+    #                SEGMENT_MAP[line.first(3)].new(*params)
+    #            end
+    #        rescue => exception
+    #            #html_error(exception)
+    #            puts exception
+    #            puts exception.backtrace
+    #            exit
+    #        end
+    #    end
+    end
+    
+    def debug
+        out = []
+        for segment in @segments do
+            out << segment.debug
+        end
+        return out
+    end
+
+    def set_critical_values
+        # Get punctuation values from UNA line
+        una = @segments.first(3) == "UNA" ? @segments.first(9) : nil
+        @chars = format_punctuation(una)
+        # Split by segment terminator
+        te = @chars.segment_terminator
+        re = @chars.release_character
+        @segments = @segments.split_with_release(te, re).map { |s| s + te }
+        # Fix UNA segment
+        @segments[0] = una if @segments[0].first(3) == "UNA"
+        # Save unedited lines
+        @raw = @segments.dup
     end
 
     def assign_values
@@ -67,18 +103,6 @@ class Document
 
     def rows
         return @lines.map { |line| [line.tag, line.rows] }
-    end
-    
-    def debug
-        out = []
-        @lines.each do |line|
-            unless line.is_a?(UNA)
-                line.table.each do |row|
-                    out += [row.join("\t, "), "\n"]
-                end
-            end
-        end
-        return out
     end
 
     def timeline

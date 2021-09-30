@@ -55,15 +55,9 @@ def process_paths(paths)
             lines = read_document(path)
             # DEBUG
             if opt?(*DEBUG_OPTS)
-                $dictionary.debug
-                #raise InvalidDocumentError.new unless valid_document?(lines)
-                #document = Document.new(lines)
-                #for line in document.lines do
-                #    if line.is_a?(COM)
-                #        #puts line.debug_rules
-                #        out << line.debug_rules
-                #    end
-                #end
+                # raise InvalidDocumentError.new unless valid_document?(lines)
+                document = Document.new(lines)
+                out << document.debug
             end
             # INFO
             if opt?(*INFO_OPTS)
@@ -170,6 +164,6 @@ if opt?(*HEADLESS_OPTS)
     end
 else
     out = process_paths($paths)
-    print out.flatten.join("\n")
+    print out.flatten.compact.join("\n")
     print STDOUT_FINISH if opt?(*HTML_OPTS)
 end

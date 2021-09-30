@@ -5,7 +5,7 @@ Definition = Struct.new(:code, :definition)
 #Element = Struct.new(:loc, :code, :title, :value, :desc, :ref, :coded)
 Version = Struct.new(:number, :release, :ref, :code, :title)
 Qualifier = Struct.new(:code, :value, :reference, :definition)
-Tag = Struct.new(:loc, :value, :title, :definition)
+#Tag = Struct.new(:loc, :value, :title, :definition)
 
 EMPTY_STRING = ""
 NULL_VALUES = [nil, [], EMPTY_STRING]
