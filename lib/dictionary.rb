@@ -1,26 +1,42 @@
 # /un_edifact/
-#   edcd/ "composite element specs"           (e.g. EDCD_D97A.json)  
-#   eded/ "element list with name/desc/repr"  (e.g. EDED_D97A.json)  
-#   edmd/ "message structure"                 (e.g. EDMD_APERAK_D97A)
-#   edsd/ "segment specs"                     (e.g. EDSD_D97A.json)
-#   uncl/ "coded data reference"              (e.g. UNCL_D00A.json)
+#   lists/ "data csv lists"                   (e.g. service_segments.csv)
+#   uncl/  "coded data reference"             (e.g. UNCL_D00A.json)
+#   edcd/  "composite element specs"          (e.g. EDCD_D97A.json)  
+#   eded/  "element list with name/desc/repr" (e.g. EDED_D97A.json)  
+#   edmd/  "message structure"                (e.g. EDMD_APERAK_D97A.json)
+#   edsd/  "segment specs"                    (e.g. EDSD_D97A.json)
+#   ss/    "service segment specs"            (e.g. SS_40000.json)
+#   sc/    "composite service element specs"  (e.g. SC_40000.json)
+#   se/    "service element specs"            (e.g. SE_40000.json)
 
 class Dictionary
     def initialize(dir = DATA_PATH)
         @dir = dir
         @cache = {
             "un_edifact" => {
-                "edcd" => {},
-                "eded" => {},
-                "edmd" => {},
-                "edsd" => {},
-                "uncl" => {}
+                "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
+                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}
             }
         }
     end
-
+    
     def debug
-        puts segment_specification("LIN", "D97A")
+        # NOTE: Leave for debug purposes
+    end
+
+    def is_service_segment?(value, standard = "un_edifact")
+        params = ["service_segments", standard]
+        return retrieve_csv_column(*params).include?(value)
+    end
+
+    def is_service_element?(value, standard = "un_edifact")
+        params = ["service_simple_elements", standard]
+        return retrieve_csv_column(*params).include?(value)
+    end
+
+    def is_service_composite?(value, standard = "un_edifact")
+        params = ["service_composite_elements", standard]
+        return retrieve_csv_column(*params).include?(value)
     end
 
     def coded_data_reference(code, value, version, standard = "un_edifact")
@@ -36,15 +52,33 @@ class Dictionary
         return data.key?(code) ? data[code] : {}
     end
 
+    def service_element_specification(code, version = "40000")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("SE", version)
+        return data.key?(code) ? data[code] : {}
+    end
+
     def composite_specification(code, version, standard = "un_edifact")
         return {} if version == nil
         data = retrieve_un_edifact_data("EDCD", version)
         return data.key?(code) ? data[code] : {}
     end
 
+    def service_composite_specification(code, version = "40000")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("SC", version)
+        return data.key?(code) ? data[code] : {}
+    end
+
     def segment_specification(tag, version, standard = "un_edifact")
         return {} if version == nil
         data = retrieve_un_edifact_data("EDSD", version)
+        return data.key?(tag) ? data[tag] : {}
+    end
+
+    def service_segment_specification(tag, version = "40000")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("SS", version)
         return data.key?(tag) ? data[tag] : {}
     end
 
@@ -63,6 +97,13 @@ class Dictionary
             entry[key] = data
             return data
         end
+    end
+
+    def retrieve_csv_column(file_name, standard = "un_edifact", column = 0)
+        data = []
+        path = "#{@dir}/#{standard}/lists/#{file_name}.csv"
+        CSV.read(path).each { |line| data << line[column] }
+        return data
     end
 
     def load_json(path)

@@ -1,27 +1,35 @@
 class Segment
-    attr_reader :elements, :raw
+    attr_reader :elements, :line_no, :raw, :error, :tag, :data, :chars
 
     def initialize(raw, line_no, version = nil, chars = nil)
         @raw = raw
         @data = @raw.dup
+        @line_no = line_no
         @version = version
         @chars = chars
         @elements = []
-        @tag = Tag.new(raw[0, 3])
+        @error = nil
+        @tag = Tag.new(raw[0, 3], version)
         # Retrieve specification from dictionary
-        @spec = $dictionary.segment_specification(@tag.value, @version)
+        unless $dictionary.is_service_segment?(@tag.value)
+            @spec = $dictionary.segment_specification(@tag.value, @version)
+        else
+            @spec = $dictionary.service_segment_specification(@tag.value)
+        end
         split_data_by_chars() unless @chars.blank?
         apply_segment_spec() unless @spec.blank?
+    end
+
+    def truncated_elements
+        data = @elements.map { |element| element.blank? ? nil : element }
+        data = data[0..-2] until (data.last != nil) or (data.empty?)
+        return data.empty? ? [] : @elements.first(data.length)
     end
 
     def flatten
         arr = []
         for element in @elements do
-            if element.is_a?(Composite)
-                arr << element.elements
-            else
-                arr << element
-            end
+            arr << (element.is_a?(Composite) ? element.elements : element)
         end
         return arr.flatten
     end
@@ -29,7 +37,7 @@ class Segment
     def apply_segment_spec
         index = 0 # Skip tag
         @elements = @spec["structure"].map do |code|
-            is_composite = (code.first == "C")
+            is_composite = ((code.first == "C") or (code.first == "S"))
             index += 1
             params = [code, @version, [index], get_data(index, is_composite)]
             is_composite ? Composite.new(*params) : Element.new(*params)
@@ -41,12 +49,14 @@ class Segment
         @data = @data[0..-2] if (@data[-1] == @chars.segment_terminator)
         # Split component data elements within line
         @data = @data.split_with_release(
-            @chars.data_element_seperator, @chars.release_character
+            @chars.data_element_seperator,
+            @chars.release_character
         )
         # Split data elements within components
         @data.map! do |component|
             component.split_with_release(
-                @chars.component_element_seperator, @chars.release_character
+                @chars.component_element_seperator,
+                @chars.release_character
             )
         end
     end
@@ -54,6 +64,10 @@ class Segment
     def get_data(index, is_composite = false)
         return nil if index >= @data.length
         return is_composite ? @data[index] : @data[index].first
+    end
+
+    def is_valid?
+        return true
     end
 
     def debug

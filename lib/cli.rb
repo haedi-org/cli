@@ -55,9 +55,12 @@ def process_paths(paths)
             lines = read_document(path)
             # DEBUG
             if opt?(*DEBUG_OPTS)
-                # raise InvalidDocumentError.new unless valid_document?(lines)
-                document = Document.new(lines)
-                out << document.debug
+                unless opt?(*HTML_OPTS)
+                    document = Document.new(lines)
+                    out << document.debug
+                else
+                    out << html_debug(document)
+                end
             end
             # INFO
             if opt?(*INFO_OPTS)
@@ -80,7 +83,7 @@ def process_paths(paths)
                 document = Document.new(lines)
                 unless opt?(*HTML_OPTS)
                     for segment in document.segments do
-                        out << ["", segment.raw]
+                        out << ["", segment.raw, segment.tag.name]
                         for element in segment.flatten do
                             unless element.blank?
                                 out << [

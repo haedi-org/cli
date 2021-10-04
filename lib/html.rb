@@ -23,53 +23,68 @@ class String
         end
         return self.encap(open_tag + ">", tag.encap("</", ">"))
     end
-end 
+end
 
-def html_interactive_segment(line)
-    if line.is_a?(UNA)
-        # Tag
-        clr, fwt = "#2B2B2B", "normal"
-        style = "color: #{clr}; font-weight: #{fwt}"
-        a = line.raw[0, 3].html("b", :st => style)
-        # Characters
-        clr, fwt = "#000000", "normal"
-        style = "color: #{clr}; font-weight: #{fwt}"
-        b = line.raw[3..-1].html("b", :st => style)
-        return a + b
-    end
-    return line.data.map.with_index { |component, c|
-        component.map.with_index { |data, d|
-            class_name = "L-#{line.line_no}-#{c}-#{d}"
-            element = line.element_at(c, d)
-            unless line.is_valid?
-                is_normal = false
+def html_debug(document)
+    out = []
+    return out
+end
+
+def html_interactive_tag(tag, segment)
+    is_valid = segment.is_valid?
+    clr = is_valid ? "#2B2B2B" : "#F14668"
+    fwt = is_valid ? "normal"  : "bold"
+    class_name = "L-#{segment.line_no}-0"
+    onmouseover = "highlightElement(#{class_name.quote})"
+    onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
+    # Return <b> tag with CSS styling
+    return tag.value.html("b", 
+        :cl => "edi-data #{class_name}",
+        :st => "color: #{clr}; font-weight: #{fwt}",
+        :onmouseover => onmouseover,
+        :onmouseleave => onmouseleave
+    )
+end
+
+def html_interactive_element(element, segment)
+    is_valid = element.is_valid? and segment.is_valid?
+    clr = is_valid ? "#2B2B2B" : "#F14668"
+    fwt = is_valid ? "normal"  : "bold"
+    class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
+    onmouseover = "highlightElement(#{class_name.quote})"
+    onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
+    # Return <b> tag with CSS styling
+    return element.data_value.html("b", 
+        :cl => "edi-data #{class_name}",
+        :st => "color: #{clr}; font-weight: #{fwt}",
+        :onmouseover => onmouseover,
+        :onmouseleave => onmouseleave
+    )
+end
+
+def html_interactive_segment(segment)
+    data = ([segment.tag] + segment.truncated_elements).map { |element|
+        if element.is_a?(Tag)
+            html_interactive_tag(element, segment)
+        else
+            if element.is_a?(Composite)
+                element.truncated_elements.map { |element|
+                    html_interactive_element(element, segment)
+                }.join(segment.chars.component_element_seperator)
             else
-                is_normal = (element.blank? || element.is_valid? == true)
+                html_interactive_element(element, segment)
             end
-            if is_normal
-                clr, fwt = "#2B2B2B", "normal"
-            else
-                clr, fwt = "#F14668", "bold"
-            end
-            onmouseover = "highlightElement(#{class_name.quote})"
-            onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
-            # Return <b> tag with CSS styling
-            data.html("b", 
-                :cl => "edi-data #{class_name}",
-                :st => "color: #{clr}; font-weight: #{fwt}",
-                :onmouseover => onmouseover,
-                :onmouseleave => onmouseleave
-            )
-        }.join(line.chars.component_element_seperator)
-    }.join(line.chars.data_element_seperator) + line.chars.segment_terminator
+        end
+    }.join(segment.chars.data_element_seperator)
+    return data + segment.chars.segment_terminator
 end
 
 def html_reference_table(document)
     # Raw data
     html_raw_data = String.new
-    for line in document.lines do
-        clr = line.is_valid? ? "#2B2B2B" : "#F14668"
-        html_raw_data += html_interactive_segment(line).html("b",
+    for segment in document.segments do
+        clr = segment.is_valid? ? "#2B2B2B" : "#F14668"
+        html_raw_data += html_interactive_segment(segment).html("b",
             :st => "font-weight: normal; color: #{clr}"
         )
         html_raw_data += HTML_LINE_BREAK
@@ -82,17 +97,21 @@ def html_reference_table(document)
         )
     # Tabular data
     html_tabular_data = String.new
-    for line in document.lines do
+    for segment in document.segments do
         # next unless (line.is_a?(CTA)) or (line.is_a?(COM))
         # Header row
         clr, fwt = "#2B2B2B", "normal"
         # Build row data
-        class_name = "L-#{line.tag.loc.join("-")}"
+        class_name = "L-#{segment.line_no}-0"
         row = String.new
-        row += line.tag.value.html("th", :st => "color: inherit")
-        row += line.tag.title.html("th", :st => "color: inherit", :colspan => 0)
-        unless line.is_valid?
-            row += line.message.html("span", :cl => "tag is-danger").html("th")
+        row += segment.tag.value.html("th", :st => "color: inherit")
+        row += segment.tag.name.html("th", 
+            :st => "color: inherit", 
+            :colspan => 2
+        )
+        unless segment.is_valid?
+            caption = segment.error.message
+            row += caption.html("span", :cl => "tag is-danger").html("th")
         else
             row += String.new.html("th", :st => "color: inherit")
         end
@@ -103,29 +122,21 @@ def html_reference_table(document)
             :onmouseleave => "restoreElement(#{class_name.quote}, #{clr.quote})"
         )
         # Data rows
-        for loc, vals in line.rows do
-            code, title, value, data, desc, valid = vals
-            # Build tag and abbr
-            value_tag, valid_tag = String.new, String.new
-            # Add value tag if interpreted value is different to raw value
-            if (value != data) && (value != "")
-                value_tag = value.html("span", :cl => "tag is-info is-light")
-            end
-            # Add invalid tag if value is an incorrect data type
-            unless valid == true
-                valid_tag = valid.message.html("span", :cl => "tag is-danger")
-            end
-            # Add abbr to data if there is a description to be read
-            data = desc.blank? ? data : data.html("abbr", :ti => desc)
-            # Build row data
+        for element in segment.flatten do
+            next if element.blank?
             row = String.new
-            row += code.html("td")
-            row += title.html("td")
-            row += [data, value_tag, valid_tag].join(NBSP).html("td")
+            row += element.code.html("td")
+            row += element.name.html("td")
+            unless element.data_name.blank?
+                row += element.data_name.upcase.html("td")
+            else
+                row += element.data_value.html("td")
+            end
             # Build row
-            clr = (line.is_valid? && valid == true) ? "#2B2B2B" : "#F14668"
-            fwt = (line.is_valid? && valid == true) ? "normal" : "bold"
-            class_name = "L-#{loc.join("-")}"
+            valid = segment.is_valid? && element.is_valid?
+            clr = valid ? "#2B2B2B" : "#F14668"
+            fwt = valid ? "normal" : "bold"
+            class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
             onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
             html_tabular_data += row.html("tr", 
@@ -134,6 +145,38 @@ def html_reference_table(document)
                 :onmouseleave => onmouseleave
             )
         end
+        # Data rows
+        #for loc, vals in line.rows do
+        #    code, title, value, data, desc, valid = vals
+        #    # Build tag and abbr
+        #    value_tag, valid_tag = String.new, String.new
+        #    # Add value tag if interpreted value is different to raw value
+        #    if (value != data) && (value != "")
+        #        value_tag = value.html("span", :cl => "tag is-info is-light")
+        #    end
+        #    # Add invalid tag if value is an incorrect data type
+        #    unless valid == true
+        #        valid_tag = valid.message.html("span", :cl => "tag is-danger")
+        #    end
+        #    # Add abbr to data if there is a description to be read
+        #    data = desc.blank? ? data : data.html("abbr", :ti => desc)
+        #    # Build row data
+        #    row = String.new
+        #    row += code.html("td")
+        #    row += title.html("td")
+        #    row += [data, value_tag, valid_tag].join(NBSP).html("td")
+        #    # Build row
+        #    clr = (line.is_valid? && valid == true) ? "#2B2B2B" : "#F14668"
+        #    fwt = (line.is_valid? && valid == true) ? "normal" : "bold"
+        #    class_name = "L-#{loc.join("-")}"
+        #    onmouseover = "highlightElement(#{class_name.quote}, true)"
+        #    onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
+        #    html_tabular_data += row.html("tr", 
+        #        :cl => class_name,
+        #        :onmouseover => onmouseover,
+        #        :onmouseleave => onmouseleave
+        #    )
+        #end
     end
     html_tabular_data = html_tabular_data
         .html("table", :cl => "table is-striped is-hoverable edi-table")

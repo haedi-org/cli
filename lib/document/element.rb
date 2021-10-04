@@ -1,17 +1,27 @@
 class Element
-    attr_reader :code, :data_value, :position
+    attr_reader :code, :position
+    attr_reader :name, :desc, :repr
+    attr_reader :data_value, :data_name, :data_desc
 
-    def initialize(code, version, position, value = nil)
+    def initialize(code, version, position, value = "")
         @code = code
         @version = version
-        @data_value = value
+        @data_value = value == nil ? "" : value
         @position = position
         # Retrieve and apply coded data
         @coded_data = $dictionary.coded_data_reference(code, value, version)
         apply_coded_data()
         # Retrieve and apply element specification data
-        @spec = $dictionary.element_specification(code, version)
+        unless $dictionary.is_service_element?(@code)
+            @spec = $dictionary.element_specification(@code, @version)
+        else
+            @spec = $dictionary.service_element_specification(@code)
+        end
         apply_element_spec()
+    end 
+
+    def is_valid?
+        return true
     end
 
     def blank?

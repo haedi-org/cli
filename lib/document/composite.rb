@@ -1,19 +1,33 @@
 class Composite < Element
-    attr_reader :elements
+    attr_reader :elements, :data_values
 
     def initialize(code, version, position, values = [])
         @code = code
         @version = version
         @position = position
-        @values = values.blank? ? [] : values
+        @data_values = values.blank? ? [] : values
         @elements = []
-        @spec = $dictionary.composite_specification(@code, @version)
+        unless $dictionary.is_service_composite?(@code)
+            @spec = $dictionary.composite_specification(@code, @version)
+        else
+            @spec = $dictionary.service_composite_specification(@code)
+        end
         apply_composite_spec() unless @spec.blank?
     end
 
+    def blank?
+        return @data_values.empty?
+    end
+
     def get_value(index)
-        return nil if index >= @values.length
-        return @values[index]
+        return nil if index >= @data_values.length
+        return @data_values[index]
+    end
+
+    def truncated_elements
+        data = @elements.map { |element| element.blank? ? nil : element }
+        data = data[0..-2] until (data.last != nil) or (data.empty?)
+        return data.empty? ? [] : @elements.first(data.length)
     end
 
     def apply_composite_spec
