@@ -76,26 +76,38 @@ def process_paths(paths)
             end
             # PARSE
             if opt?(*PARSE_OPTS)
-                raise InvalidDocumentError.new unless valid_document?(lines)
+                #raise InvalidDocumentError.new unless valid_document?(lines)
                 document = Document.new(lines)
                 unless opt?(*HTML_OPTS)
-                    for line in document.lines do
-                        raw = line.raw
-                        raw += " <#{line.message}>" unless line.is_valid?
-                        out << [raw, ""]
-                        for loc, row in line.rows do
-                            line_text = ""
-                            code, title, value, data, desc, valid = row
-                            data += " <#{value}>" unless data == value
-                            data += " <#{valid.message}>" unless valid == true
-                            for cell in [code, title, data] do
-                                width = cell == row.first ? 16 : 56
-                                line_text += cell.rpad(width)
+                    for segment in document.segments do
+                        out << ["", segment.raw]
+                        for element in segment.flatten do
+                            unless element.blank?
+                                out << [
+                                    element.code,
+                                    element.position.join("_"),
+                                    element.data_value,
+                                ].inspect
                             end
-                            out << line_text
                         end
-                        out << "" unless line.rows.empty?
                     end
+                    #for line in document.lines do
+                    #    raw = line.raw
+                    #    raw += " <#{line.message}>" unless line.is_valid?
+                    #    out << [raw, ""]
+                    #    for loc, row in line.rows do
+                    #        line_text = ""
+                    #        code, title, value, data, desc, valid = row
+                    #        data += " <#{value}>" unless data == value
+                    #        data += " <#{valid.message}>" unless valid == true
+                    #        for cell in [code, title, data] do
+                    #            width = cell == row.first ? 16 : 56
+                    #            line_text += cell.rpad(width)
+                    #        end
+                    #        out << line_text
+                    #    end
+                    #    out << "" unless line.rows.empty?
+                    #end
                 else
                     out << html_reference_table(document)
                 end

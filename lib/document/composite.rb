@@ -1,7 +1,10 @@
 class Composite < Element
-    def initialize(code, version, values = [])
+    attr_reader :elements
+
+    def initialize(code, version, position, values = [])
         @code = code
         @version = version
+        @position = position
         @values = values.blank? ? [] : values
         @elements = []
         @spec = $dictionary.composite_specification(@code, @version)
@@ -16,7 +19,8 @@ class Composite < Element
     def apply_composite_spec
         index = -1
         @elements = @spec["elements"].map do |code, data|
-            params = [code, @version, get_value(index += 1)]
+            index += 1
+            params = [code, @version, [@position, index], get_value(index)]
             Element.new(*params)
         end
     end

@@ -1,4 +1,6 @@
 class Segment
+    attr_reader :elements, :raw
+
     def initialize(raw, line_no, version = nil, chars = nil)
         @raw = raw
         @data = @raw.dup
@@ -12,11 +14,24 @@ class Segment
         apply_segment_spec() unless @spec.blank?
     end
 
+    def flatten
+        arr = []
+        for element in @elements do
+            if element.is_a?(Composite)
+                arr << element.elements
+            else
+                arr << element
+            end
+        end
+        return arr.flatten
+    end
+
     def apply_segment_spec
         index = 0 # Skip tag
         @elements = @spec["structure"].map do |code|
             is_composite = (code.first == "C")
-            params = [code, @version, get_data((index += 1), is_composite)]
+            index += 1
+            params = [code, @version, [index], get_data(index, is_composite)]
             is_composite ? Composite.new(*params) : Element.new(*params)
         end
     end
@@ -32,7 +47,7 @@ class Segment
         @data.map! do |component|
             component.split_with_release(
                 @chars.component_element_seperator, @chars.release_character
-            ) 
+            )
         end
     end
 

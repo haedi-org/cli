@@ -1,16 +1,21 @@
 class Element
-    attr_reader :code
+    attr_reader :code, :data_value, :position
 
-    def initialize(code, version, value = nil)
+    def initialize(code, version, position, value = nil)
         @code = code
         @version = version
         @data_value = value
+        @position = position
         # Retrieve and apply coded data
         @coded_data = $dictionary.coded_data_reference(code, value, version)
         apply_coded_data()
         # Retrieve and apply element specification data
         @spec = $dictionary.element_specification(code, version)
         apply_element_spec()
+    end
+
+    def blank?
+        return @data_value.blank?
     end
 
     def apply_coded_data

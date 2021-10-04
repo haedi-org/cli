@@ -1,6 +1,6 @@
 class Document
     attr_reader :raw
-    attr_reader :lines
+    attr_reader :segments
     attr_reader :version
     attr_reader :message
 
