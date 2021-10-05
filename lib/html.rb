@@ -41,8 +41,8 @@ def html_debug(document)
         ["Dictionary read count", $dictionary.read_count],
     ]
     classes = "table is-bordered is-narrow m-2"
-    out << html_table(document_info, :cl => classes)
-    out << html_table(system_info, :cl => classes)
+    out << html_table(document_info, classes)
+    out << html_table(system_info, classes)
     return out
 end
 
