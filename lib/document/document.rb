@@ -7,6 +7,7 @@ class Document
     def initialize(lines)
         @raw = lines.dup
         @segments = @raw.map { |line| line.chomp }.join
+        @message = "APERAK" # nil
         @version = "D97A" # nil
         # 
         set_critical_values
@@ -20,26 +21,6 @@ class Document
                 puts exception.backtrace
             end
         end
-
-
-    #    # Get critical values from document and reformat
-    #    assign_values
-    #    # Create line object dependant on tag
-    #    @lines.map!.with_index do |line, line_no|
-    #        begin
-    #            params = [line, line_no, @version, @chars]
-    #            unless SEGMENT_MAP.include?(line.first(3))
-    #                Line.new(*params)
-    #            else
-    #                SEGMENT_MAP[line.first(3)].new(*params)
-    #            end
-    #        rescue => exception
-    #            #html_error(exception)
-    #            puts exception
-    #            puts exception.backtrace
-    #            exit
-    #        end
-    #    end
     end
     
     def debug

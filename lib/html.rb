@@ -9,10 +9,10 @@ class String
     def html(tag, ti: nil, id: nil, cl: nil, st: nil, 
         colspan: nil, onmouseover: nil, onmouseleave:nil)
         arr = [
-            ["id", id&.quote], 
-            ["class", cl&.quote], 
+            ["id", id&.quote],
+            ["class", cl&.quote],
             ["style", st&.quote],
-            ["title", ti&.quote], 
+            ["title", ti&.quote],
             ["colspan", colspan&.quote],
             ["onmouseover", onmouseover&.quote("'")],
             ["onmouseleave", onmouseleave&.quote("'")],
@@ -25,8 +25,24 @@ class String
     end
 end
 
+def html_table(values, cl = "table")
+    return values.map { |row|
+        (row.map { |value| value.to_s.html("td") }).join.html("tr")
+    }.join.html("table", :cl => cl)
+end
+
 def html_debug(document)
     out = []
+    document_info = [
+        ["Message", document.message],
+        ["Version", document.version],
+    ]
+    system_info = [
+        ["Dictionary read count", $dictionary.read_count],
+    ]
+    classes = "table is-bordered is-narrow m-2"
+    out << html_table(document_info, :cl => classes)
+    out << html_table(system_info, :cl => classes)
     return out
 end
 

@@ -55,8 +55,8 @@ def process_paths(paths)
             lines = read_document(path)
             # DEBUG
             if opt?(*DEBUG_OPTS)
+                document = Document.new(lines)
                 unless opt?(*HTML_OPTS)
-                    document = Document.new(lines)
                     out << document.debug
                 else
                     out << html_debug(document)

@@ -10,12 +10,15 @@
 #   se/    "service element specs"            (e.g. SE_40000.json)
 
 class Dictionary
+    attr_reader :read_count
+
     def initialize(dir = DATA_PATH)
         @dir = dir
+        @read_count = 0
         @cache = {
             "un_edifact" => {
                 "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
-                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}
+                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}, "lists" => {}
             }
         }
     end
@@ -100,10 +103,23 @@ class Dictionary
     end
 
     def retrieve_csv_column(file_name, standard = "un_edifact", column = 0)
-        data = []
-        path = "#{@dir}/#{standard}/lists/#{file_name}.csv"
-        CSV.read(path).each { |line| data << line[column] }
-        return data
+        # In context of the correct entry in the cache
+        @cache[standard]["lists"].tap do |entry|
+            if entry.key?(file_name)
+                # Use cached version if it exists
+                csv = entry[file_name]
+            else
+                # Otherwise load, and store
+                path = "#{@dir}/#{standard}/lists/#{file_name}.csv"
+                return [] unless File.file?(path)
+                csv = CSV.read(path)
+                entry[file_name] = csv
+                # Increment dictionary read count
+                @read_count += 1
+            end
+            # Return given column of csv
+            return csv.map { |line| line[column] }
+        end
     end
 
     def load_json(path)
@@ -115,6 +131,8 @@ class Dictionary
         json = JSON.load(file)
         # Close file before returning JSON data
         file.close
+        # Increment dictionary read count
+        @read_count += 1
         return json
     end
 end
