@@ -1,3 +1,15 @@
+class NoDocumentError < StandardError
+    def message
+        return "No document error"
+    end
+end
+
+class NoElementError < StandardError
+    def message
+        return "No element error"
+    end
+end
+
 class InvalidDocumentError < StandardError
     def message
         return "EDI document is incorrectly formatted"

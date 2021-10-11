@@ -2,12 +2,14 @@ class Element
     attr_reader :code, :position
     attr_reader :name, :desc, :repr
     attr_reader :data_value, :data_name, :data_desc
+    attr_reader :error
 
     def initialize(code, version, position, value = "")
         @code = code
         @version = version
         @data_value = value == nil ? "" : value
         @position = position
+        @error = NoElementError.new
         # Retrieve and apply coded data
         @coded_data = $dictionary.coded_data_reference(code, value, version)
         apply_coded_data()
@@ -21,7 +23,7 @@ class Element
     end 
 
     def is_valid?
-        return true
+        return error == NoElementError.new
     end
 
     def blank?

@@ -47,9 +47,9 @@ def html_debug(document)
 end
 
 def html_interactive_tag(tag, segment)
-    is_valid = segment.is_valid?
-    clr = is_valid ? "#2B2B2B" : "#F14668"
-    fwt = is_valid ? "normal"  : "bold"
+    valid = segment.is_valid?
+    clr = valid ? "#2B2B2B" : "#F14668"
+    fwt = valid ? "normal"  : "bold"
     class_name = "L-#{segment.line_no}-0"
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
@@ -63,9 +63,9 @@ def html_interactive_tag(tag, segment)
 end
 
 def html_interactive_element(element, segment)
-    is_valid = element.is_valid? and segment.is_valid?
-    clr = is_valid ? "#2B2B2B" : "#F14668"
-    fwt = is_valid ? "normal"  : "bold"
+    valid = element.is_valid? and segment.is_valid?
+    clr = valid ? "#2B2B2B" : "#F14668"
+    fwt = valid ? "normal"  : "bold"
     class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
@@ -123,7 +123,7 @@ def html_reference_table(document)
         row += segment.tag.value.html("th", :st => "color: inherit")
         row += segment.tag.name.html("th", 
             :st => "color: inherit", 
-            :colspan => 2
+            #:colspan => 3
         )
         unless segment.is_valid?
             caption = segment.error.message
@@ -140,59 +140,50 @@ def html_reference_table(document)
         # Data rows
         for element in segment.flatten do
             next if element.blank?
-            row = String.new
-            row += element.code.html("td")
-            row += element.name.html("td")
-            unless element.data_name.blank?
-                row += element.data_name.upcase.html("td")
-            else
-                row += element.data_value.html("td")
-            end
-            # Build row
             valid = segment.is_valid? && element.is_valid?
+            element.tap do |e|
+                row = String.new
+                # Element code row
+                row += e.code.html("td")
+                # Element name row
+                row += e.name.html("td")
+                # Element data row
+                shown_data = e.data_name.blank? ? e.data_value : e.data_name
+                # Add data description attr tag if it exists
+                unless e.data_desc.blank?
+                    shown_data = shown_data.html("abbr", :ti => e.data_desc)
+                end
+                # Data value tag
+                unless e.data_name.blank?
+                    value_tag = e.data_value.html("span", 
+                        :cl => "tag is-info is-light"
+                    )
+                else
+                    value_tag = String.new
+                end
+                # Error tag
+                unless e.is_valid?
+                    error_tag = e.error.message.html("span", 
+                        :cl => "tag is-danger"
+                    )
+                else
+                    error_tag = String.new
+                end
+                # Add to row
+                row << [shown_data, value_tag, error_tag].join(NBSP).html("td")
+            end
+            # Add row to tabular data
             clr = valid ? "#2B2B2B" : "#F14668"
             fwt = valid ? "normal" : "bold"
             class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
             onmouseover = "highlightElement(#{class_name.quote}, true)"
             onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
-            html_tabular_data += row.html("tr", 
+            html_tabular_data += row.html("tr",
                 :cl => class_name,
                 :onmouseover => onmouseover,
                 :onmouseleave => onmouseleave
             )
         end
-        # Data rows
-        #for loc, vals in line.rows do
-        #    code, title, value, data, desc, valid = vals
-        #    # Build tag and abbr
-        #    value_tag, valid_tag = String.new, String.new
-        #    # Add value tag if interpreted value is different to raw value
-        #    if (value != data) && (value != "")
-        #        value_tag = value.html("span", :cl => "tag is-info is-light")
-        #    end
-        #    # Add invalid tag if value is an incorrect data type
-        #    unless valid == true
-        #        valid_tag = valid.message.html("span", :cl => "tag is-danger")
-        #    end
-        #    # Add abbr to data if there is a description to be read
-        #    data = desc.blank? ? data : data.html("abbr", :ti => desc)
-        #    # Build row data
-        #    row = String.new
-        #    row += code.html("td")
-        #    row += title.html("td")
-        #    row += [data, value_tag, valid_tag].join(NBSP).html("td")
-        #    # Build row
-        #    clr = (line.is_valid? && valid == true) ? "#2B2B2B" : "#F14668"
-        #    fwt = (line.is_valid? && valid == true) ? "normal" : "bold"
-        #    class_name = "L-#{loc.join("-")}"
-        #    onmouseover = "highlightElement(#{class_name.quote}, true)"
-        #    onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
-        #    html_tabular_data += row.html("tr", 
-        #        :cl => class_name,
-        #        :onmouseover => onmouseover,
-        #        :onmouseleave => onmouseleave
-        #    )
-        #end
     end
     html_tabular_data = html_tabular_data
         .html("table", :cl => "table is-striped is-hoverable edi-table")
