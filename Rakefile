@@ -3,7 +3,7 @@ require_relative './lib/paths.rb'
 
 task :default do
     puts "build\tbuild executable using ocra"
-    puts "test\trun unit tests"
+    puts "test\trun rspec"
 end
 
 task :build do
@@ -17,6 +17,10 @@ task :build do
 end
 
 task :test do
-    paths = Dir[TEST_MESSAGE_PATH + "*.edi"]
-    puts `ruby #{RUN_PATH} --unit #{paths.join(" ")}`.force_encoding(Encoding::UTF_8)
+    params = [
+        RSPEC_PATH,
+        "--tty", "--color",
+        "--format", "documentation"
+    ]
+    puts `rspec #{params.join(" ")}`
 end

@@ -1,5 +1,6 @@
 class Segment
-    attr_reader :elements, :line_no, :raw, :error, :tag, :data, :chars
+    attr_reader :elements, :line_no, :raw, :error
+    attr_reader :tag, :data, :chars, :version
 
     def initialize(raw, line_no, version = nil, chars = nil)
         @raw = raw
@@ -18,6 +19,10 @@ class Segment
         end
         split_data_by_chars() unless @chars.blank?
         apply_segment_spec() unless @spec.blank?
+    end
+
+    def get_elements_by_code(code)
+        return (flatten.map { |e| e.code == code ? e : nil }).compact
     end
 
     def truncated_elements
@@ -49,13 +54,13 @@ class Segment
         @data = @data[0..-2] if (@data[-1] == @chars.segment_terminator)
         # Split component data elements within line
         @data = @data.split_with_release(
-            @chars.data_element_seperator,
+            @chars.data_element_separator,
             @chars.release_character
         )
         # Split data elements within components
         @data.map! do |component|
             component.split_with_release(
-                @chars.component_element_seperator,
+                @chars.component_element_separator,
                 @chars.release_character
             )
         end

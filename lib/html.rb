@@ -86,12 +86,12 @@ def html_interactive_segment(segment)
             if element.is_a?(Composite)
                 element.truncated_elements.map { |element|
                     html_interactive_element(element, segment)
-                }.join(segment.chars.component_element_seperator)
+                }.join(segment.chars.component_element_separator)
             else
                 html_interactive_element(element, segment)
             end
         end
-    }.join(segment.chars.data_element_seperator)
+    }.join(segment.chars.data_element_separator)
     return data + segment.chars.segment_terminator
 end
 

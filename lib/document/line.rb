@@ -12,12 +12,12 @@ class Line
         @data = @data[0..-2] if (@data[-1] == @chars.segment_terminator)
         # Split component data elements within line
         @data = @data.split_with_release(
-            @chars.data_element_seperator, @chars.release_character
+            @chars.data_element_separator, @chars.release_character
         )
         # Split data elements within components
         @data.map! do |component|
             component.split_with_release(
-                @chars.component_element_seperator, @chars.release_character
+                @chars.component_element_separator, @chars.release_character
             ) 
         end
         # Assign tag and rules after data is processed

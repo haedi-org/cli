@@ -8,6 +8,7 @@
 #   ss/    "service segment specs"            (e.g. SS_40000.json)
 #   sc/    "composite service element specs"  (e.g. SC_40000.json)
 #   se/    "service element specs"            (e.g. SE_40000.json)
+#   unas/  "UNA segment specs"                (e.g. UNAS.json)
 
 class Dictionary
     attr_reader :read_count
@@ -18,7 +19,8 @@ class Dictionary
         @cache = {
             "un_edifact" => {
                 "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
-                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}, "lists" => {}
+                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}, 
+                "unas" => {}, "lists" => {}
             }
         }
     end
@@ -85,9 +87,16 @@ class Dictionary
         return data.key?(tag) ? data[tag] : {}
     end
 
+    def una_segment_specification(version = "40000")
+        return {} if version == nil
+        data = retrieve_un_edifact_data("UNAS", version)
+        return data.key?("UNA") ? data["UNA"] : {}
+    end
+
     def retrieve_un_edifact_data(datatype, version, message = nil)
         # Ensure correct casing on all strings
-        datatype, version = datatype.downcase, version.upcase
+        datatype = datatype.downcase
+        version = version.upcase unless version == nil
         message = message.upcase unless message == nil
         # In context of the correct entry in the cache
         @cache["un_edifact"][datatype].tap do |entry|

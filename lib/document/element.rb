@@ -41,6 +41,14 @@ class Element
         @repr = @spec.dig("repr")
     end
 
+    def set_data_name(name)
+        @data_name = name
+    end
+
+    def value
+        return @data_value
+    end
+
     def debug
         unless @data_value.blank?
             out = []

@@ -30,21 +30,22 @@ def opt?(a = nil, b = nil)
     return false
 end
 
+# UNIT TEST
+if opt?(*UNIT_TEST_OPTS)
+    #out = []
+    #out << print_header
+    #tests = $paths.map.with_index { |a, i| [nil, a, true] }
+    #out << unit_test(tests)
+    #print out.flatten.join("\n")
+    #return
+    exit
+end
+
 if $opts.empty? or ($paths.empty? && !opt?(*HEADLESS_OPTS)) or opt?(*HELP_OPTS)
     out = []
     out << print_header
     out << File.readlines(USAGE_PATH)
     puts out.flatten.join
-    return
-end
-
-# UNIT TEST
-if opt?(*UNIT_TEST_OPTS)
-    out = []
-    out << print_header
-    tests = $paths.map.with_index { |a, i| [nil, a, true] }
-    out << unit_test(tests)
-    print out.flatten.join("\n")
     return
 end
 
@@ -56,11 +57,18 @@ def process_paths(paths)
             # DEBUG
             if opt?(*DEBUG_OPTS)
                 document = Document.new(lines)
-                unless opt?(*HTML_OPTS)
-                    out << document.debug
-                else
-                    out << html_debug(document)
+                for segment in document.segments do
+                    if segment.is_a?(DTMSegment)
+                        puts segment.raw
+                        puts segment.version
+                        puts segment.date_time.data_name
+                    end
                 end
+                #unless opt?(*HTML_OPTS)
+                #    out << document.debug
+                #else
+                #    out << html_debug(document)
+                #end
             end
             # INFO
             if opt?(*INFO_OPTS)

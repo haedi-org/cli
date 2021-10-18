@@ -1,4 +1,5 @@
 RUN_PATH = "./lib/main.rb"
+RSPEC_PATH = "./tests/spec.rb"
 INCLUDE_PATH = "./lib/include.rb"
 OUTPUT_PATH = "./edi-cli.exe"
 CODE_PATH = "./data/codes"

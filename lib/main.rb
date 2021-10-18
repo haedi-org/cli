@@ -10,3 +10,4 @@ end
 ENV["OCRA_EXECUTABLE"].tap { |d| Dir.chdir(File.dirname(d)) if d }
 
 require_relative './include.rb'
+require_relative './cli.rb'
