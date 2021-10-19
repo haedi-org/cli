@@ -1,6 +1,9 @@
 require 'rubygems'
-require 'bundler'
-Bundler.setup(:default, :ci)
+
+unless ENV['OCRA_EXECUTABLE']
+    require 'bundler'
+    Bundler.setup(:default, :ci)
+end
 
 require 'csv'
 require 'json'
@@ -33,3 +36,5 @@ require_relative './segments/unh.rb'
 require_relative './segments/dtm.rb'
 
 require_relative './document/segment_map.rb'
+
+require_relative './cli.rb'

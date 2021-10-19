@@ -7,13 +7,14 @@ task :default do
 end
 
 task :build do
+    source = (Dir["./lib/**/*.rb"] - [RUN_PATH]).join(" ")
     params = [
-        RUN_PATH,
+        RUN_PATH, source,
         "--output", OUTPUT_PATH,
         "--console",
         "--gemfile", "Gemfile"
     ]
-    puts `ocra #{params.join(" ")}`
+    puts `ocra #{params.flatten.join(" ")}`
 end
 
 task :test do

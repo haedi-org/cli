@@ -35,6 +35,16 @@ def routine_html_parse(lines)
     return out
 end
 
+def routine_structure(lines)
+    out = []
+    return out
+end
+
+def routine_timeline(lines)
+    out = []
+    return out
+end
+
 def routine_debug(lines)
     out = []
     document = Document.new(lines)
@@ -46,15 +56,5 @@ def routine_debug(lines)
             out << segment.date_time.data_name
         end
     end
-    return out
-end
-
-def routine_structure(lines)
-    out = []
-    return out
-end
-
-def routine_timeline(lines)
-    out = []
     return out
 end

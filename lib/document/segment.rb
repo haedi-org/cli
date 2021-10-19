@@ -1,6 +1,6 @@
 class Segment
     attr_reader :elements, :line_no, :raw, :error
-    attr_reader :tag, :data, :chars, :version
+    attr_reader :tag, :data, :chars, :version, :spec
 
     def initialize(raw, line_no, version = nil, chars = nil)
         @raw = raw

@@ -10,6 +10,8 @@
 #   se/    "service element specs"            (e.g. SE_40000.json)
 #   unas/  "UNA segment specs"                (e.g. UNAS.json)
 
+FALLBACK_VERSION = "D97A"
+
 class Dictionary
     attr_reader :read_count
 
@@ -106,6 +108,11 @@ class Dictionary
             # Otherwise load, store, and return
             path = "/un_edifact/#{datatype}/#{datatype.upcase}_#{key}.json"
             data = load_json(path)
+            if data.blank? and (version != FALLBACK_VERSION)
+                data = retrieve_un_edifact_data(
+                    datatype, FALLBACK_VERSION, message
+                )
+            end
             entry[key] = data
             return data
         end
