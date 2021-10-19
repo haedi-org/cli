@@ -34,7 +34,7 @@ end
 def html_debug(document)
     out = []
     document_info = [
-        ["Message", document.message],
+        ["Message", document.message_type],
         ["Version", document.version],
     ]
     system_info = [

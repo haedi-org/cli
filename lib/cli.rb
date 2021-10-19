@@ -38,16 +38,22 @@ def opt?(key)
     return false
 end
 
+def no_opt?(key)
+    return (!opt?(key))
+end
+
 def process_paths(paths)
     out = []
     for path in paths do
         lines = read_document(path)
-        out << routine_info(lines)       if opt?(:info)
-        out << routine_parse(lines)      if opt?(:parse)
-        out << routine_debug(lines)      if opt?(:debug)
+        out << routine_info(lines)       if opt?(:info) && no_opt?(:html)
+        out << routine_html_info(lines)  if opt?(:info) && opt?(:html)
+        out << routine_parse(lines)      if opt?(:parse) && no_opt?(:html)
+        out << routine_html_parse(lines) if opt?(:parse) && opt?(:html)
+        out << routine_debug(lines)      if opt?(:debug) && no_opt?(:html)
+        out << routine_html_debug(lines) if opt?(:debug) && opt?(:html)
         out << routine_structure(lines)  if opt?(:structure)
         out << routine_timeline(lines)   if opt?(:timeline)
-        out << routine_html_parse(lines) if opt?(:html) && opt?(:parse)
     end
     return out
 end
@@ -83,6 +89,7 @@ if opt?(:headless)
                 $paths = extract_paths(input.words)
                 $opts  = extract_tags(input.words)
                 unless $paths.empty?
+                    out << process_paths($paths)
                     print_out(out)
                 end
             end

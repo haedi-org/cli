@@ -10,6 +10,12 @@ def routine_info(lines)
     return out
 end
 
+def routine_html_info(lines)
+    out = []
+    #out << html_document_information(document)
+    return out
+end
+
 def routine_parse(lines)
     out = []
     document = Document.new(lines)
@@ -31,7 +37,7 @@ end
 def routine_html_parse(lines)
     out = []
     document = Document.new(lines)
-    out << html_document_information(document)
+    out << html_reference_table(document)
     return out
 end
 
@@ -56,5 +62,12 @@ def routine_debug(lines)
             out << segment.date_time.data_name
         end
     end
+    return out
+end
+
+def routine_html_debug(lines)
+    out = []
+    document = Document.new(lines)
+    out << html_debug(document)
     return out
 end

@@ -39,6 +39,9 @@ class Element
         @name = @spec.dig("name")
         @desc = @spec.dig("desc")
         @repr = @spec.dig("repr")
+        @name = "" if @name == nil
+        @desc = "" if @desc == nil
+        @repr = "" if @repr == nil
     end
 
     def set_data_name(name)

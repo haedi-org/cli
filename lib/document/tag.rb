@@ -18,5 +18,7 @@ class Tag
         @name = @spec.dig("name")
         @desc = @spec.dig("desc")
         @desc = @spec.dig("function") if @desc.blank?
+        @name = "" if @name.blank?
+        @desc = "" if @desc.blank?
     end
 end
