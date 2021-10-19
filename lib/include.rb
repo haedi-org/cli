@@ -18,6 +18,7 @@ require_relative './html.rb'
 require_relative './reference.rb'
 require_relative './curator.rb'
 require_relative './dictionary.rb'
+require_relative './routines.rb'
 
 require_relative './document/document.rb'
 require_relative './document/element.rb'

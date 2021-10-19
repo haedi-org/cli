@@ -12,6 +12,15 @@ OPT_DATA = {
 QUIT_COMMAND = "q"
 STDOUT_FINISH = "END"
 
+def clear_stdin()
+    $stdin.getc while $stdin.ready?
+end
+
+def quit_notty()
+    File.open(RECENT_LOG_PATH, 'w+') { |f| f.puts Time.now.to_s }
+    exit
+end
+
 def extract_paths(arr)
     paths = arr.map { |arg| File.file?(arg) ? arg : nil }
     return paths.compact
@@ -22,75 +31,11 @@ def extract_tags(arr)
     return tags.compact
 end
 
-$opts = extract_tags(ARGV)
-$paths = extract_paths(ARGV)
-
 def opt?(key)
     a, b = OPT_DATA[key]
     return true if (a != nil) && $opts.include?(a)
     return true if (b != nil) && $opts.include?(b)
     return false
-end
-
-def routine_help
-    out = []
-    out << print_header
-    out << File.readlines(USAGE_PATH)
-    return out
-end
-
-def routine_info(lines)
-    out = []
-    return out
-end
-
-def routine_parse(lines)
-    out = []
-    document = Document.new(lines)
-    for segment in document.segments do
-        out << ["", segment.raw, segment.tag.name]
-        for element in segment.flatten do
-            unless element.blank?
-                out << [
-                    element.code,
-                    element.position.join("_"),
-                    element.data_value,
-                ].inspect
-            end
-        end
-    end
-    return out
-end
-
-def routine_html_parse(lines)
-    out = []
-    document = Document.new(lines)
-    out << html_document_information(document)
-    return out
-end
-
-def routine_debug(lines)
-    out = []
-    document = Document.new(lines)
-    for segment in document.segments do
-        # DTM testing
-        if segment.is_a?(DTMSegment)
-            out << segment.raw
-            out << segment.version
-            out << segment.date_time.data_name
-        end
-    end
-    return out
-end
-
-def routine_structure(lines)
-    out = []
-    return out
-end
-
-def routine_timeline(lines)
-    out = []
-    return out
 end
 
 def process_paths(paths)
@@ -116,20 +61,14 @@ def print_out(out)
     end
 end
 
+$opts = extract_tags(ARGV)
+$paths = extract_paths(ARGV)
+
 out = []
 
 if opt?(:help) or $opts.empty?
     out << routine_help()
     print_out(out)
-    exit
-end
-
-def clear_stdin()
-    $stdin.getc while $stdin.ready?
-end
-
-def quit_notty()
-    File.open(RECENT_LOG_PATH, 'w+') { |f| f.puts Time.now.to_s }
     exit
 end
 
