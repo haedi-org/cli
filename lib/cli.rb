@@ -124,6 +124,15 @@ if opt?(:help) or $opts.empty?
     exit
 end
 
+def clear_stdin()
+    $stdin.getc while $stdin.ready?
+end
+
+def quit_notty()
+    File.open(RECENT_LOG_PATH, 'w+') { |f| f.puts Time.now.to_s }
+    exit
+end
+
 if opt?(:headless)
     $stdout.sync = true
     begin
