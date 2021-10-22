@@ -1,12 +1,13 @@
 OPT_DATA = {
-    :info      => ["-i", "--info"],
-    :parse     => ["-p", "--parse"],
-    :debug     => ["-d", "--debug"],
-    :structure => ["-s", "--structure"],
-    :timeline  => ["-t", "--timeline"],
-    :headless  => ["-l", "--headless"],
-    :help      => ["-h", "--help"],
-    :html      => ["--html"],
+    :info       => ["-i", "--info"],
+    :parse      => ["-p", "--parse"],
+    :debug      => ["-d", "--debug"],
+    :structure  => ["-s", "--structure"],
+    :timeline   => ["-t", "--timeline"],
+    :headless   => ["-l", "--headless"],
+    :collection => ["-c", "--collection"],
+    :help       => ["-h", "--help"],
+    :html       => ["--html"],
 }
 
 QUIT_COMMAND = "q"
@@ -44,6 +45,9 @@ end
 
 def process_paths(paths)
     out = []
+    # Routines on multiple files
+    return routine_collection(paths) if opt?(:collection)
+    # Routines on singular files
     for path in paths do
         lines = read_document(path)
         out << routine_info(lines)       if opt?(:info) && no_opt?(:html)

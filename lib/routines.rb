@@ -71,3 +71,23 @@ def routine_html_debug(lines)
     out << html_debug(document)
     return out
 end
+
+def routine_collection(paths)
+    out = []
+    for path in paths do
+        if File.file?(path)
+            filename = File.basename(path)
+            begin
+                lines = File.readlines(path)
+                document = Document.new(lines)
+                message = document.message_type
+                version = document.version
+                throw if message.blank? or version.blank?
+                out << [filename, message, version].join("\t")
+            rescue
+                out << [filename, "Error"].join("\t")
+            end
+        end
+    end
+    return out
+end
