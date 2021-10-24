@@ -46,7 +46,10 @@ end
 def process_paths(paths)
     out = []
     # Routines on multiple files
-    return routine_collection(paths) if opt?(:collection)
+    if opt?(:collection)
+        return routine_collection(paths) if no_opt?(:html)
+        return routine_html_collection(paths) if opt?(:html)
+    end
     # Routines on singular files
     for path in paths do
         lines = read_document(path)

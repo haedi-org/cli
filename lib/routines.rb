@@ -91,3 +91,26 @@ def routine_collection(paths)
     end
     return out
 end
+
+def routine_html_collection(paths)
+    out = []
+    table = []
+    for path in paths do
+        if File.file?(path)
+            filename = File.basename(path)    
+            begin
+                lines = File.readlines(path)
+                document = Document.new(lines)
+                message = document.message_type
+                version = document.version
+                table << [
+                    filename, message, version
+                ]
+            rescue
+                # Could not parse file
+            end
+        end
+    end
+    out << html_table(table)
+    return out
+end
