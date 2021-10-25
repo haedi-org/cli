@@ -108,12 +108,14 @@ if opt?(:headless)
                 unless $paths.empty? && $dirs.empty?
                     out << process_paths($paths, $dirs)
                     print_out(out)
+                    out = []
                 end
             end
         end
     rescue => exception
         out += [exception.message, exception.backtrace]
         print_out(out)
+        out = []
     end
 else
     out = process_paths($paths, $dirs)
