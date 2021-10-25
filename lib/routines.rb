@@ -74,7 +74,15 @@ end
 
 def routine_collection(paths)
     out = []
-    for path in paths do
+    # Check if path is file or dir
+    if File.directory?(paths.first)
+        paths.map! do |path|
+            path = path.gsub("\\", "/")
+            Dir[path + "*"]
+        end
+    end
+    # Parse paths
+    for path in paths.flatten.compact do
         if File.file?(path)
             filename = File.basename(path)
             begin
@@ -95,7 +103,15 @@ end
 def routine_html_collection(paths)
     out = []
     table = []
-    for path in paths do
+    # Check if path is file or dir
+    if File.directory?(paths.first)
+        paths.map! do |path|
+            path = path.gsub("\\", "/")
+            Dir[path + "*"]
+        end
+    end
+    # Parse paths
+    for path in paths.flatten.compact do
         if File.file?(path)
             filename = File.basename(path)    
             begin

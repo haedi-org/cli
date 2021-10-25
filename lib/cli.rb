@@ -22,6 +22,11 @@ def quit_notty()
     exit
 end
 
+def extract_dirs(arr)
+    dirs = arr.map { |arg| File.directory?(arg) ? arg : nil }
+    return dirs.compact
+end
+
 def extract_paths(arr)
     paths = arr.map { |arg| File.file?(arg) ? arg : nil }
     return paths.compact
@@ -43,12 +48,13 @@ def no_opt?(key)
     return (!opt?(key))
 end
 
-def process_paths(paths)
+def process_paths(paths, dirs)
     out = []
     # Routines on multiple files
     if opt?(:collection)
-        return routine_collection(paths) if no_opt?(:html)
-        return routine_html_collection(paths) if opt?(:html)
+        arg = dirs.empty? ? paths : dirs
+        return routine_collection(arg) if no_opt?(:html)
+        return routine_html_collection(arg) if opt?(:html)
     end
     # Routines on singular files
     for path in paths do
@@ -74,8 +80,10 @@ def print_out(out)
     end
 end
 
-$opts = extract_tags(ARGV)
 $paths = extract_paths(ARGV)
+$dirs  = extract_dirs(ARGV)
+$opts  = extract_tags(ARGV)
+$opts << "--collection" unless $dirs.empty?
 
 out = []
 
@@ -94,9 +102,11 @@ if opt?(:headless)
             quit_notty() if input == QUIT_COMMAND
             unless input == nil
                 $paths = extract_paths(input.words)
-                $opts  = extract_tags(input.words)
-                unless $paths.empty?
-                    out << process_paths($paths)
+                $dirs = extract_dirs(input.words)
+                $opts = extract_tags(input.words)
+                $opts << "--collection" unless $dirs.empty?
+                unless $paths.empty? && $dirs.empty?
+                    out << process_paths($paths, $dirs)
                     print_out(out)
                 end
             end
@@ -106,6 +116,6 @@ if opt?(:headless)
         print_out(out)
     end
 else
-    out = process_paths($paths)
+    out = process_paths($paths, $dirs)
     print_out(out)
 end
