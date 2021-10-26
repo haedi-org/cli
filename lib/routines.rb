@@ -74,12 +74,16 @@ end
 
 def routine_collection(paths)
     out = []
+    table = []
     # Check if path is file or dir
     if File.directory?(paths.first)
+        out << "―" * 48
         paths.map! do |path|
+            out << path
             path = path.gsub("\\", "/")
-            Dir[path + "*"]
+            Dir[path + "/*"]
         end
+        out << "―" * 48
     end
     # Parse paths
     for path in paths.flatten.compact do
@@ -91,12 +95,22 @@ def routine_collection(paths)
                 message = document.message_type
                 version = document.version
                 throw if message.blank? or version.blank?
-                out << [filename, message, version].join("\t")
+                table << [
+                    filename, 
+                    message, 
+                    version,
+                ]
             rescue
-                out << [filename, "Error"].join("\t")
+                table << [
+                    filename, 
+                    "N/A".ljust(12, " ").colorize(:light_red), 
+                    "N/A".ljust(12, " ").colorize(:light_red),
+                ]
             end
         end
     end
+    out << ascii_table(table, [32, 12, 12])
+    out << "―" * 48
     return out
 end
 
@@ -129,4 +143,12 @@ def routine_html_collection(paths)
     end
     out << html_table(table)
     return out
+end
+
+def ascii_table(data, widths = Array.new(99) { 16 })
+    return data.map { |row|
+        row.map.with_index { |cell, index|
+            cell.ljust(widths[index], " ")
+        }.join
+    }.join("\n")
 end
