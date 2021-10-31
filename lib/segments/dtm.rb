@@ -1,5 +1,5 @@
 class DTMSegment < Segment
-    attr_reader :date_time
+    attr_reader :date_time_qualifier, :date_time
 
     def initialize(raw, line_no, version = nil, chars = nil)
         super(raw, line_no, version, chars)

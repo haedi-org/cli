@@ -52,6 +52,12 @@ class Element
         return @data_value
     end
 
+    def readable
+        return @data_name unless @data_name == nil
+        return @data_value unless @data_value == nil
+        return "N/A"
+    end
+
     def debug
         unless @data_value.blank?
             out = []

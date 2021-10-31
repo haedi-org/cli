@@ -93,15 +93,15 @@ class Document
     end
 
     def timeline
-        times = []
-        @lines.each do |line|
-            if line.tag.value == "UNB"
-                times << ["Preparation date time", line.time + " " + line.date]
-            end
-            if line.tag.value == "DTM"
-                times << [line.qualifier.ref, line.interpret]
+        events = []
+        @segments.each do |segment|
+            if segment.tag.value == "DTM"
+                events << [
+                    segment.date_time_qualifier.readable, 
+                    segment.date_time.readable
+                ]
             end
         end
-        return times.sort { |a, b| Time.parse(a[1]) <=> Time.parse(b[1]) }
+        return events.sort { |a, b| Time.parse(a[1]) <=> Time.parse(b[1]) }
     end
 end

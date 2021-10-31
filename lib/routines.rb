@@ -48,6 +48,41 @@ end
 
 def routine_timeline(lines)
     out = []
+    document = Document.new(lines)
+    timeline = document.timeline
+    out << ascii_table(timeline, [40, 40]) unless timeline.blank?
+    return out
+end
+
+def routine_html_timeline(lines)
+    out = []
+    document = Document.new(lines)
+    timeline = document.timeline
+    # Timeline
+    timeline.map! do |event, time|
+        [
+            # Marker
+            String.new.html("div", :cl => "timeline-marker"),
+            # Content
+            [
+                time.html("p", :cl => "heading"), 
+                event.html("p")
+            ].join.html("div", :cl => "timeline-content")
+            # 
+        ].join.html("div", :cl => "timeline-item")
+    end
+    # Tags
+    start_tag, end_tag = ["Start", "End"].map! do |caption|
+        caption
+            .html("span", :cl => "tag is-medium is-primary")
+            .html("header", :cl => "timeline-header")
+    end
+    # Assemble
+    out << [start_tag, timeline, end_tag]
+        .flatten.join.html("div", 
+            :cl => "timeline is-centered",
+            :st => "padding-top: 32px"
+    )
     return out
 end
 
@@ -96,7 +131,7 @@ def routine_collection(paths)
                 version = document.version
                 throw if message.blank? or version.blank?
                 table << [
-                    filename, 
+                    filename,
                     message, 
                     version,
                 ]

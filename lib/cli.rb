@@ -58,15 +58,16 @@ def process_paths(paths, dirs)
     end
     # Routines on singular files
     for path in paths do
-        lines = read_document(path)
-        out << routine_info(lines)       if opt?(:info) && no_opt?(:html)
-        out << routine_html_info(lines)  if opt?(:info) && opt?(:html)
-        out << routine_parse(lines)      if opt?(:parse) && no_opt?(:html)
-        out << routine_html_parse(lines) if opt?(:parse) && opt?(:html)
-        out << routine_debug(lines)      if opt?(:debug) && no_opt?(:html)
-        out << routine_html_debug(lines) if opt?(:debug) && opt?(:html)
-        out << routine_structure(lines)  if opt?(:structure)
-        out << routine_timeline(lines)   if opt?(:timeline)
+        arg = read_document(path)
+        out << routine_info(arg)          if opt?(:info) && no_opt?(:html)
+        out << routine_html_info(arg)     if opt?(:info) && opt?(:html)
+        out << routine_parse(arg)         if opt?(:parse) && no_opt?(:html)
+        out << routine_html_parse(arg)    if opt?(:parse) && opt?(:html)
+        out << routine_debug(arg)         if opt?(:debug) && no_opt?(:html)
+        out << routine_html_debug(arg)    if opt?(:debug) && opt?(:html)
+        out << routine_structure(arg)     if opt?(:structure)
+        out << routine_timeline(arg)      if opt?(:timeline) && no_opt?(:html)
+        out << routine_html_timeline(arg) if opt?(:timeline) && opt?(:html)
     end
     return out
 end
