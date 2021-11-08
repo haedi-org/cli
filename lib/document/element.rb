@@ -9,7 +9,7 @@ class Element
         @version = version
         @data_value = value == nil ? "" : value
         @position = position
-        @error = NoElementError.new
+        @error = []
         # Retrieve and apply coded data
         @coded_data = $dictionary.coded_data_reference(code, value, version)
         apply_coded_data()
@@ -23,7 +23,15 @@ class Element
     end 
 
     def is_valid?
-        return error == NoElementError.new
+        return (
+            (error.blank?) or 
+            (error.uniq == [NoElementError.new]) or
+            (error == NoElementError.new)
+        )
+    end
+
+    def add_error(err)
+        error = (error + [err]).uniq
     end
 
     def blank?

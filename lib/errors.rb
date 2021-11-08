@@ -22,6 +22,12 @@ class InvalidSSCCError < StandardError
     end
 end
 
+class InvalidVINError < StandardError
+    def message
+        return "Bad VIN"
+    end
+end
+
 class MandatoryFieldError < StandardError
     def message
         return "Missing mandatory field"

@@ -11,7 +11,7 @@ class String
     end
 
     def is_numeric?
-        true if Float(self) rescue false
+        return true if Float(self) rescue false
     end
 
     def is_datetime?
@@ -67,5 +67,9 @@ class String
             else
                 false
         end
+    end
+
+    def is_vin?
+        return true
     end
 end

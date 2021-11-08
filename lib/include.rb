@@ -35,6 +35,8 @@ require_relative './document/segment.rb'
 require_relative './segments/una.rb'
 require_relative './segments/unh.rb'
 require_relative './segments/dtm.rb'
+require_relative './segments/gin.rb'
+require_relative './segments/rff.rb'
 
 require_relative './document/segment_map.rb'
 
