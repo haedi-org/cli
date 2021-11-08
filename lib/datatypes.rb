@@ -19,7 +19,7 @@ class String
         return check != nil
     end
 
-    def is_sscc?
+    def is_gtin_18?
         return false unless self.is_number?
         return false unless self.length == 18
         # Split into data and check digit
@@ -28,28 +28,31 @@ class String
         sum = data.map.with_index { |c, i| c.to_i * (i % 2 == 0 ? 3 : 1) }.sum
         expected_check_digit = 10 - (sum % 10)
         # Return bool
-        # puts [self, given_check_digit, expected_check_digit].inspect
         return given_check_digit == expected_check_digit
     end
 
     def is_gsin?
-        return (('0' * 1) + self).is_sscc?
+        return (('0' * 1) + self).is_gtin_18?
     end
 
     def is_gtin_14?
-        return (('0' * 4) + self).is_sscc?
+        return (('0' * 4) + self).is_gtin_18?
     end
 
     def is_gtin_13?
-        return (('0' * 5) + self).is_sscc?
+        return (('0' * 5) + self).is_gtin_18?
     end
 
     def is_gtin_12?
-        return (('0' * 6) + self).is_sscc?
+        return (('0' * 6) + self).is_gtin_18?
     end
 
     def is_gtin_8?
-        return (('0' * 10) + self).is_sscc?
+        return (('0' * 10) + self).is_gtin_18?
+    end
+
+    def is_sscc?
+        return self.is_gtin_18?
     end
 
     def is_gs1_id?
@@ -68,8 +71,43 @@ class String
                 false
         end
     end
+    
+    VIN_ILLEGAL_CHARACTERS = ['I', 'O', 'Q']
+
+    VIN_WEIGHTS = [8, 7, 6, 5, 4, 3, 2, 10, 0, 9, 8, 7, 6, 5, 4, 3, 2]
+
+    VIN_TRANSLITERATION_MAP = {
+        'A' => 1, 'B' => 2, 'C' => 3, 'D' => 4, 'E' => 5, 'F' => 6, 
+        'G' => 7, 'H' => 8, 'J' => 1, 'K' => 2, 'L' => 3, 'M' => 4, 
+        'N' => 5, 'P' => 7, 'R' => 9, 'S' => 2, 'T' => 3, 'U' => 4, 
+        'V' => 5, 'W' => 6, 'X' => 7, 'Y' => 8, 'Z' => 9,
+    }
 
     def is_vin?
-        return true
+        # Check for correct length
+        return false unless self.length == 17
+        # Check for illegal characters (i.e. 'I', 'O', and 'Q')
+        for illegal_char in VIN_ILLEGAL_CHARACTERS do
+            return false if self.upcase.include?(illegal_char)
+        end
+        # Step 1: Transliterate
+        values = []
+        for char in self.upcase.chars do
+            if ('A'..'Z').to_a.include?(char)
+                values << VIN_TRANSLITERATION_MAP[char]
+            else
+                values << char.to_i
+            end
+        end
+        # Step 2: Compute weighted products
+        weighted_values = values.map.with_index do |value, index|
+            value * VIN_WEIGHTS[index]
+        end
+        # Step 3: Compute remainder
+        remainder = (weighted_values.sum % 11).to_s
+        remainder = 'X' if remainder == '10'
+        # Step 4: Compare remainder to check digit (the 9th character)
+        check_digit = self.chars[8]
+        return remainder == check_digit
     end
 end

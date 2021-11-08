@@ -16,6 +16,8 @@ class GINSegment < Segment
     def validate_identity_numbers(qualifier, number_elements)
         for element in number_elements do
             validity = case qualifier
+            when 'AW' # GS1 serial shipping container code
+                element.value.is_sscc? ? true : InvalidSSCCError.new
             when 'BJ' # GS1 serial shipping container code
                 element.value.is_sscc? ? true : InvalidSSCCError.new
             when 'VV' # Vehicle identity number
