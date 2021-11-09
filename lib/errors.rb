@@ -28,6 +28,12 @@ class InvalidVINError < StandardError
     end
 end
 
+class InvalidACRNError < StandardError
+    def message
+        return "Bad ACRN"
+    end
+end
+
 class MandatoryFieldError < StandardError
     def message
         return "Missing mandatory field"

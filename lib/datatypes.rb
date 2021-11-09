@@ -1,13 +1,13 @@
-ALPHABET = *("A".."Z")
-NUMBERS = *("0".."9")
-
 class String
+
+    ALPHABET = *("A".."Z")
+    NUMBERS = *("0".."9")
+
     def is_alphanumeric?
+        for char in self.upcase.chars do
+            return false unless (ALPHABET + NUMBERS).include?(char)
+        end
         return true
-        #for char in self.upcase.chars do
-        #    return false unless (ALPHABET + NUMBERS).include?(char)
-        #end
-        #return true
     end
 
     def is_numeric?
@@ -110,4 +110,19 @@ class String
         check_digit = self.chars[8]
         return remainder == check_digit
     end
+
+    ACRN_ILLEGAL_CHARACTERS = ["O", "I"]
+
+    def is_acrn?
+        # Check length is equal to 2
+        return false unless self.length == 2
+        # Check string is alphanumeric
+        return false unless self.is_alphanumeric?
+        # Check string does not contain illegal characters
+        for illegal_char in ACRN_ILLEGAL_CHARACTERS do
+            return false if self.upcase.include?(illegal_char)
+        end
+        return true
+    end
+
 end

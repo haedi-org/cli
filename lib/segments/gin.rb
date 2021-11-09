@@ -15,15 +15,21 @@ class GINSegment < Segment
 
     def validate_identity_numbers(qualifier, number_elements)
         for element in number_elements do
-            validity = case qualifier
-            when 'AW' # GS1 serial shipping container code
-                element.value.is_sscc? ? true : InvalidSSCCError.new
-            when 'BJ' # GS1 serial shipping container code
-                element.value.is_sscc? ? true : InvalidSSCCError.new
-            when 'VV' # Vehicle identity number
-                element.value.is_vin? ? true : InvalidVINError.new
-            else
-                true
+            element.value.tap do |value|
+                validity = case qualifier
+                when 'AW' # GS1 serial shipping container code
+                    value.is_sscc? ? true : InvalidSSCCError.new
+                when 'BJ' # GS1 serial shipping container code
+                    value.is_sscc? ? true : InvalidSSCCError.new
+                when 'VV' # Vehicle identity number
+                    value.is_vin?  ? true : InvalidVINError.new
+                when 'BM' # Accounting classification reference number
+                    value.is_acrn? ? true : InvalidACRNError.new
+                when 'BP' # Special accounting classification reference number
+                    value.is_acrn? ? true : InvalidACRNError.new
+                else
+                    true
+                end
             end
             element.add_error(validity) unless validity == true
         end
