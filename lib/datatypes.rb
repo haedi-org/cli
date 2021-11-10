@@ -141,7 +141,7 @@ class String
         # Check length
         return false unless (str.length == 10)
         # Check number
-        return false unless str.is_numeric?
+        return false unless str[0, 9].is_numeric?
         # Split data
         digits, given_check_digit = str.chars[0, 9], str.chars[9]
         # Step 1: Apply weights
