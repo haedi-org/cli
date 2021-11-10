@@ -86,6 +86,8 @@ class String
     def is_vin?
         # Check for correct length
         return false unless self.length == 17
+        # Check string is alphanumeric
+        return false unless self.is_alphanumeric?
         # Check for illegal characters (i.e. 'I', 'O', and 'Q')
         for illegal_char in VIN_ILLEGAL_CHARACTERS do
             return false if self.upcase.include?(illegal_char)
@@ -123,6 +125,54 @@ class String
             return false if self.upcase.include?(illegal_char)
         end
         return true
+    end
+
+    def is_isbn?
+        # Ignore dashes
+        str = self.gsub('-', '')
+        return str.is_isbn_10? if str.length == 10
+        return str.is_isbn_13? if str.length == 13
+        return false
+    end
+
+    def is_isbn_10?
+        # Ignore dashes
+        str = self.gsub('-', '')
+        # Check length
+        return false unless (str.length == 10)
+        # Check number
+        return false unless str.is_numeric?
+        # Split data
+        digits, given_check_digit = str.chars[0, 9], str.chars[9]
+        # Step 1: Apply weights
+        digits.map!.with_index do |digit, index|
+            digit.to_i * (10 - index)
+        end
+        # Step 2: Find check digit as modulus - (sum % modulus)
+        expected_check_digit = (11 - (digits.sum % 11)).to_s
+        expected_check_digit = 'X' if expected_check_digit == '10'
+        # Step 3: Compare remainder with check digit
+        return expected_check_digit == given_check_digit
+    end
+
+    def is_isbn_13?
+        # Ignore dashes
+        str = self.gsub('-', '')
+        # Check length
+        return false unless (str.length == 13)
+        # Check number
+        return false unless str.is_numeric?
+        # Split data
+        digits, given_check_digit = str.chars[0, 12], str.chars[12]
+        # Step 1: Apply weights
+        digits.map!.with_index do |digit, index|
+            digit.to_i * ((index % 2 == 0) ? 1 : 3)
+        end
+        # Step 2: Find check digit as modulus - (sum % modulus)
+        expected_check_digit = (10 - (digits.sum % 10)).to_s
+        expected_check_digit = '0' if expected_check_digit == '10'
+        # Step 3: Compare remainder with check digit
+        return expected_check_digit == given_check_digit
     end
 
 end
