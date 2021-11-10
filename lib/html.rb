@@ -1,5 +1,6 @@
 HTML_LINE_BREAK = "<br>"
 NBSP = "&nbsp;"
+TICK_CHARACTER = "✓"
 
 class String
     def html_sanitize
@@ -63,9 +64,10 @@ def html_interactive_tag(tag, segment)
 end
 
 def html_interactive_element(element, segment)
-    valid = element.is_valid? and segment.is_valid?
-    clr = valid ? "#2B2B2B" : "#F14668"
-    fwt = valid ? "normal"  : "bold"
+    no_error = element.is_valid? and segment.is_valid?
+    clr, fwt = "#2B2B2B", "normal"
+    clr, fwt = "#48C774", "bold" if element.has_integrity?
+    clr, fwt = "#F14668", "bold" unless no_error
     class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
@@ -159,7 +161,7 @@ def html_reference_table(document)
                         :cl => "tag is-info is-light"
                     )
                 else
-                    value_tag = String.new
+                    value_tag = nil
                 end
                 # Error tag
                 unless e.is_valid?
@@ -167,10 +169,20 @@ def html_reference_table(document)
                         :cl => "tag is-danger"
                     )
                 else
-                    error_tag = String.new
+                    error_tag = nil
+                end
+                # Integrity tag
+                if e.has_integrity?
+                    integrity_tag = TICK_CHARACTER.html("span",
+                        :cl => "tag is-success"
+                    )
+                else
+                    integrity_tag = nil
                 end
                 # Add to row
-                row << [shown_data, value_tag, error_tag].join(NBSP).html("td")
+                row << [
+                    shown_data, value_tag, error_tag, integrity_tag
+                ].compact.join(NBSP).html("td")
             end
             # Add row to tabular data
             clr = valid ? "#2B2B2B" : "#F14668"

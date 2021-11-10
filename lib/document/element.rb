@@ -2,14 +2,15 @@ class Element
     attr_reader :code, :position
     attr_reader :name, :desc, :repr
     attr_reader :data_value, :data_name, :data_desc
-    attr_reader :error
+    attr_reader :errors
 
     def initialize(code, version, position, value = "")
         @code = code
         @version = version
         @data_value = value == nil ? "" : value
         @position = position
-        @error = []
+        @integrity = false
+        @errors = []
         # Retrieve and apply coded data
         @coded_data = $dictionary.coded_data_reference(code, value, version)
         apply_coded_data()
@@ -24,14 +25,25 @@ class Element
 
     def is_valid?
         return (
-            (error.blank?) or 
-            (error.uniq == [NoElementError.new]) or
-            (error == NoElementError.new)
+            (@errors.blank?) or (@errors.uniq == [NoElementError.new])
         )
     end
 
+    def has_integrity?
+        return @integrity
+    end
+
+    def error
+        return NoElementError.new if @errors.blank?
+        return @errors.first
+    end
+
     def add_error(err)
-        error = (error + [err]).uniq
+        @errors = (@errors + [err]).uniq
+    end
+
+    def set_integrity(integrity)
+        @integrity = integrity
     end
 
     def blank?

@@ -19,15 +19,17 @@ end
 def routine_parse(lines)
     out = []
     document = Document.new(lines)
-    for segment in document.segments do
+    for segment in document.segments.compact do
         out << ["", segment.raw, segment.tag.name]
         for element in segment.flatten do
             unless element.blank?
-                out << [
+                arr =  [
                     element.code,
                     element.position.join("_"),
-                    element.data_value,
-                ].inspect
+                    element.data_value
+                ]
+                arr << element.errors.first.message unless element.is_valid?
+                out << arr.inspect
             end
         end
     end

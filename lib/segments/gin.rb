@@ -16,7 +16,7 @@ class GINSegment < Segment
     def validate_identity_numbers(qualifier, number_elements)
         for element in number_elements do
             element.value.tap do |value|
-                validity = case qualifier
+                result = case qualifier
                 when 'AW' # GS1 serial shipping container code
                     value.is_sscc? ? true : InvalidSSCCError.new
                 when 'BJ' # GS1 serial shipping container code
@@ -30,8 +30,9 @@ class GINSegment < Segment
                 else
                     true
                 end
+                element.set_integrity(result == true)
+                element.add_error(result) unless result == true
             end
-            element.add_error(validity) unless validity == true
         end
     end
 end

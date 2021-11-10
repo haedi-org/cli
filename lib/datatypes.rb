@@ -25,7 +25,7 @@ class String
         # Split into data and check digit
         digits, given_check_digit = self[0, 17].chars, self[17, 1].to_i
         # Step 1: Apply weights
-        digits.map.with_index do |digit, index|
+        digits.map!.with_index do |digit, index|
             digit.to_i * ((index % 2 == 0) ? 3 : 1)
         end
         # Step 2: Find check digit as modulus - (sum % modulus)
