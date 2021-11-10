@@ -23,11 +23,14 @@ class String
         return false unless self.is_number?
         return false unless self.length == 18
         # Split into data and check digit
-        data, given_check_digit = self[0, 17].chars, self[17, 1].to_i
-        # Calculate check digit
-        sum = data.map.with_index { |c, i| c.to_i * (i % 2 == 0 ? 3 : 1) }.sum
-        expected_check_digit = 10 - (sum % 10)
-        # Return bool
+        digits, given_check_digit = self[0, 17].chars, self[17, 1].to_i
+        # Step 1: Apply weights
+        digits.map.with_index do |digit, index|
+            digit.to_i * ((index % 2 == 0) ? 3 : 1)
+        end
+        # Step 2: Find check digit as modulus - (sum % modulus)
+        expected_check_digit = 10 - (digits.sum % 10)
+        # Step 3: Compare check digit
         return given_check_digit == expected_check_digit
     end
 
