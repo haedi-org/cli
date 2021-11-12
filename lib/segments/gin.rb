@@ -37,19 +37,19 @@ class GINSegment < Segment
     end
 end
 
-#010   7405  Identity number qualifier          M  1  an..3 	
-#020   C208  IDENTITY NUMBER RANGE              M  1
-#      7402  Identity number                    M     an..35
-#      7402  Identity number                    C     an..35
-#030   C208  IDENTITY NUMBER RANGE              M  1
-#      7402  Identity number                    M     an..35
-#      7402  Identity number                    C     an..35
-#040   C208  IDENTITY NUMBER RANGE              M  1
-#      7402  Identity number                    M     an..35
-#      7402  Identity number                    C     an..35	
-#050   C208  IDENTITY NUMBER RANGE              M  1
-#      7402  Identity number                    M     an..35
-#      7402  Identity number                    C     an..35
-#060   C208  IDENTITY NUMBER RANGE              M  1
-#      7402  Identity number                    M     an..35
-#      7402  Identity number                    C     an..35	
+#010  7405  Identity number qualifier  M  1  an..3 	
+#020  C208  IDENTITY NUMBER RANGE      M  1
+#     7402  Identity number            M     an..35
+#     7402  Identity number            C     an..35
+#030  C208  IDENTITY NUMBER RANGE      M  1
+#     7402  Identity number            M     an..35
+#     7402  Identity number            C     an..35
+#040  C208  IDENTITY NUMBER RANGE      M  1
+#     7402  Identity number            M     an..35
+#     7402  Identity number            C     an..35	
+#050  C208  IDENTITY NUMBER RANGE      M  1
+#     7402  Identity number            M     an..35
+#     7402  Identity number            C     an..35
+#060  C208  IDENTITY NUMBER RANGE      M  1
+#     7402  Identity number            M     an..35
+#     7402  Identity number            C     an..35	

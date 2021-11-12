@@ -23,7 +23,7 @@ def routine_parse(lines)
         out << ["", segment.raw, segment.tag.name]
         for element in segment.flatten do
             unless element.blank?
-                arr =  [
+                arr = [
                     element.code,
                     element.position.join("_"),
                     element.data_value
@@ -91,14 +91,16 @@ end
 def routine_debug(lines)
     out = []
     document = Document.new(lines)
-    for segment in document.segments do
-        # DTM testing
-        if segment.is_a?(DTMSegment)
-            out << segment.raw
-            out << segment.version
-            out << segment.date_time.data_name
-        end
-    end
+    out << document.controlling_agency
+    out << document.association_assigned_code
+    #for segment in document.segments do
+    #    # DTM testing
+    #    if segment.is_a?(DTMSegment)
+    #        out << segment.raw
+    #        out << segment.version
+    #        out << segment.date_time.data_name
+    #    end
+    #end
     return out
 end
 

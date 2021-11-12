@@ -5,12 +5,14 @@ TEST_PATHS = [
     "./tests/data/INVOIC_D93A.edi",
     "./tests/data/DESADV_D01B.edi",
     "./tests/data/INVOIC_D97A.edi",
+    "./tests/data/DESADV_D96A.edi",
 ]
 
 RSpec.describe("Haedi CLI") do
     let!(:test_a) { Document.new(File.readlines(TEST_PATHS[0])) }
     let!(:test_b) { Document.new(File.readlines(TEST_PATHS[1])) }
     let!(:test_c) { Document.new(File.readlines(TEST_PATHS[2])) }
+    let!(:test_d) { Document.new(File.readlines(TEST_PATHS[3])) }
 
     describe(Document) do
         it("identifies segment terminator without UNA segment") do
@@ -35,6 +37,14 @@ RSpec.describe("Haedi CLI") do
 
         it("identifies version key of D01B document") do
             expect(test_b.version).to(eq('D01B'))
+        end
+
+        it("identifies document as not being an EANCOM document") do
+            expect(test_a.is_eancom?).to(be(false))
+        end
+
+        it("identifies document as being an EANCOM document") do
+            expect(test_d.is_eancom?).to(be(true))
         end
     end
 

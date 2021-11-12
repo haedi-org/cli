@@ -38,6 +38,8 @@ require_relative './segments/dtm.rb'
 require_relative './segments/gin.rb'
 require_relative './segments/rff.rb'
 
+require_relative './associations.rb'
+
 require_relative './document/segment_map.rb'
 
 require_relative './cli.rb'

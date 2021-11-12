@@ -4,6 +4,8 @@ class Document
     attr_reader :version
     attr_reader :message_type
     attr_reader :chars
+    attr_reader :controlling_agency
+    attr_reader :association_assigned_code
 
     def initialize(lines)
         @raw = lines.dup
@@ -51,31 +53,8 @@ class Document
                 unh = UNHSegment.new(segment, line_no, @version, @chars)
                 @version = unh.version_key
                 @message_type = unh.message_type.value
-            end
-        end
-    end
-
-    def assign_values
-        puts "TESTTESTTEST"
-        # Get punctuation values from UNA line
-        una = segments.first(3) == "UNA" ? lines.first(9) : nil
-        @chars = format_punctuation(una)
-        # Split by segment terminator
-        te = @chars.segment_terminator
-        re = @chars.release_character
-        @segments = @segments
-            .split_with_release(te, re).map { |line| line + te }
-        # Fix UNA segment
-        @lines[0] = una if @lines[0].first(3) == "UNA"
-        # Save unedited lines
-        @raw = @segments.dup
-        # Get document information
-        @segments.each_with_index do |segment, line_no|
-            puts segment.first(3)
-            if segment.first(3) == "UNH"
-                unh = UNHSegment.new(segment, line_no, @version, @chars)
-                @version = unh.version_key
-                @message_type = unh.message_type.value
+                @controlling_agency = unh.controlling_agency.value
+                @association_assigned_code = unh.association_assigned_code.value
             end
         end
     end
