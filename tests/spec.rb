@@ -39,11 +39,11 @@ RSpec.describe("Haedi CLI") do
             expect(test_b.version).to(eq('D01B'))
         end
 
-        it("identifies document as not being an EANCOM document") do
+        it("identifies as not being an EANCOM document") do
             expect(test_a.is_eancom?).to(be(false))
         end
 
-        it("identifies document as being an EANCOM document") do
+        it("identifies as being an EANCOM document") do
             expect(test_d.is_eancom?).to(be(true))
         end
     end
