@@ -37,6 +37,7 @@ require_relative './segments/unh.rb'
 require_relative './segments/dtm.rb'
 require_relative './segments/gin.rb'
 require_relative './segments/rff.rb'
+require_relative './segments/pia.rb'
 
 require_relative './associations.rb'
 

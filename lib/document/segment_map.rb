@@ -4,4 +4,5 @@ SEGMENT_MAP = {
     "DTM" => DTMSegment,
     "GIN" => GINSegment,
     "RFF" => RFFSegment,
+    "PIA" => PIASegment,
 }

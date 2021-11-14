@@ -29,6 +29,7 @@ def routine_parse(lines)
                     element.data_value
                 ]
                 arr << element.errors.first.message unless element.is_valid?
+                arr << TICK_CHARACTER if element.has_integrity?
                 out << arr.inspect
             end
         end

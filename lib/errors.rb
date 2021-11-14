@@ -34,6 +34,18 @@ class InvalidACRNError < StandardError
     end
 end
 
+class InvalidISBNError < StandardError
+    def message
+        return "Bad ISBN"
+    end
+end
+
+class InvalidISSNError < StandardError
+    def message
+        return "Bad ISSN"
+    end
+end
+
 class MandatoryFieldError < StandardError
     def message
         return "Missing mandatory field"

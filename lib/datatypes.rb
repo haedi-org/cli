@@ -178,4 +178,8 @@ class String
         return expected_check_digit == given_check_digit
     end
 
+    def is_issn?
+        return true
+    end
+
 end
