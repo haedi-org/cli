@@ -20,7 +20,9 @@ class String
     end
 
     def is_gtin_18?
+        # Check numeric
         return false unless self.is_number?
+        # Check for correct length
         return false unless self.length == 18
         # Split into data and check digit
         digits, given_check_digit = self[0, 17].chars, self[17, 1].to_i

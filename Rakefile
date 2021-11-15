@@ -2,8 +2,9 @@
 require_relative './lib/paths.rb'
 
 task :default do
-    puts "build\tbuild executable using ocra"
-    puts "test\trun rspec"
+    puts "build\t\tbuild executable using ocra"
+    puts "test\t\trun rspec"
+    puts "datatypes\trun datatypes rspec"
 end
 
 task :build do
@@ -26,7 +27,7 @@ task :test do
     puts `rspec #{params.join(" ")}`
 end
 
-task :test_datatypes do
+task :datatypes do
     params = [
         RSPEC_DATATYPES_PATH,
         "--tty", "--color",
