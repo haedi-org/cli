@@ -58,7 +58,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("GSIN") do
         GSIN_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_gsin?).to(be(bool))
             end
         end
@@ -66,7 +66,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("SSCC (GTIN-18)") do
         SSCC_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_sscc?).to(be(bool))
             end
         end
@@ -74,7 +74,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("GTIN-14") do
         GTIN_14_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_gtin_14?).to(be(bool))
             end
         end
@@ -82,7 +82,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("VIN") do
         VIN_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_vin?).to(be(bool))
             end
         end
@@ -90,7 +90,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("ISBN") do
         ISBN_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_isbn?).to(be(bool))
             end
         end
@@ -98,7 +98,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("ISSN") do
         ISSN_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_issn?).to(be(bool))
             end
         end
@@ -106,7 +106,7 @@ RSpec.describe("haedi datatypes") do
 
     describe("ISMN") do
         ISMN_TESTS.each do |code, bool|
-            it("identifies #{code} as #{bool}") do
+            it("identifies '#{code}' as #{bool}") do
                 expect(code.is_ismn?).to(be(bool))
             end
         end
