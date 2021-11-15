@@ -132,7 +132,7 @@ class String
 
     def is_isbn?
         # Ignore dashes
-        str = self.gsub('-', '')
+        str = self.gsub('-', '').gsub(' ', '')
         return str.is_isbn_10? if str.length == 10
         return str.is_isbn_13? if str.length == 13
         return false
@@ -140,7 +140,7 @@ class String
 
     def is_isbn_10?
         # Ignore dashes
-        str = self.gsub('-', '')
+        str = self.gsub('-', '').gsub(' ', '')
         # Check length
         return false unless (str.length == 10)
         # Check number
@@ -160,7 +160,7 @@ class String
 
     def is_isbn_13?
         # Ignore dashes
-        str = self.gsub('-', '')
+        str = self.gsub('-', '').gsub(' ', '')
         # Check length
         return false unless (str.length == 13)
         # Check number
@@ -178,8 +178,66 @@ class String
         return expected_check_digit == given_check_digit
     end
 
+    ISSN_WEIGHTS = [8, 7, 6, 5, 4, 3, 2]
+
     def is_issn?
-        return true
+        # Ignore dashes
+        str = self.gsub('-', '').gsub(' ', '')
+        # Check length
+        return false unless (str.length == 8)
+        # Check number
+        return false unless str.is_numeric?
+        # Split data
+        digits, given_check_digit = str.chars[0, 7], str.chars[7]
+        # Step 1: Apply weights
+        digits.map!.with_index do |digit, index|
+            digit.to_i * ISSN_WEIGHTS[index]
+        end
+        # Step 2: Find check digit as modulus - (sum % modulus)
+        expected_check_digit = (11 - (digits.sum % 11)).to_s
+        expected_check_digit = 'X' if expected_check_digit == '10'
+        expected_check_digit = '0' if expected_check_digit == '11'
+        # Step 3: Compare remainder with check digit
+        return expected_check_digit == given_check_digit
+    end
+
+    def is_ismn?
+        # Ignore dashes and spaces
+        str = self.gsub('-', '').gsub(' ', '')
+        return str.is_ismn_10? if str.length == 10
+        return str.is_ismn_13? if str.length == 13
+        return false
+    end
+
+    def is_ismn_10?
+        # Ignore dashes and spaces
+        str = self.gsub('-', '').gsub(' ', '')
+        # Replace leading 'M' with '0'
+        str = str.gsub('M', '0')
+        # Prefix with '979' to become ISMN-13
+        return ('979' + str).is_ismn_13?
+    end
+
+    def is_ismn_13?
+        # Ignore dashes and spaces
+        str = self.gsub('-', '').gsub(' ', '')
+        # Check length
+        return false unless (str.length == 13)
+        # Check number
+        return false unless str.is_numeric?
+        # Check prefix is '9790'
+        return false unless str[0, 4] == '9790'
+        # Split data
+        digits, given_check_digit = str.chars[0, 12], str.chars[12]
+        # Step 1: Apply weights
+        digits.map!.with_index do |digit, index|
+            digit.to_i * ((index % 2 == 0) ? 1 : 3)
+        end
+        # Step 2: Find check digit as modulus - (sum % modulus)
+        expected_check_digit = (10 - (digits.sum % 10)).to_s
+        expected_check_digit = '0' if expected_check_digit == '10'
+        # Step 3: Compare remainder with check digit
+        return expected_check_digit == given_check_digit
     end
 
 end

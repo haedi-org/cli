@@ -25,3 +25,12 @@ task :test do
     ]
     puts `rspec #{params.join(" ")}`
 end
+
+task :test_datatypes do
+    params = [
+        RSPEC_DATATYPES_PATH,
+        "--tty", "--color",
+        "--format", "documentation"
+    ]
+    puts `rspec #{params.join(" ")}`
+end

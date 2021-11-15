@@ -8,7 +8,7 @@ TEST_PATHS = [
     "./tests/data/DESADV_D96A.edi",
 ]
 
-RSpec.describe("Haedi CLI") do
+RSpec.describe("haedi CLI") do
     let!(:test_a) { Document.new(File.readlines(TEST_PATHS[0])) }
     let!(:test_b) { Document.new(File.readlines(TEST_PATHS[1])) }
     let!(:test_c) { Document.new(File.readlines(TEST_PATHS[2])) }
