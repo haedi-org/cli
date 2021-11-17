@@ -75,6 +75,10 @@ class Segment
         return true
     end
 
+    def is?(tag_value)
+        return @tag.value == tag_value
+    end
+
     def debug
         out = ["", "SEGMENT : #{@data.inspect}"]
         @elements.each { |element| out << element.debug }

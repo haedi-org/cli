@@ -81,6 +81,10 @@ def html_interactive_element(element, segment)
 end
 
 def html_interactive_segment(segment)
+    # Don't use data element separator or terminator for UNA segment 
+    separator  = segment.is?('UNA') ? '' : segment.chars.data_element_separator
+    terminator = segment.is?('UNA') ? '' : segment.chars.segment_terminator
+    # Map and join elements including tag
     data = ([segment.tag] + segment.truncated_elements).map { |element|
         if element.is_a?(Tag)
             html_interactive_tag(element, segment)
@@ -93,8 +97,8 @@ def html_interactive_segment(segment)
                 html_interactive_element(element, segment)
             end
         end
-    }.join(segment.chars.data_element_separator)
-    return data + segment.chars.segment_terminator
+    }.join(separator)
+    return data + terminator
 end
 
 def html_reference_table(document)

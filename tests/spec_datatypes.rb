@@ -1,3 +1,5 @@
+$VERBOSE = nil
+
 require 'rspec'
 require_relative '../lib/include.rb'
 
