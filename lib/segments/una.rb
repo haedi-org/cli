@@ -22,6 +22,13 @@ class UNASegment < Segment
             params = [code, @version, [index], @raw[2 + index]]
             Element.new(*params)
         end
+        # Set values for elements
+        @elements.each do |element|
+            name = @spec.dig("elements", element.code, "name")
+            element.set_name(name) unless name.blank?
+            repr = @spec.dig("elements", element.code, "repr")
+            element.set_repr(repr) unless repr.blank?
+        end
         # Set variables
         @chars = Punctuation.new(
             @elements[0].value, @elements[1].value, @elements[2].value,

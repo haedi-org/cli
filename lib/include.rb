@@ -24,6 +24,7 @@ require_relative './dictionary.rb'
 require_relative './routines.rb'
 require_relative './history.rb'
 
+require_relative './document/rule.rb'
 require_relative './document/document.rb'
 require_relative './document/element.rb'
 require_relative './document/composite.rb'

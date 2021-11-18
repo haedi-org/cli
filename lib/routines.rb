@@ -25,8 +25,10 @@ def routine_parse(lines)
             unless element.blank?
                 arr = [
                     element.code,
+                    element.name.titleize,
                     element.position.join("_"),
-                    element.data_value
+                    element.data_value,
+                    element.repr,
                 ]
                 arr << element.errors.first.message unless element.is_valid?
                 arr << TICK_CHARACTER if element.has_integrity?
@@ -137,12 +139,12 @@ def routine_collection(paths)
                 throw if message.blank? or version.blank?
                 table << [
                     filename,
-                    message, 
+                    message,
                     version,
                 ]
             rescue
                 table << [
-                    filename, 
+                    filename,
                     "N/A".ljust(12, " ").colorize(:light_red), 
                     "N/A".ljust(12, " ").colorize(:light_red),
                 ]

@@ -21,7 +21,18 @@ class Element
             @spec = $dictionary.service_element_specification(@code)
         end
         apply_element_spec()
-    end 
+        check_against_repr() unless @repr.blank?
+    end
+
+    def check_against_repr
+        rule = Rule.new(@spec)
+        unless rule.check_length(@data_value)
+            add_error(InvalidLengthError.new(rule.describe_length))
+        end
+        unless rule.check_symbols(@data_value)
+            add_error(InvalidSymbolsError.new(rule.describe_symbols))
+        end
+    end
 
     def is_valid?
         return (
@@ -64,8 +75,16 @@ class Element
         @repr = "" if @repr == nil
     end
 
-    def set_data_name(name)
-        @data_name = name
+    def set_name(name)
+        @name = name
+    end
+
+    def set_data_name(data_name)
+        @data_name = data_name
+    end
+
+    def set_repr(repr)
+        @repr = repr
     end
 
     def value

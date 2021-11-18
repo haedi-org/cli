@@ -127,6 +127,7 @@ def html_reference_table(document)
         class_name = "L-#{segment.line_no}-0"
         row = String.new
         row += segment.tag.value.html("th", :st => "color: inherit")
+        row += "a3".html("th", :st => "color: inherit")
         row += segment.tag.name.html("th", 
             :st => "color: inherit", 
             #:colspan => 3
@@ -151,6 +152,8 @@ def html_reference_table(document)
                 row = String.new
                 # Element code row
                 row += e.code.html("td")
+                # Element repr row
+                row += (e.repr.blank? ? String.new : e.repr).html("td")
                 # Element name row
                 row += e.name.html("td")
                 # Element data row

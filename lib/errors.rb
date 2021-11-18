@@ -10,6 +10,36 @@ class NoElementError < StandardError
     end
 end
 
+class InvalidReprError < StandardError
+    def message
+        return "Invalid repr"
+    end
+end
+
+class InvalidLengthError < StandardError
+    def initialize(desc)
+        super()
+        @desc = desc
+    end
+    
+    def message
+        return "Invalid length" if @desc.blank?
+        return "Invalid length (expected #{@desc})"
+    end
+end
+
+class InvalidSymbolsError < StandardError
+    def initialize(desc)
+        super()
+        @desc = desc
+    end
+    
+    def message
+        return "Invalid symbols" if @desc.blank?
+        return "Must be #{@desc}"
+    end
+end
+
 class InvalidDocumentError < StandardError
     def message
         return "EDI document is incorrectly formatted"

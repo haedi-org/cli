@@ -84,6 +84,7 @@ class Dictionary
     end
 
     def service_segment_specification(tag, version = "40000")
+        return self.una_segment_specification(version) if tag == 'UNA'
         return {} if version == nil
         data = retrieve_un_edifact_data("SS", version)
         return data.key?(tag) ? data[tag] : {}
