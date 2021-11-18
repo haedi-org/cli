@@ -41,9 +41,14 @@ def html_debug(document)
     system_info = [
         ["Dictionary read count", $dictionary.read_count],
     ]
+    error_info = [
+        ["Error count", document.error_count],
+    ]
+    error_info += document.errors
     classes = "table is-bordered is-narrow m-2"
     out << html_table(document_info, classes)
     out << html_table(system_info, classes)
+    out << html_table(error_info, classes)
     return out
 end
 

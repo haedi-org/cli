@@ -96,6 +96,7 @@ def routine_debug(lines)
     document = Document.new(lines)
     out << document.controlling_agency
     out << document.association_assigned_code
+    out << document.error_count
     #for segment in document.segments do
     #    # DTM testing
     #    if segment.is_a?(DTMSegment)

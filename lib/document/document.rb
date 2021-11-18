@@ -59,6 +59,28 @@ class Document
         end
     end
 
+    def errors
+        arr = []
+        for segment in @segments do
+            for element in segment.flatten do
+                for error in element.errors
+                    position = [
+                        segment.line_no, element.position.join("-")
+                    ].join(":")
+                    arr << [
+                        "Element #{position}",
+                        error.message
+                    ]
+                end
+            end
+        end
+        return arr
+    end
+
+    def error_count
+        return errors.length
+    end
+
     def format_punctuation(line = nil)
         unless line == nil
             return UNASegment.new(line, 0, @version).punctuation

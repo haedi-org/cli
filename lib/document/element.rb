@@ -26,6 +26,10 @@ class Element
 
     def check_against_repr
         rule = Rule.new(@spec)
+        if @data_value.blank?
+            add_error(MandatoryFieldError.new) unless rule.conditional?
+            return
+        end
         unless rule.check_length(@data_value)
             add_error(InvalidLengthError.new(rule.describe_length))
         end
