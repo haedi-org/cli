@@ -1,3 +1,5 @@
+TAG_REPR = "a3"
+
 class Tag
     attr_reader :value, :name, :desc
 

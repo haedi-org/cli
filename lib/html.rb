@@ -1,12 +1,13 @@
 HTML_LINE_BREAK = "<br>"
 NBSP = "&nbsp;"
 TICK_CHARACTER = "✓"
+HTML_SHOW_REPR = true
 
 class String
     def html_sanitize
         return self.gsub("<", "&lt;").gsub(">", "&gt;")
     end
-    
+
     def html(tag, ti: nil, id: nil, cl: nil, st: nil, 
         colspan: nil, onmouseover: nil, onmouseleave:nil)
         arr = [
@@ -33,12 +34,17 @@ def html_table(values, cl = "table")
 end
 
 def html_debug(document)
-    out = []
     document_info = [
         ["Message", document.message_type],
         ["Version", document.version],
     ]
+    if $dictionary.has_version?(document.version)
+        used_version = document.version
+    else
+        used_version = FALLBACK_VERSION
+    end
     system_info = [
+        ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
     ]
     error_info = [
@@ -46,10 +52,11 @@ def html_debug(document)
     ]
     error_info += document.errors
     classes = "table is-bordered is-narrow m-2"
-    out << html_table(document_info, classes)
-    out << html_table(system_info, classes)
-    out << html_table(error_info, classes)
-    return out
+    return [
+        html_table(document_info, classes),
+        html_table(system_info, classes),
+        html_table(error_info, classes),
+    ]
 end
 
 def html_interactive_tag(tag, segment)
@@ -60,7 +67,7 @@ def html_interactive_tag(tag, segment)
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
     # Return <b> tag with CSS styling
-    return tag.value.html("b", 
+    return tag.value.html("b",
         :cl => "edi-data #{class_name}",
         :st => "color: #{clr}; font-weight: #{fwt}",
         :onmouseover => onmouseover,
@@ -132,9 +139,9 @@ def html_reference_table(document)
         class_name = "L-#{segment.line_no}-0"
         row = String.new
         row += segment.tag.value.html("th", :st => "color: inherit")
-        row += "a3".html("th", :st => "color: inherit")
-        row += segment.tag.name.html("th", 
-            :st => "color: inherit", 
+        row += TAG_REPR.html("th", :st => "color: inherit") if HTML_SHOW_REPR
+        row += segment.tag.name.html("th",
+            :st => "color: inherit",
             #:colspan => 3
         )
         unless segment.is_valid?
@@ -158,7 +165,9 @@ def html_reference_table(document)
                 # Element code row
                 row += e.code.html("td")
                 # Element repr row
-                row += (e.repr.blank? ? String.new : e.repr).html("td")
+                if HTML_SHOW_REPR
+                    row += (e.repr.blank? ? String.new : e.repr).html("td")
+                end
                 # Element name row
                 row += e.name.html("td")
                 # Element data row

@@ -7,6 +7,8 @@ class Document
     attr_reader :controlling_agency
     attr_reader :association_assigned_code
 
+    # TODO: Create segment factory object that uses the SEGMENT_MAP
+
     def initialize(lines)
         @raw = lines.dup
         @segments = @raw.map { |line| line.chomp }.join
@@ -26,7 +28,7 @@ class Document
             end
         end
     end
-    
+
     def debug
         out = []
         for segment in @segments do

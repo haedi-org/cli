@@ -31,6 +31,14 @@ class Dictionary
         # NOTE: Leave for debug purposes
     end
 
+    def has_version?(version)
+        for datatype in ["uncl", "edcd", "eded"] do
+            path = "/un_edifact/#{datatype}/#{datatype.upcase}_#{version}.json"
+            return false unless File.file?(path)
+        end
+        return true
+    end
+
     def is_service_segment?(value, standard = "un_edifact")
         params = ["service_segments", standard]
         return retrieve_csv_column(*params).include?(value)
