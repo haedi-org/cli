@@ -5,20 +5,20 @@ def routine_help
     return out
 end
 
-def routine_info(lines)
+def routine_info(lines, path)
     out = []
     return out
 end
 
-def routine_html_info(lines)
+def routine_html_info(lines, path)
     out = []
     #out << html_document_information(document)
     return out
 end
 
-def routine_parse(lines)
+def routine_parse(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     for segment in document.segments.compact do
         out << ["", segment.raw, segment.tag.name]
         for element in segment.flatten do
@@ -39,29 +39,29 @@ def routine_parse(lines)
     return out
 end
 
-def routine_html_parse(lines)
+def routine_html_parse(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     out << html_reference_table(document)
     return out
 end
 
-def routine_structure(lines)
+def routine_structure(lines, path)
     out = []
     return out
 end
 
-def routine_timeline(lines)
+def routine_timeline(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     timeline = document.timeline
     out << ascii_table(timeline, [40, 40]) unless timeline.blank?
     return out
 end
 
-def routine_html_timeline(lines)
+def routine_html_timeline(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     timeline = document.timeline
     # Timeline
     timeline.map! do |event, time|
@@ -91,9 +91,9 @@ def routine_html_timeline(lines)
     return out
 end
 
-def routine_debug(lines)
+def routine_debug(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     out << document.controlling_agency
     out << document.association_assigned_code
     out << document.error_count
@@ -108,14 +108,14 @@ def routine_debug(lines)
     return out
 end
 
-def routine_html_debug(lines)
+def routine_html_debug(lines, path)
     out = []
-    document = Document.new(lines)
+    document = Document.new(lines, path)
     out << html_debug(document)
     return out
 end
 
-def routine_collection(paths)
+def routine_collection(paths, path)
     out = []
     table = []
     # Check if path is file or dir
@@ -134,7 +134,7 @@ def routine_collection(paths)
             filename = File.basename(path)
             begin
                 lines = File.readlines(path)
-                document = Document.new(lines)
+                document = Document.new(lines, path)
                 message = document.message_type
                 version = document.version
                 throw if message.blank? or version.blank?
@@ -173,7 +173,7 @@ def routine_html_collection(paths)
             filename = File.basename(path)    
             begin
                 lines = File.readlines(path)
-                document = Document.new(lines)
+                document = Document.new(lines, path)
                 message = document.message_type
                 version = document.version
                 table << [

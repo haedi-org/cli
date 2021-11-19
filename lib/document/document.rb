@@ -6,12 +6,14 @@ class Document
     attr_reader :chars
     attr_reader :controlling_agency
     attr_reader :association_assigned_code
+    attr_reader :path
 
     # TODO: Create segment factory object that uses the SEGMENT_MAP
 
-    def initialize(lines)
+    def initialize(lines, path = "N/A")
         @raw = lines.dup
         @segments = @raw.map { |line| line.chomp }.join
+        @path = path
         set_critical_values(lines)
         # Create segment objects
         @segments.map!.with_index do |segment, line_no|
@@ -61,7 +63,7 @@ class Document
         end
     end
 
-    def errors
+    def error_descriptions
         arr = []
         for segment in @segments do
             for element in segment.flatten do
@@ -70,7 +72,7 @@ class Document
                         segment.line_no, element.position.join("-")
                     ].join(":")
                     arr << [
-                        "Element #{position}",
+                        "Element (#{segment.tag.value}) #{position}",
                         error.message
                     ]
                 end
@@ -80,7 +82,7 @@ class Document
     end
 
     def error_count
-        return errors.length
+        return error_descriptions.length
     end
 
     def format_punctuation(line = nil)

@@ -34,6 +34,7 @@ require_relative './document/tag.rb'
 require_relative './document/segment.rb'
 
 require_relative './segments/una.rb'
+require_relative './segments/unb.rb'
 require_relative './segments/unh.rb'
 require_relative './segments/dtm.rb'
 require_relative './segments/gin.rb'

@@ -34,6 +34,9 @@ def html_table(values, cl = "table")
 end
 
 def html_debug(document)
+    file_info = [
+        ["File path", document.path]
+    ]
     document_info = [
         ["Message", document.message_type],
         ["Version", document.version],
@@ -50,9 +53,10 @@ def html_debug(document)
     error_info = [
         ["Error count", document.error_count],
     ]
-    error_info += document.errors
+    error_info += document.error_descriptions
     classes = "table is-bordered is-narrow m-2"
     return [
+        html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
         html_table(error_info, classes),
