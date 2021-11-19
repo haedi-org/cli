@@ -90,7 +90,7 @@ def html_interactive_element(element, segment)
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
     # Return <b> tag with CSS styling
-    return element.data_value.html("b", 
+    return element.data_value.html("b",
         :cl => "edi-data #{class_name}",
         :st => "color: #{clr}; font-weight: #{fwt}",
         :onmouseover => onmouseover,
@@ -316,6 +316,6 @@ end
 
 def html_file_path(path)
     return path.html('a',
-        :onclick => "openFile(\"#{path.gsub("\\", "/")}\")"
+        :onclick => "openFile(#{path.gsub("\\", "/").quote})"
     )
 end
