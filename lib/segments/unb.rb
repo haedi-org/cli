@@ -1,6 +1,38 @@
+UNB_DATE_TIME_QUALIFIER = 'Date/time of preparation'
+
 class UNBSegment < Segment
+    attr_reader :date, :time
+
     def initialize(raw, line_no, version = nil, chars = nil)
         super(raw, line_no, version, chars)
+        @date = get_elements_by_code("0017").first
+        @time = get_elements_by_code("0019").first
+        interpret_date_time()
+    end
+
+    def interpret_date_time()
+        # 101   YYMMDD
+        # 102   CCYYMMDD
+        unless @date.blank?
+            date_format = nil
+            date_format = '101' if @date.value.length == 6
+            date_format = '102' if @date.value.length == 8
+            unless date_format.blank?
+                @date.set_data_name(
+                    interpret_date(@date.value, date_format)
+                )
+            end
+        end
+        # 401   HHMM
+        unless @time.blank?
+            time_format = nil
+            time_format = '401' if @time.value.length == 4
+            unless time_format.blank?
+                @time.set_data_name(
+                    interpret_date(@time.value, time_format)
+                )
+            end
+        end
     end
 end
 

@@ -8,14 +8,16 @@ class String
         return self.gsub("<", "&lt;").gsub(">", "&gt;")
     end
 
-    def html(tag, ti: nil, id: nil, cl: nil, st: nil, 
-        colspan: nil, onmouseover: nil, onmouseleave:nil)
+    def html(tag, ti: nil, id: nil, cl: nil, st: nil, href: nil,
+        colspan: nil, onclick: nil, onmouseover: nil, onmouseleave:nil)
         arr = [
             ["id", id&.quote],
             ["class", cl&.quote],
             ["style", st&.quote],
             ["title", ti&.quote],
+            ["href", href&.quote],
             ["colspan", colspan&.quote],
+            ["onclick", onclick&.quote("'")],
             ["onmouseover", onmouseover&.quote("'")],
             ["onmouseleave", onmouseleave&.quote("'")],
         ]
@@ -35,7 +37,7 @@ end
 
 def html_debug(document)
     file_info = [
-        ["File path", document.path]
+        ["File path", html_file_path(document.path)]
     ]
     document_info = [
         ["Message", document.message_type],
@@ -310,4 +312,10 @@ def html_error(error)
         .html("span", :st => "font-size: 0.8em; line-height: 0.8em")
         .html("div", :cl => "notification is-danger is-small block")
         .html("div", :cl => "is-fullwidth scroller p-4")
+end
+
+def html_file_path(path)
+    return path.html('a',
+        :onclick => "openFile(\"#{path.gsub("\\", "/")}\")"
+    )
 end

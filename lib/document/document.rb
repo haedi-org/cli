@@ -100,6 +100,12 @@ class Document
     def timeline
         events = []
         @segments.each do |segment|
+            if segment.tag.value == "UNB"
+                events << [
+                    UNB_DATE_TIME_QUALIFIER, 
+                    [segment.date.readable, segment.time.readable].join(' ')
+                ]
+            end
             if segment.tag.value == "DTM"
                 events << [
                     segment.date_time_qualifier.readable, 
