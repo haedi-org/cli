@@ -99,7 +99,7 @@ def html_interactive_element(element, segment)
 end
 
 def html_interactive_segment(segment)
-    # Don't use data element separator or terminator for UNA segment 
+    # Don't use data element separator or terminator for UNA segment
     separator  = segment.is?('UNA') ? '' : segment.chars.data_element_separator
     terminator = segment.is?('UNA') ? '' : segment.chars.segment_terminator
     # Map and join elements including tag
