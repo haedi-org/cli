@@ -72,6 +72,20 @@ class Interchange
             Message.new(lines, @version, @chars)
         end
     end
+
+    def segments()
+        arr = []
+        arr << self.header
+        for message in @messages do
+            arr << message.header
+            for group in message.groups do
+                arr << group.segments
+            end
+            arr << message.trailer
+        end
+        arr << self.footer
+        return arr.flatten
+    end
 end
 
 # Interchange header (UNB)

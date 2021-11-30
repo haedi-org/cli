@@ -37,6 +37,7 @@ require_relative './document/punctuation.rb'
 require_relative './document/date.rb'
 require_relative './document/tag.rb'
 require_relative './document/segment.rb'
+require_relative './document/group.rb'
 require_relative './document/group_factory.rb'
 
 require_relative './segments/una.rb'

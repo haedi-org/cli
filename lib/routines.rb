@@ -18,21 +18,29 @@ end
 
 def routine_parse(lines, path)
     out = []
-    document = Document.new(lines, path)
-    for segment in document.segments.compact do
-        out << ["", segment.raw, segment.tag.name]
-        for element in segment.flatten do
-            unless element.blank?
-                arr = [
-                    element.code,
-                    element.name.titleize,
-                    element.position.join("_"),
-                    element.data_value,
-                    element.repr,
-                ]
-                arr << element.errors.first.message unless element.is_valid?
-                arr << TICK_CHARACTER if element.has_integrity?
-                out << arr.inspect
+    interchange = Interchange.new(path)
+    for message in interchange.messages do
+        out << message.type
+        for group in message.groups do
+            out << group.name
+            for segment in group.segments do
+                out << segment.tag.value
+                for element in segment.flatten do
+                    unless element.blank?
+                        arr = [
+                            element.code,
+                            element.name.titleize,
+                            element.position.join("_"),
+                            element.data_value,
+                            element.repr,
+                        ]
+                        unless element.is_valid?
+                            arr << element.errors.first.message
+                        end
+                        arr << TICK_CHARACTER if element.has_integrity?
+                        out << arr.inspect
+                    end
+                end
             end
         end
     end

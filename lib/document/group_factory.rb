@@ -1,18 +1,22 @@
 class GroupFactory
     attr_reader :groups, :raw
 
-    def initialize(lines, spec)
+    def initialize(lines, spec, message_version, chars)
         @lines = lines
         @spec = spec
+        @message_version = message_version
+        @chars = chars
         @groups = []
         @raw = []
         # Algorithm variables
-        @group_index, @segment_index, @line_index = 0, 0, 0
+        @group_index, @segment_index = 0, 0
+        @line_index, @individual_index = 0, 0
         @is_repeating_group = false
         @group_repeat_counter = 1
         # Initial methods
         collapse_spec()
         begin
+            assign_groups()
             set_groups()
         rescue => exception
             puts exception
@@ -40,19 +44,43 @@ class GroupFactory
         end
     end
 
+    def set_groups()
+        #for group_no, individual_no, line in @raw do
+        #    puts "#{group_no}\t#{individual_no}\t#{line[1]}"
+        #end
+        # Split by individual number
+        group_hash = {}
+        for group_no, individual_no, line in @raw do
+            unless group_hash.key?(individual_no)
+                group_hash[individual_no] = {
+                    "group" => group_no,
+                    "lines" => []
+                }
+            end
+            group_hash[individual_no]["lines"] << line
+        end
+        # Create group object
+        for individual_no, group_data in group_hash do
+            name = "GROUP_#{group_data["group"]}"
+            params = [name, group_data["lines"], @message_version, @chars]
+            @groups << Group.new(*params)
+        end
+    end
+
     def next_line()
         @line_index += 1
     end
 
     def next_group()
-        puts "NEXT GROUP"
+       #puts "NEXT GROUP"
+        @individual_index += 1
         @group_index += 1
         @segment_index = 0
         @group_repeat_counter = group_spec()["repeat"].to_i
     end
 
     def next_segment()
-        puts "NEXT SEGMENT"
+       #puts "NEXT SEGMENT"
         if should_attempt_to_repeat_group() #and set_group_repeats()
             repeat_group()
         else
@@ -70,13 +98,14 @@ class GroupFactory
     end
 
     def repeat_group()
-        debug()
-        puts "REPEATING GROUP"
+       #debug()
+       #puts "REPEATING GROUP"
+        @individual_index += 1
         @segment_index = 0
         @is_repeating_group = true
         @group_repeat_counter -= 1
         if @group_repeat_counter < 1
-            debug("GROUP REPEAT COUNTER LESS THAN 1")
+           #debug("GROUP REPEAT COUNTER LESS THAN 1")
             return
         end
     end
@@ -97,7 +126,7 @@ class GroupFactory
         if @spec.key?(@group_index.to_s)
             return @spec[@group_index.to_s]["segments"]
         else
-            debug("NO GROUP SPEC KEY FOR #{@group_index.to_s}")
+           #debug("NO GROUP SPEC KEY FOR #{@group_index.to_s}")
             return
         end
     end
@@ -111,16 +140,6 @@ class GroupFactory
         tag, spec = group_segments().to_a[@segment_index]
         return spec
     end
-
-    #def set_group_repeats()
-    #    if @is_repeating_group
-    #        @group_repeat_counter -= 1
-    #    else
-    #        @group_repeat_counter = group_spec()["repeat"].to_i
-    #    end
-    #    @is_repeating_group = false
-    #    return (@group_repeat_counter >= 1)
-    #end
 
     def segment_repeat_counter()
         return segment_spec()["repeat"].to_i
@@ -172,7 +191,7 @@ class GroupFactory
 
     def next_unique_line()
         offset = 1
-        until @line_index + offset > @lines.length
+        until @line_index + offset >= @lines.length
             if (@lines[@line_index + offset][1].first(3) != line_tag())
                 return @lines[@line_index + offset][1]
             end
@@ -188,14 +207,14 @@ class GroupFactory
     def should_attempt_to_repeat_group()
         return (
             last_segment_in_group() &&
-            #group_does_not_contain_next_unique_line() &&
+           #group_does_not_contain_next_unique_line() &&
             group_contains_current_line() &&
             (@group_repeat_counter > 1)
         )
     end
 
     def group_line_data()
-        return [@group_index, line()]
+        return [@group_index, @individual_index, @lines[@line_index]]
     end
 
     def debug(str = "")
@@ -215,27 +234,23 @@ class GroupFactory
 
     def segment_is_expected()
         if (group_is_mandatory() and segment_is_mandatory())
-            debug("GROUP MAN AND SEG MAN")
+           #debug("GROUP MAN AND SEG MAN")
             return true
         end
         if (group_is_conditional() and segment_is_mandatory() and not_first_segment_in_group())
-            debug("GROUP CON AND SEG MAN AND NOT FIRST")
+           #debug("GROUP CON AND SEG MAN AND NOT FIRST")
             return true
         end
         return false
     end
 
-    def set_groups()
+    def assign_groups()
         until (@group_index >= (@spec.length - 1))
             if group_spec().blank?
                 debug("GROUP SPEC IS BLANK")
                 return
             end
-            #unless set_group_repeats()
-            #    debug("GROUP REQUESTS IS UNDER 1")
-            #    return
-            #end
-            debug()
+           #debug()
             if segment_matches_line()
                 if first_segment_in_group()
                     @raw << group_line_data()
@@ -252,7 +267,7 @@ class GroupFactory
                     # Ensure that the list of segments is within the given
                     # repeat number of the specification
                     if temp_arr.length > segment_repeat_counter()
-                        debug("TOO MANY SEGMENT REPEATS")
+                       #debug("TOO MANY SEGMENT REPEATS")
                         return
                     end 
                     @raw += temp_arr
@@ -260,7 +275,15 @@ class GroupFactory
                 end
             else
                 return if segment_is_expected()
-                first_segment_in_group(true) ? next_group() : next_segment()
+                if first_segment_in_group(true)
+                    unless group_contains_current_line()
+                        next_group()
+                    else
+                        next_segment()
+                    end
+                else
+                    next_segment()
+                end
             end
         end
     end
