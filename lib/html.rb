@@ -3,32 +3,6 @@ NBSP = "&nbsp;"
 TICK_CHARACTER = "✓"
 HTML_SHOW_REPR = true
 
-class String
-    def html_sanitize
-        return self.gsub("<", "&lt;").gsub(">", "&gt;")
-    end
-
-    def html(tag, ti: nil, id: nil, cl: nil, st: nil, href: nil,
-        colspan: nil, onclick: nil, onmouseover: nil, onmouseleave:nil)
-        arr = [
-            ["id", id&.quote],
-            ["class", cl&.quote],
-            ["style", st&.quote],
-            ["title", ti&.quote],
-            ["href", href&.quote],
-            ["colspan", colspan&.quote],
-            ["onclick", onclick&.quote("'")],
-            ["onmouseover", onmouseover&.quote("'")],
-            ["onmouseleave", onmouseleave&.quote("'")],
-        ]
-        open_tag = "<" + tag
-        for arg, var in arr do
-            open_tag += " #{arg}=#{var}" unless var.blank?
-        end
-        return self.encap(open_tag + ">", tag.encap("</", ">"))
-    end
-end
-
 def html_table(values, cl = "table")
     return values.map { |row|
         (row.map { |value| value.to_s.html("td") }).join.html("tr")

@@ -9,6 +9,10 @@ Punctuation = Struct.new(
     :segment_terminator
 )
 
+DEFAULT_CHARS = Punctuation.new(
+    ':', '+', '.', '?', ' ', DEFAULT_SEGMENT_TERMINATOR
+)
+
 class String
     def split_with_release(split_char, release_char)
         temp, word, is_released = [], "", false

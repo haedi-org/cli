@@ -104,6 +104,12 @@ class Dictionary
         return data.key?("UNA") ? data["UNA"] : {}
     end
 
+    def message_structure_specification(message, version)
+        return {} if version == nil
+        data = retrieve_un_edifact_data("EDMD", version, message)
+        return data
+    end
+
     def retrieve_un_edifact_data(datatype, version, message = nil)
         # Ensure correct casing on all strings
         datatype = datatype.downcase

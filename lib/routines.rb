@@ -93,10 +93,10 @@ end
 
 def routine_debug(lines, path)
     out = []
-    document = Document.new(lines, path)
-    out << document.controlling_agency
-    out << document.association_assigned_code
-    out << document.error_count
+    interchange = Interchange.new(path)
+    puts interchange.messages.first.version
+    #document = Document.new(lines, path)
+    #out << edi_to_xml(document)
     #for segment in document.segments do
     #    # DTM testing
     #    if segment.is_a?(DTMSegment)
