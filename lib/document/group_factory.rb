@@ -66,6 +66,13 @@ module EDIFACT
                 params = [name, group_data["lines"], @message_version, @chars]
                 @groups << Group.new(*params)
             end
+            # Add any trailing lines as individual groups
+            n = @lines.length - @raw.length
+            for line in @lines[@lines.length - n, n] do
+                name = line[1].first(3)
+                params = [name, [line], @message_version, @chars]
+                @groups << Group.new(*params)
+            end
         end
 
         def next_line()
