@@ -1,37 +1,39 @@
-class GINSegment < Segment
-    attr_reader :date_time_qualifier, :date_time
+module EDIFACT
+    class GINSegment < Segment
+        attr_reader :date_time_qualifier, :date_time
 
-    def initialize(raw, line_no, version = nil, chars = nil)
-        super(raw, line_no, version, chars)
-        @identity_number_qualifier = get_elements_by_code("7405").first
-        @identity_numbers = get_elements_by_code("7402")
-        unless @identity_number_qualifier.blank? or @identity_numbers.blank?
-            validate_identity_numbers(
-                @identity_number_qualifier.value,
-                @identity_numbers
-            )
+        def initialize(raw, line_no, version = nil, chars = nil)
+            super(raw, line_no, version, chars)
+            @identity_number_qualifier = get_elements_by_code("7405").first
+            @identity_numbers = get_elements_by_code("7402")
+            unless @identity_number_qualifier.blank? or @identity_numbers.blank?
+                validate_identity_numbers(
+                    @identity_number_qualifier.value,
+                    @identity_numbers
+                )
+            end
         end
-    end
 
-    def validate_identity_numbers(qualifier, number_elements)
-        for element in number_elements do
-            element.value.tap do |value|
-                result = case qualifier
-                when 'AW' # GS1 serial shipping container code
-                    value.is_sscc? ? true : InvalidSSCCError.new
-                when 'BJ' # GS1 serial shipping container code
-                    value.is_sscc? ? true : InvalidSSCCError.new
-                when 'VV' # Vehicle identity number
-                    value.is_vin?  ? true : InvalidVINError.new
-                when 'BM' # Accounting classification reference number
-                    value.is_acrn? ? true : InvalidACRNError.new
-                when 'BP' # Special accounting classification reference number
-                    value.is_acrn? ? true : InvalidACRNError.new
-                else
-                    true
+        def validate_identity_numbers(qualifier, number_elements)
+            for element in number_elements do
+                element.value.tap do |value|
+                    result = case qualifier
+                    when 'AW' # GS1 serial shipping container code
+                        value.is_sscc? ? true : InvalidSSCCError.new
+                    when 'BJ' # GS1 serial shipping container code
+                        value.is_sscc? ? true : InvalidSSCCError.new
+                    when 'VV' # Vehicle identity number
+                        value.is_vin?  ? true : InvalidVINError.new
+                    when 'BM' # Accounting classification ref. number
+                        value.is_acrn? ? true : InvalidACRNError.new
+                    when 'BP' # Special accounting classification ref. number
+                        value.is_acrn? ? true : InvalidACRNError.new
+                    else
+                        true
+                    end
+                    element.set_integrity(result == true)
+                    element.add_error(result) unless result == true
                 end
-                element.set_integrity(result == true)
-                element.add_error(result) unless result == true
             end
         end
     end

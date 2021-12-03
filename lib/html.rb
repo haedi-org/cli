@@ -9,16 +9,17 @@ def html_table(values, cl = "table")
     }.join.html("table", :cl => cl)
 end
 
-def html_debug(document)
+def html_debug(interchange)
     file_info = [
-        ["File path", html_file_path(document.path)]
+        ["File path", html_file_path(interchange.path)]
     ]
     document_info = [
-        ["Message", document.message_type],
-        ["Version", document.version],
+        ["Interchange version", interchange.version],
+        ["Message version", interchange.messages.first.version],
+        ["Message", interchange.messages.first.type],
     ]
-    if $dictionary.has_version?(document.version)
-        used_version = document.version
+    if $dictionary.has_version?(interchange.messages.first.version)
+        used_version = interchange.messages.first.version
     else
         used_version = FALLBACK_VERSION
     end
@@ -26,16 +27,16 @@ def html_debug(document)
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
     ]
-    error_info = [
-        ["Error count", document.error_count],
-    ]
-    error_info += document.error_descriptions
+    #error_info = [
+    #    ["Error count", interchange.error_count],
+    #]
+    #error_info += interchange.error_descriptions
     classes = "table is-bordered is-narrow m-2"
     return [
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
-        html_table(error_info, classes),
+    #    html_table(error_info, classes),
     ]
 end
 
@@ -78,10 +79,10 @@ def html_interactive_segment(segment)
     terminator = segment.is?('UNA') ? '' : segment.chars.segment_terminator
     # Map and join elements including tag
     data = ([segment.tag] + segment.truncated_elements).map { |element|
-        if element.is_a?(Tag)
+        if element.is_a?(EDIFACT::Tag)
             html_interactive_tag(element, segment)
         else
-            if element.is_a?(Composite)
+            if element.is_a?(EDIFACT::Composite)
                 element.truncated_elements.map { |element|
                     html_interactive_element(element, segment)
                 }.join(segment.chars.component_element_separator)
@@ -93,10 +94,10 @@ def html_interactive_segment(segment)
     return data + terminator
 end
 
-def html_reference_table(document)
+def html_reference_table(interchange)
     # Raw data
     html_raw_data = String.new
-    for segment in document.segments do
+    for segment in interchange.segments do
         clr = segment.is_valid? ? "#2B2B2B" : "#F14668"
         html_raw_data += html_interactive_segment(segment).html("b",
             :st => "font-weight: normal; color: #{clr}"
@@ -111,7 +112,7 @@ def html_reference_table(document)
         )
     # Tabular data
     html_tabular_data = String.new
-    for segment in document.segments do
+    for segment in interchange.segments do
         # next unless (line.is_a?(CTA)) or (line.is_a?(COM))
         # Header row
         clr, fwt = "#2B2B2B", "normal"
@@ -119,7 +120,9 @@ def html_reference_table(document)
         class_name = "L-#{segment.line_no}-0"
         row = String.new
         row += segment.tag.value.html("th", :st => "color: inherit")
-        row += TAG_REPR.html("th", :st => "color: inherit") if HTML_SHOW_REPR
+        if HTML_SHOW_REPR
+            row += EDIFACT::TAG_REPR.html("th", :st => "color: inherit")
+        end
         row += segment.tag.name.html("th",
             :st => "color: inherit",
             #:colspan => 3
@@ -241,29 +244,6 @@ def html_document_information(document)
     return out
         .flatten.join
         .html("div", :cl => "scroller p-4")
-end
-
-def html_timeline(document)
-    items = []
-    # Start timeline heading
-    items << "Start"
-        .html("span", :cl => "tag is-medium is-primary")
-        .html("header", :cl => "timeline-header")
-    # Ordered date/time markers
-    for caption, time in curate_document_timeline(document) do
-        marker = String.new.html("div", :cl => "timeline-marker")
-        content = [time.html("p", :cl => "heading"), caption.html("p")]
-            .join.html("div", :cl => "timeline-content")
-        items << [marker, content].join.html("div", :cl => "timeline-item")
-    end
-    # End timeline heading
-    items << "End"
-        .html("span", :cl => "tag is-medium is-primary")
-        .html("header", :cl => "timeline-header")
-    return items
-        .flatten.join
-        .html("div", :cl => "timeline is-centered", :st => "padding: 32px")
-        .html("div", :cl => "scroller")
 end
 
 def html_error(error)

@@ -7,7 +7,6 @@ Version = Struct.new(:number, :release, :ref, :code, :title)
 Qualifier = Struct.new(:code, :value, :reference, :definition)
 #Tag = Struct.new(:loc, :value, :title, :definition)
 
-EMPTY_STRING = ""
 NULL_VALUES = [nil, [], EMPTY_STRING]
 
 $code_lists = {}

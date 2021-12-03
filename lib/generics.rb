@@ -1,3 +1,5 @@
+EMPTY_STRING = ""
+
 class Object
     def is_number?
         # to_f.to_s == to_s || to_i.to_s == to_s
@@ -112,5 +114,28 @@ class String
             open_tag += " #{arg}=#{var}" unless var.blank?
         end
         return self.encap(open_tag + ">", tag.encap("</", ">"))
+    end
+end
+    
+class String
+    def split_with_release(split_char, release_char)
+        temp, word, is_released = [], "", false
+        self.chars.each_with_index do |char, index|
+            if is_released
+                word += char
+                is_released = false
+            elsif char == split_char
+                temp << word
+                word = ""
+            elsif char == release_char
+                is_released = true
+            elsif index == self.length - 1
+                word += char
+                temp << word
+            else
+                word += char
+            end
+        end
+        return temp
     end
 end

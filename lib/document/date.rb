@@ -1,31 +1,33 @@
-DATE_CODES = ["0017", "2380"]
+module EDIFACT
+    DATE_CODES = ["0017", "2380"]
 
-def interpret_date(d, f)
-    str = case f
-    when "2"   # DDMMYY
-        "#{d[0,2]}/#{d[2,2]}/#{d[4,2]}"
-    when "3"   # MMDDYY
-        "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"
-    when "4"   # DDMMCCYY
-        "#{d[0,2]}/#{d[2,2]}/#{d[4,4]}"
-    when "101" # YYMMDD
-        "#{d[4,2]}/#{d[2,2]}/20#{d[0,2]}"
-    when "102" # CCYYMMDD
-        "#{d[6,2]}/#{d[4,2]}/#{d[0,4]}"
-    when "203" # CCYYMMDDHHMM
-        "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}"
-    when "204" # CCYYMMDDHHMMSS
-        "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}:#{d[12,2]}"
-    when "401" # HHMM
-        "#{d[0,2]}:#{d[2,2]}"
-    else
-        d
-    end
-    # Return value
-    unless str == nil
-        return str
-    else
-        return nil
+    def self.interpret_date(d, f)
+        str = case f
+        when "2"   # DDMMYY
+            "#{d[0,2]}/#{d[2,2]}/#{d[4,2]}"
+        when "3"   # MMDDYY
+            "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"
+        when "4"   # DDMMCCYY
+            "#{d[0,2]}/#{d[2,2]}/#{d[4,4]}"
+        when "101" # YYMMDD
+            "#{d[4,2]}/#{d[2,2]}/20#{d[0,2]}"
+        when "102" # CCYYMMDD
+            "#{d[6,2]}/#{d[4,2]}/#{d[0,4]}"
+        when "203" # CCYYMMDDHHMM
+            "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}"
+        when "204" # CCYYMMDDHHMMSS
+            "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}:#{d[12,2]}"
+        when "401" # HHMM
+            "#{d[0,2]}:#{d[2,2]}"
+        else
+            d
+        end
+        # Return value
+        unless str == nil
+            return str
+        else
+            return nil
+        end
     end
 end
 

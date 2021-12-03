@@ -1,3 +1,10 @@
+# 0x6a j ┘ 0x74 t ├
+# 0x6b k ┐ 0x75 u ┤
+# 0x6c l ┌ 0x76 v ┴
+# 0x6d m └ 0x77 w ┬
+# 0x6e n ┼ 0x78 x │
+# 0x71 q ─
+
 def routine_help
     out = []
     out << print_header()
@@ -18,7 +25,7 @@ end
 
 def routine_parse(lines, path)
     out = []
-    interchange = Interchange.new(path)
+    interchange = EDIFACT::Interchange.new(path)
     for message in interchange.messages do
         out << message.type
         for group in message.groups do
@@ -49,59 +56,80 @@ end
 
 def routine_html_parse(lines, path)
     out = []
-    document = Document.new(lines, path)
-    out << html_reference_table(document)
+    interchange = EDIFACT::Interchange.new(path)
+    out << html_reference_table(interchange)
     return out
 end
 
 def routine_structure(lines, path)
     out = []
+    interchange = EDIFACT::Interchange.new(path)
+    messages = interchange.messages
+    messages.each_with_index do |message, m_i|
+        out << "#{message.type} (\##{message.reference})"
+        groups = message.groups
+        groups.each_with_index do |group, g_i|
+            g_branch = (g_i == groups.length - 1 ? " └─ " : " ├─ ")
+            out << g_branch + group.name
+            segments = group.segments
+            segments.each_with_index do |segment, s_i|
+                g_branch = (g_i == groups.length - 1 ? "    " : " │  ")
+                s_branch = (s_i == segments.length - 1 ? " └─ " : " ├─ ")
+                caption = segment.tag.value + ": " + segment.tag.name
+                out << g_branch + s_branch + caption
+            end
+        end
+    end
     return out
 end
 
 def routine_timeline(lines, path)
     out = []
-    document = Document.new(lines, path)
-    timeline = document.timeline
-    out << ascii_table(timeline, [40, 40]) unless timeline.blank?
+    interchange = EDIFACT::Interchange.new(path)
+    timelines = interchange.timelines
+    for timeline in timelines do
+        out << ascii_table(timeline, [40, 40]) unless timeline.blank?
+    end
     return out
 end
 
 def routine_html_timeline(lines, path)
     out = []
-    document = Document.new(lines, path)
-    timeline = document.timeline
+    interchange = EDIFACT::Interchange.new(path)
+    timelines = interchange.timelines
     # Timeline
-    timeline.map! do |event, time|
-        [
-            # Marker
-            String.new.html("div", :cl => "timeline-marker"),
-            # Content
+    for timeline in timelines do
+        timeline.map! do |event, time|
             [
-                time.html("p", :cl => "heading"), 
-                event.html("p")
-            ].join.html("div", :cl => "timeline-content")
-            # 
-        ].join.html("div", :cl => "timeline-item")
+                # Marker
+                String.new.html("div", :cl => "timeline-marker"),
+                # Content
+                [
+                    time.html("p", :cl => "heading"), 
+                    event.html("p")
+                ].join.html("div", :cl => "timeline-content")
+                # 
+            ].join.html("div", :cl => "timeline-item")
+        end
+        # Tags
+        start_tag, end_tag = ["Start", "End"].map! do |caption|
+            caption
+                .html("span", :cl => "tag is-medium is-primary")
+                .html("header", :cl => "timeline-header")
+        end
+        # Assemble
+        out << [start_tag, timeline, end_tag]
+            .flatten.join.html("div", 
+                :cl => "timeline is-centered",
+                :st => "padding-top: 32px"
+        )
     end
-    # Tags
-    start_tag, end_tag = ["Start", "End"].map! do |caption|
-        caption
-            .html("span", :cl => "tag is-medium is-primary")
-            .html("header", :cl => "timeline-header")
-    end
-    # Assemble
-    out << [start_tag, timeline, end_tag]
-        .flatten.join.html("div", 
-            :cl => "timeline is-centered",
-            :st => "padding-top: 32px"
-    )
-    return out
+    return out.join.html("div", :cl => "scroller is-gapless")
 end
 
 def routine_debug(lines, path)
     out = []
-    interchange = Interchange.new(path)
+    interchange = EDIFACT::Interchange.new(path)
     puts interchange.messages.first.version
     #document = Document.new(lines, path)
     #out << edi_to_xml(document)
@@ -118,8 +146,8 @@ end
 
 def routine_html_debug(lines, path)
     out = []
-    document = Document.new(lines, path)
-    out << html_debug(document)
+    interchange = EDIFACT::Interchange.new(path)
+    out << html_debug(interchange)
     return out
 end
 
