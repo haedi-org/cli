@@ -13,6 +13,8 @@ module EDIFACT
             "#{d[4,2]}/#{d[2,2]}/20#{d[0,2]}"
         when "102" # CCYYMMDD
             "#{d[6,2]}/#{d[4,2]}/#{d[0,4]}"
+        when "201" # YYMMDDHHMM
+            "#{d[4,2]}/#{d[2,2]}/#{d[0,2]} #{d[6,2]}:#{d[8,2]}"
         when "203" # CCYYMMDDHHMM
             "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}"
         when "204" # CCYYMMDDHHMMSS
@@ -20,6 +22,7 @@ module EDIFACT
         when "401" # HHMM
             "#{d[0,2]}:#{d[2,2]}"
         else
+            puts "Unmatchable qualifier: #{f}"
             d
         end
         # Return value

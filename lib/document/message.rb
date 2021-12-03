@@ -61,7 +61,7 @@ module EDIFACT
                     if segment.tag.value == "UNB"
                         events << [
                             UNB_DATE_TIME_QUALIFIER, [
-                                segment.date.readable, 
+                                segment.date.readable,
                                 segment.time.readable
                             ].join(' ')
                         ]
