@@ -77,7 +77,7 @@ def print_out(out)
         print out.flatten.join
         print STDOUT_FINISH
     else
-        print out.flatten.join("\n")
+        puts out.flatten
     end
 end
 
