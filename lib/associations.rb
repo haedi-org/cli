@@ -14,13 +14,17 @@ module EDIFACT
         "GDSN23", # GDSN version 2.3 (GS1 Permanent Code)
     ]
 
-    #class Document
-    #    def is_eancom?
-    #        return EANCOM_ASSOCIATION_CODES.include?(@association_assigned_code)
-    #    end
-    #
-    #    def is_iata?
-    #        return @controlling_agency == "IA"
-    #    end
-    #end
+    class Document
+        def is_eancom?
+            return EANCOM_ASSOCIATION_CODES.include?(@association_assigned_code)
+        end
+    
+        def is_iata?
+            return @controlling_agency == "IA"
+        end
+
+        def is_edigas?
+            return @controlling_agency == "EG"
+        end
+    end
 end
