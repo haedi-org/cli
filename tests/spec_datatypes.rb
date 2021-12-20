@@ -56,6 +56,11 @@ ISMN_TESTS = [
     ["979-0-9016791-7-7", true],
 ]
 
+ISO_6346_TESTS = [
+    ["CSQU3054383", true],
+    ["TOLU4734787", true],
+]
+
 RSpec.describe("haedi datatypes") do
 
     describe("GSIN") do
@@ -110,6 +115,14 @@ RSpec.describe("haedi datatypes") do
         ISMN_TESTS.each do |code, bool|
             it("identifies '#{code}' as #{bool}") do
                 expect(code.is_ismn?).to(be(bool))
+            end
+        end
+    end
+
+    describe("ISO 6346") do
+        ISO_6346_TESTS.each do |code, bool|
+            it("identifies '#{code}' as #{bool}") do
+                expect(code.is_iso_6346?).to(be(bool))
             end
         end
     end
