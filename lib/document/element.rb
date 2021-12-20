@@ -87,6 +87,10 @@ module EDIFACT
         def set_data_name(data_name)
             @data_name = data_name
         end
+        
+        def set_data_desc(data_desc)
+            @data_desc = data_desc
+        end
 
         def set_repr(repr)
             @repr = repr

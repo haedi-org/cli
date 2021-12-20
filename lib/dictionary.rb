@@ -31,10 +31,30 @@ class Dictionary
         # NOTE: Leave for debug purposes
     end
 
+    def smdg_hash
+        if @cache.key?("smdg")
+            return @cache["smdg"]
+        else
+            path = "/smdg/cl.json"
+            data = load_json(path)
+            @cache["smdg"] = data
+            return data
+        end
+    end
+
+    def code_list_lookup(agency, qualifier, code)
+        # SMDG
+        if (agency == "306")
+            data = smdg_hash[qualifier]
+            return data.key?(code) ? data[code] : {} 
+        end
+        return {}
+    end
+
     def has_version?(version)
         for datatype in ["uncl", "edcd", "eded"] do
             path = "/un_edifact/#{datatype}/#{datatype.upcase}_#{version}.json"
-            return false unless File.file?(path)
+            return false unless File.file?(@dir + path)
         end
         return true
     end
@@ -158,7 +178,7 @@ class Dictionary
         # Return no data if path doesn't exist
         return {} unless File.file?(path)
         # Otherwise load in file to JSON data
-        file = File.open(path)
+        file = File.open(path, encoding: "UTF-8")
         json = JSON.load(file)
         # Close file before returning JSON data
         file.close

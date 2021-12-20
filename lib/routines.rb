@@ -29,23 +29,29 @@ def routine_parse(lines, path)
     for message in interchange.messages do
         out << message.type
         for group in message.groups do
-            out << group.name
+            out << "Group #{group.name}"
             for segment in group.segments do
-                out << segment.tag.value
+                out << "  Segment #{segment.tag.value}"
                 for element in segment.flatten do
                     unless element.blank?
-                        arr = [
-                            element.code,
-                            element.name.titleize,
-                            element.position.join("_"),
-                            element.data_value,
-                            element.repr,
-                        ]
-                        unless element.is_valid?
-                            arr << element.errors.first.message
+                        out << "    #{element.name.titleize}"
+                        line = "      #{element.data_value}"
+                        unless element.data_name.blank?
+                            line += " [#{element.data_name}]"
                         end
-                        arr << TICK_CHARACTER if element.has_integrity?
-                        out << arr.inspect
+                        out << line
+                        #arr = [
+                        #    element.code,
+                        #    element.name.titleize,
+                        #    element.position.join("_"),
+                        #    element.data_value,
+                        #    element.repr,
+                        #]
+                        #unless element.is_valid?
+                        #    arr << element.errors.first.message
+                        #end
+                        ##arr << TICK_CHARACTER if element.has_integrity?
+                        #out << arr.inspect
                     end
                 end
             end

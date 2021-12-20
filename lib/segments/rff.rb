@@ -10,8 +10,8 @@ module EDIFACT
     end
 end
 
-#010  C506  REFERENCE                 M  1 		
-#     1153  Reference qualifier       M     an..3 	
-#     1154  Reference number          C     an..35 	
-#     1156  Line number               C     an..6 	
-#     4000  Reference version number  C     an..35 	
+# 010  C506  REFERENCE                 M  1
+#      1153  Reference qualifier       M     an..3
+#      1154  Reference number          C     an..35
+#      1156  Line number               C     an..6
+#      4000  Reference version number  C     an..35	
