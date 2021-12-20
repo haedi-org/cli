@@ -35,3 +35,10 @@ task :datatypes do
     ]
     puts `rspec #{params.join(" ")}`
 end
+
+task :debug do
+    require './lib/datatypes.rb'
+    puts "SUDU1234569".is_iso_6346?
+    puts "OOLU1996346".is_iso_6346?
+    puts "CMBU2366346".is_iso_6346?
+end
