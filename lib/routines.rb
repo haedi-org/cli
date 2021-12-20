@@ -148,6 +148,7 @@ def routine_debug(lines, path)
     out = []
     interchange = EDIFACT::Interchange.new(path)
     puts interchange.messages.first.version
+    puts $dictionary.code_lists_used
     #document = Document.new(lines, path)
     #out << edi_to_xml(document)
     #for segment in document.segments do

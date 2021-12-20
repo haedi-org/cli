@@ -26,6 +26,7 @@ def html_debug(interchange)
     system_info = [
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
+        ["Third party code lists", $dictionary.code_lists_used.join(", ")],
     ]
     #error_info = [
     #    ["Error count", interchange.error_count],

@@ -14,10 +14,12 @@ FALLBACK_VERSION = "D97A"
 
 class Dictionary
     attr_reader :read_count
+    attr_reader :code_lists_used
 
     def initialize(dir = DATA_PATH)
         @dir = dir
         @read_count = 0
+        @code_lists_used = []
         @cache = {
             "un_edifact" => {
                 "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
@@ -42,11 +44,18 @@ class Dictionary
         end
     end
 
+    def add_code_list_used(code_list_name)
+        @code_lists_used = (@code_lists_used + [code_list_name]).uniq
+    end
+
     def code_list_lookup(agency, qualifier, code)
         # SMDG
         if (agency == "306")
             data = smdg_hash[qualifier]
-            return data.key?(code) ? data[code] : {} 
+            if data.key?(code)
+                add_code_list_used("SMDG #{qualifier}")
+                return data[code]
+            end
         end
         return {}
     end
