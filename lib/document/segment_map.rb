@@ -6,6 +6,7 @@ module EDIFACT
         "UNT" => UNTSegment,
         "DOC" => DOCSegment,
         "DTM" => DTMSegment,
+        "EQD" => EQDSegment,
         "FTX" => FTXSegment,
         "GIN" => GINSegment,
         "RFF" => RFFSegment,

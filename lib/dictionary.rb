@@ -37,12 +37,20 @@ class Dictionary
         @code_lists_used = (@code_lists_used + [code_list_name]).uniq
     end
 
-    def code_list_lookup(agency, qualifier, code)
+    def code_list_lookup(agency, qualifier = nil, code = nil)
         # SMDG
         if (agency == "306")
             data = retrieve_smdg_hash[qualifier]
             if data.key?(code)
                 add_code_list_used("SMDG #{qualifier}")
+                return data[code]
+            end
+        end
+        # ISO-6346
+        if (agency == "6346")
+            data = retrieve_iso_6346_hash[qualifier]
+            if data.key?(code)
+                add_code_list_used("ISO-6346 #{qualifier}")
                 return data[code]
             end
         end
@@ -149,6 +157,10 @@ class Dictionary
             entry[key] = data
             return data
         end
+    end
+
+    def retrieve_iso_6346_hash
+        return retrieve_hash("iso_6346", "/smdg/iso_6346.json")
     end
 
     def retrieve_smdg_hash

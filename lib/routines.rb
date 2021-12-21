@@ -160,13 +160,15 @@ end
 def routine_debug(lines, path)
     out = []
     interchange = load_interchange(path)
-    str = "Finished in #{interchange.process_time}s"
-    str += " (files took #{interchange.load_time}s to load)"
-    puts interchange.messages
     for message in interchange.messages do
-        puts message.type
+        if message.is_a?(EDIFACT::BAPLIEMessage)
+            out << message.debug
+        end
     end
-    out << str
+    # Print processing times
+    load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
+    process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
+    out << "Finished in #{process_time} (files took #{load_time} to load)"
     #document = Document.new(lines, path)
     #out << edi_to_xml(document)
     #for segment in document.segments do
