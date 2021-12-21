@@ -5,6 +5,19 @@
 # 0x6e n ┼ 0x78 x │
 # 0x71 q ─
 
+$previous_path = nil
+$previous_interchange = nil
+
+def load_interchange(path)
+    unless path == $previous_path
+        interchange = EDIFACT::Interchange.new(path)
+        $previous_path, $previous_interchange = path, interchange
+    else
+        interchange = $previous_interchange
+    end
+    return interchange
+end
+
 def routine_help
     out = []
     out << print_header()
@@ -25,7 +38,7 @@ end
 
 def routine_parse(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     for message in interchange.messages do
         out << message.type
         for group in message.groups do
@@ -62,14 +75,14 @@ end
 
 def routine_html_parse(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     out << html_reference_table(interchange)
     return out
 end
 
 def routine_structure(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     messages = interchange.messages
     messages.each_with_index do |message, m_i|
         out << "#{message.type} (\##{message.reference})"
@@ -91,7 +104,7 @@ end
 
 def routine_timeline(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     interchange.messages.each do |message|
         out << "#{message.type} (\##{message.reference})"
         timeline = message.timeline
@@ -112,7 +125,7 @@ end
 
 def routine_html_timeline(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     timelines = interchange.timelines
     # Timeline
     for timeline in timelines do
@@ -146,9 +159,14 @@ end
 
 def routine_debug(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
-    puts interchange.messages.first.version
-    puts $dictionary.code_lists_used
+    interchange = load_interchange(path)
+    str = "Finished in #{interchange.process_time}s"
+    str += " (files took #{interchange.load_time}s to load)"
+    puts interchange.messages
+    for message in interchange.messages do
+        puts message.type
+    end
+    out << str
     #document = Document.new(lines, path)
     #out << edi_to_xml(document)
     #for segment in document.segments do
@@ -164,7 +182,7 @@ end
 
 def routine_html_debug(lines, path)
     out = []
-    interchange = EDIFACT::Interchange.new(path)
+    interchange = load_interchange(path)
     out << html_debug(interchange)
     return out
 end

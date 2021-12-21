@@ -29,6 +29,7 @@ require_relative './morph.rb'
 require_relative './document/date.rb'
 require_relative './document/interchange.rb'
 require_relative './document/message.rb'
+require_relative './document/message_factory.rb'
 require_relative './document/segment_factory.rb'
 require_relative './document/rule.rb'
 require_relative './document/document.rb'
@@ -51,8 +52,11 @@ require_relative './segments/gin.rb'
 require_relative './segments/rff.rb'
 require_relative './segments/pia.rb'
 
+require_relative './messages/baplie.rb'
+
 require_relative './associations.rb'
 
 require_relative './document/segment_map.rb'
+require_relative './document/message_map.rb'
 
 require_relative './cli.rb'

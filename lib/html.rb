@@ -23,10 +23,14 @@ def html_debug(interchange)
     else
         used_version = FALLBACK_VERSION
     end
+    load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
+    process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
     system_info = [
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
         ["Third party code lists", $dictionary.code_lists_used.join(", ")],
+        ["File load time", load_time],
+        ["Interchange processing time", process_time],
     ]
     #error_info = [
     #    ["Error count", interchange.error_count],

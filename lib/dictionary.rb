@@ -33,17 +33,6 @@ class Dictionary
         # NOTE: Leave for debug purposes
     end
 
-    def smdg_hash
-        if @cache.key?("smdg")
-            return @cache["smdg"]
-        else
-            path = "/smdg/cl.json"
-            data = load_json(path)
-            @cache["smdg"] = data
-            return data
-        end
-    end
-
     def add_code_list_used(code_list_name)
         @code_lists_used = (@code_lists_used + [code_list_name]).uniq
     end
@@ -51,7 +40,7 @@ class Dictionary
     def code_list_lookup(agency, qualifier, code)
         # SMDG
         if (agency == "306")
-            data = smdg_hash[qualifier]
+            data = retrieve_smdg_hash[qualifier]
             if data.key?(code)
                 add_code_list_used("SMDG #{qualifier}")
                 return data[code]
@@ -162,11 +151,23 @@ class Dictionary
         end
     end
 
+    def retrieve_smdg_hash
+        return retrieve_hash("smdg", "/smdg/cl.json")
+    end
+
+    def retrieve_hash(key, path)
+        # Use cached version if it exists
+        return @cache[key] if @cache.key?(key)
+        # Otherwise load, and store
+        data = load_json(path)
+        @cache[key] = data
+        return data
+    end
+
     def retrieve_csv_column(file_name, standard = "un_edifact", column = 0)
         # In context of the correct entry in the cache
         @cache[standard]["lists"].tap do |entry|
             if entry.key?(file_name)
-                # Use cached version if it exists
                 csv = entry[file_name]
             else
                 # Otherwise load, and store

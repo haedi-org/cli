@@ -3,8 +3,10 @@ module EDIFACT
         attr_reader :path, :raw
         attr_reader :header, :trailer
         attr_reader :messages, :version
+        attr_reader :load_time, :process_time
 
         def initialize(path)
+            start_process_time = Time.now
             @path = path
             @raw = load_from_file(path)
             @lines = @raw.map { |line| line.chomp }.join
@@ -17,10 +19,14 @@ module EDIFACT
             set_punctuation_values()
             split_lines_by_terminator()
             set_messages()
+            @process_time = Time.now - start_process_time
         end
 
         def load_from_file(path = @path)
-            return File.readlines(path)
+            start_load_time = Time.now
+            lines = File.readlines(path)
+            @load_time = Time.now - start_load_time
+            return lines
         end
 
         def get_una_segment()
@@ -71,7 +77,7 @@ module EDIFACT
 
         def set_messages()
             @messages = group_lines_by_envelope('UNH', 'UNT').map! do |lines|
-                Message.new(lines, @version, @chars)
+                MessageFactory.new(lines, @version, @chars).message
             end
         end
 
