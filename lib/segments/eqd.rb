@@ -3,6 +3,7 @@ module EDIFACT
         attr_reader :equipment_qualifier
         attr_reader :equipment_id_number
         attr_reader :full_empty_indicator
+        attr_reader :equipment_size_and_type
 
         def initialize(raw, line_no, version = nil, chars = nil)
             super(raw, line_no, version, chars)

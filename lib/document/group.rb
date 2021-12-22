@@ -14,12 +14,24 @@ module EDIFACT
             # Initial methods
             set_segments()
         end
+        
+        def raw
+            return @segments.map { |segment| segment.raw }
+        end
 
         def set_segments()
             for line_no, line_data in @lines do
                 params = [line_data, line_no, @message_version, @chars]
                 @segments << SegmentFactory.new(*params).segment
             end
+        end
+
+        def get_segments_by_tag(tag)
+            arr = []
+            for segment in @segments do
+                arr << segment if segment.tag.value == tag
+            end
+            return arr
         end
     end
 end

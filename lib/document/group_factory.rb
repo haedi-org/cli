@@ -1,5 +1,116 @@
 module EDIFACT
     class GroupFactory
+        attr_reader :groups
+
+        def initialize(lines, spec, message_version, chars)
+            @lines = lines
+            @spec = spec
+            @message_version = message_version
+            @chars = chars
+            @groups = []
+            @raw = []
+            group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
+            # Recursively process groups
+            line_no, split_no, error = 0, 0, nil
+            for group_no in group_structure do
+                if error.blank?
+                    params = [group_no, line_no, split_no]
+                    line_no, split_no, error = process_group(*params)
+                end
+            end
+            puts error.message unless error == nil
+            for group_no, line, split_no in @raw do
+                line_no, line_data = line
+                #puts [group_no, split_no, line_no, line_data].join("\t")
+            end
+        end
+
+        def process_group(group_no, line_no, split_no = 0, is_first = true, iteration = 1)
+            puts "\nGroup #{group_no}"
+            # Set variables
+            group_spec = @spec[group_no.gsub("SG", "")]
+            group_is_mandatory = (group_spec["m_c"] == "M") && is_first
+            group_repeats = group_spec["repeat"].to_i
+            structure = group_spec["structure"]
+            if line_no >= @lines.length
+                # EOF
+                return line_no, split_no + 1
+            else
+                line_tag = @lines[line_no][1][0, 3]
+            end
+            # Assert iteration is under repeat count
+            if (iteration > group_repeats)
+                puts "\nToo many iterations (#{iteration} > #{group_repeats})"
+                puts "\nReturning #{group_no}"
+                return line_no, split_no + 1, StandardError.new
+            end
+            # Ensure current line matches start of group if the group is
+            # mandatory - and it has not been referenced by another group
+            if (group_is_mandatory) && (is_first)
+                unless structure.first == line_tag
+                    puts "Absent mandatory first segment"
+                    return line_no, split_no + 1, StandardError.new
+                end
+            end
+            # Iterate through structure and assign lines as they match
+            for tag in structure do
+                if tag == line_tag
+                    segment_spec = group_spec["segments"][tag]
+                    segment_repeats = segment_spec["repeat"].to_i
+                    puts segment_repeats.inspect
+                    puts "  Assigned #{@lines[line_no][0]}:#{@lines[line_no][1]}"
+                    @raw << [group_no, @lines[line_no], split_no]
+                    # TODO: Match repeating elements
+                    line_no += 1
+                    if line_no >= @lines.length
+                        # EOF
+                        return line_no, split_no + 1
+                    else
+                        line_tag = @lines[line_no][1][0, 3]
+                    end
+                else
+                    if group_spec["segments"].key?(tag)
+                        segment_spec = group_spec["segments"][tag]
+                        segment_is_mandatory = (segment_spec["m_c"] == "M")
+                        # if group_is_mandatory && segment_is_mandatory
+                        #     puts "Absent mandatory segment"
+                        #     puts tag, segment_spec
+                        #     return line_no, split_no, StandardError.new
+                        # end
+                    else
+                        # Nested segment group
+                        puts "\nNested group #{group_no} => #{tag}"
+                        params = [tag, line_no, split_no + 1, false]
+                        line_no, split_no = process_group(*params)
+                        if line_no >= @lines.length
+                            # EOF
+                            return line_no, split_no + 1
+                        else
+                            line_tag = @lines[line_no][1][0, 3]
+                        end
+                    end
+                end
+            end
+            # Check if group should be repeated
+            if (iteration < group_repeats) && (structure.include?(line_tag))
+                puts "\nRepeating #{group_no} #{iteration + 1}"
+                params = [group_no, line_no, split_no + 1, false, iteration + 1]
+                line_no, split_no = process_group(*params)
+                if line_no >= @lines.length
+                    # EOF
+                    return line_no, split_no + 1
+                else
+                    line_tag = @lines[line_no][1][0, 3]
+                end
+            else
+                puts "\nCan't match #{@lines[line_no][0]}:#{line_tag} to #{group_no} #{structure.inspect}"
+            end
+            puts "\nReturning #{group_no}"
+            return line_no, split_no + 1
+        end
+    end
+
+    class OldGroupFactory
         attr_reader :groups, :raw
 
         def initialize(lines, spec, message_version, chars)
@@ -51,6 +162,11 @@ module EDIFACT
             #end
             # Split by individual number
             group_hash = {}
+            File.open("./t.txt", "a") { |file|
+                for line in @raw do
+                    file.puts line.join(",\t")
+                end
+            }
             for group_no, individual_no, line in @raw do
                 unless group_hash.key?(individual_no)
                     group_hash[individual_no] = {

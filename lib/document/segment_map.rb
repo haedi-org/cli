@@ -8,7 +8,10 @@ module EDIFACT
         "DTM" => DTMSegment,
         "EQD" => EQDSegment,
         "FTX" => FTXSegment,
+        "GID" => GIDSegment,
         "GIN" => GINSegment,
+        "LOC" => LOCSegment,
+        "MEA" => MEASegment,
         "RFF" => RFFSegment,
         "PIA" => PIASegment,
     }

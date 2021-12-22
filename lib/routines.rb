@@ -84,7 +84,7 @@ def routine_structure(lines, path)
     out = []
     interchange = load_interchange(path)
     messages = interchange.messages
-    messages.each_with_index do |message, m_i|
+    messages.compact.each_with_index do |message, m_i|
         out << "#{message.type} (\##{message.reference})"
         groups = message.groups
         groups.each_with_index do |group, g_i|
