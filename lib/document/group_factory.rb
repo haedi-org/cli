@@ -9,6 +9,7 @@ module EDIFACT
             @chars = chars
             @groups = []
             @raw = []
+            @errors = []
             group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
             # Recursively process groups
             line_no, split_no, error = 0, 0, nil
@@ -16,97 +17,111 @@ module EDIFACT
                 if error.blank?
                     params = [group_no, line_no, split_no]
                     line_no, split_no, error = process_group(*params)
+                    @errors << error unless error.blank?
                 end
             end
-            puts error.message unless error == nil
+            # Split groups by split_no
+            temp_hash = {}
             for group_no, line, split_no in @raw do
-                line_no, line_data = line
-                #puts [group_no, split_no, line_no, line_data].join("\t")
+               #puts [group_no, split_no, line].flatten.join("\t")
+                unless temp_hash.key?(split_no)
+                    temp_hash[split_no] = { 
+                        "group_no" => group_no, "lines" => []
+                    }
+                end
+                temp_hash[split_no]["lines"] << line
+            end
+            # Build groups from hash (name, lines, message_version, chars)
+            for split_no, group_data in temp_hash do
+                group_no, lines = group_data["group_no"], group_data["lines"]
+                name = "GROUP_" + group_no.gsub("SG", "")
+                params = [name, lines, message_version, chars]
+                @groups << Group.new(*params)
+            end
+            # Add any trailing lines as individual groups
+            n = @lines.length - @raw.length
+            for line in @lines[@lines.length - n, n] do
+                name = line[1].first(3)
+                params = [name, [line], @message_version, @chars]
+                @groups << Group.new(*params)
             end
         end
 
-        def process_group(group_no, line_no, split_no = 0, is_first = true, iteration = 1)
-            puts "\nGroup #{group_no}"
+        def process_group(group_no, line_no, split_no = 0, is_first = true, iteration = 1, from_group = nil)
+            errors = []
+           #puts "\nGroup #{group_no}"
             # Set variables
             group_spec = @spec[group_no.gsub("SG", "")]
             group_is_mandatory = (group_spec["m_c"] == "M") && is_first
             group_repeats = group_spec["repeat"].to_i
             structure = group_spec["structure"]
-            if line_no >= @lines.length
-                # EOF
-                return line_no, split_no + 1
-            else
-                line_tag = @lines[line_no][1][0, 3]
-            end
+            # EOF
+            return line_no, split_no + 1 if line_no >= @lines.length
             # Assert iteration is under repeat count
             if (iteration > group_repeats)
-                puts "\nToo many iterations (#{iteration} > #{group_repeats})"
-                puts "\nReturning #{group_no}"
-                return line_no, split_no + 1, StandardError.new
+               #puts "\nToo many iterations (#{iteration} > #{group_repeats})"
+               #puts "\nReturning #{group_no}"
+                errors << StandardError.new
+            end
+            # Skip if nested group or repeated group and first mandatory element does not match
+            if ((from_group != nil) or (iteration > 1)) and (structure.first != @lines[line_no][1][0, 3])
+                return line_no, split_no + 1 if group_spec["segments"][structure.first]["m_c"] == "M"
             end
             # Ensure current line matches start of group if the group is
             # mandatory - and it has not been referenced by another group
             if (group_is_mandatory) && (is_first)
-                unless structure.first == line_tag
-                    puts "Absent mandatory first segment"
-                    return line_no, split_no + 1, StandardError.new
+                unless structure.first == @lines[line_no][1][0, 3]
+                   #puts "Absent mandatory first segment"
+                   errors << StandardError.new
+                    
                 end
             end
             # Iterate through structure and assign lines as they match
             for tag in structure do
-                if tag == line_tag
+                if tag[0, 3] == @lines[line_no][1][0, 3]
                     segment_spec = group_spec["segments"][tag]
                     segment_repeats = segment_spec["repeat"].to_i
-                    puts segment_repeats.inspect
-                    puts "  Assigned #{@lines[line_no][0]}:#{@lines[line_no][1]}"
-                    @raw << [group_no, @lines[line_no], split_no]
-                    # TODO: Match repeating elements
-                    line_no += 1
-                    if line_no >= @lines.length
-                        # EOF
-                        return line_no, split_no + 1
-                    else
-                        line_tag = @lines[line_no][1][0, 3]
+                    segment_iterations = 1
+                    until (line_no >= @lines.length) || (tag[0, 3] != @lines[line_no][1][0, 3]) || (segment_iterations > segment_repeats)
+                       #puts "  Assigned #{@lines[line_no][0]}:#{@lines[line_no][1]}"
+                        @raw << [from_group == nil ? group_no : from_group, @lines[line_no], split_no]
+                        # TODO: Match repeating elements
+                        line_no += 1
+                        segment_iterations += 1
                     end
+                    # EOF
+                    return line_no, split_no + 1, errors if line_no >= @lines.length
                 else
                     if group_spec["segments"].key?(tag)
                         segment_spec = group_spec["segments"][tag]
                         segment_is_mandatory = (segment_spec["m_c"] == "M")
-                        # if group_is_mandatory && segment_is_mandatory
-                        #     puts "Absent mandatory segment"
-                        #     puts tag, segment_spec
-                        #     return line_no, split_no, StandardError.new
-                        # end
+                        if group_is_mandatory && segment_is_mandatory
+                           #puts "Absent mandatory segment"
+                            errors << StandardError.new
+                        end
                     else
                         # Nested segment group
-                        puts "\nNested group #{group_no} => #{tag}"
-                        params = [tag, line_no, split_no + 1, false]
+                       #puts "\nNested group #{group_no} => #{tag}"
+                        from_group = from_group == nil ? group_no : from_group
+                        params = [tag, line_no, split_no, false, 1, from_group]
                         line_no, split_no = process_group(*params)
-                        if line_no >= @lines.length
-                            # EOF
-                            return line_no, split_no + 1
-                        else
-                            line_tag = @lines[line_no][1][0, 3]
-                        end
+                        # EOF
+                        return line_no, split_no + 1, errors if line_no >= @lines.length
                     end
                 end
             end
             # Check if group should be repeated
-            if (iteration < group_repeats) && (structure.include?(line_tag))
-                puts "\nRepeating #{group_no} #{iteration + 1}"
+            if (iteration < group_repeats) && (structure.include?(@lines[line_no][1][0, 3]))
+               #puts "\nRepeating #{group_no} #{iteration + 1}"
                 params = [group_no, line_no, split_no + 1, false, iteration + 1]
                 line_no, split_no = process_group(*params)
-                if line_no >= @lines.length
-                    # EOF
-                    return line_no, split_no + 1
-                else
-                    line_tag = @lines[line_no][1][0, 3]
-                end
+                # EOF
+                return line_no, split_no + 1 if line_no >= @lines.length
             else
-                puts "\nCan't match #{@lines[line_no][0]}:#{line_tag} to #{group_no} #{structure.inspect}"
+               #puts "\nCan't match #{@lines[line_no][0]}:#{@lines[line_no][1][0, 3]} to #{group_no} #{structure.inspect}"
             end
-            puts "\nReturning #{group_no}"
-            return line_no, split_no + 1
+           #puts "\nReturning #{group_no}"
+            return line_no, split_no + 1, errors
         end
     end
 
