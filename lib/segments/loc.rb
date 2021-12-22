@@ -4,6 +4,8 @@ module EDIFACT
 
     class LOCSegment < Segment
         attr_reader :location_qualifier
+        attr_reader :location_id
+        attr_reader :location_responsible_agency
         attr_reader :stowage_location
 
         def initialize(raw, line_no, version = nil, chars = nil)
@@ -35,6 +37,19 @@ module EDIFACT
                         @stowage_location = StowageLocation.new(bay, row, tier)
                     end
                 end
+            end
+            # Attempt to apply UN/LOCODE or SMDG TERMINALS to location ID
+            data = $dictionary.code_list_lookup(
+                "306", "UNLOCODE", @location_id.value
+            )
+            if data.blank?
+                data = $dictionary.code_list_lookup(
+                    "306", "TERMINALS", @location_id.value
+                )
+            end
+            unless data.blank?
+                @location_id.set_data_name(data["name"])
+                @location_id.set_data_desc(data["desc"])
             end
         end
 

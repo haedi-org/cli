@@ -53,6 +53,7 @@ require_relative './segments/gid.rb'
 require_relative './segments/gin.rb'
 require_relative './segments/loc.rb'
 require_relative './segments/mea.rb'
+require_relative './segments/nad.rb'
 require_relative './segments/rff.rb'
 require_relative './segments/pia.rb'
 

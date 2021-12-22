@@ -54,6 +54,14 @@ class Dictionary
                 return data[code]
             end
         end
+        # BIC
+        if (agency == "20")
+            data = retrieve_bic_hash[qualifier]
+            if data.key?(code)
+                add_code_list_used("BIC #{qualifier}")
+                return data[code]
+            end
+        end
         return {}
     end
 
@@ -157,6 +165,10 @@ class Dictionary
             entry[key] = data
             return data
         end
+    end
+
+    def retrieve_bic_hash
+        return retrieve_hash("bic", "/bic/cl.json")
     end
 
     def retrieve_iso_6346_hash

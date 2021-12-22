@@ -12,6 +12,7 @@ module EDIFACT
         "GIN" => GINSegment,
         "LOC" => LOCSegment,
         "MEA" => MEASegment,
+        "NAD" => NADSegment,
         "RFF" => RFFSegment,
         "PIA" => PIASegment,
     }

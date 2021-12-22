@@ -1,0 +1,60 @@
+module EDIFACT
+    class NADSegment < Segment
+        attr_reader :party_qualifier
+        attr_reader :party_identification
+        attr_reader :party_code_list
+        attr_reader :party_responsible_agency
+
+        def initialize(raw, line_no, version = nil, chars = nil)
+            super(raw, line_no, version, chars)
+            @party_qualifier = get_elements_by_code("3035").first
+            @party_identification = get_elements_by_code("3039").first
+            @party_code_list = get_elements_by_code("1131").first
+            @party_responsible_agency = get_elements_by_code("3055").first
+            apply_code_list
+        end
+
+        def apply_code_list
+            data = $dictionary.code_list_lookup(
+                @party_responsible_agency.value,
+                @party_code_list.value,
+                @party_identification.value
+            )
+            unless data.blank?
+                @party_identification.set_data_name(data["name"])
+                @party_identification.set_data_desc(data["desc"])
+            end
+        end
+    end
+end
+
+# 0   1  20 21  22
+# NAD+CA+PL:172:ZZZ'
+
+# 010  3035  Party qualifier                      M  1  an..3
+# 020  C082  PARTY IDENTIFICATION DETAILS         C  1
+#      3039  Party id. identification             M     an..35
+#      1131  Code list qualifier                  C     an..3
+#      3055  Code list responsible agency, coded  C     an..3
+# 030  C058  NAME AND ADDRESS                     C  1
+#      3124  Name and address line                M     an..35
+#      3124  Name and address line                C     an..35
+#      3124  Name and address line                C     an..35
+#      3124  Name and address line                C     an..35
+#      3124  Name and address line                C     an..35
+# 040  C080  PARTY NAME                           C  1
+#      3036  Party name                           M     an..35
+#      3036  Party name                           C     an..35
+#      3036  Party name                           C     an..35
+#      3036  Party name                           C     an..35
+#      3036  Party name                           C     an..35
+#      3045  Party name format, coded             C     an..3
+# 050  C059  STREET                               C  1
+#      3042  Street and number/p.o. box           M     an..35
+#      3042  Street and number/p.o. box           C     an..35
+#      3042  Street and number/p.o. box           C     an..35
+#      3042  Street and number/p.o. box           C     an..35
+# 060  3164  City name                            C  1 	an..35
+# 070  3229  Country sub-entity identification    C  1 	an..9
+# 080  3251  Postcode identification              C  1 	an..9
+# 090  3207  Country, coded                       C  1 	an..3
