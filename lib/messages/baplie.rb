@@ -37,7 +37,7 @@ module EDIFACT
                     for loc in group.get_segments_by_tag("LOC") do
                         case loc.location_qualifier.value
                             when "9" ; row[9]  = loc.location_id.readable
-                            when "11"; row[10]  = loc.location_id.readable
+                            when "11"; row[10] = loc.location_id.readable
                             when "83"; row[11] = loc.location_id.readable
                         end
                         unless loc.stowage_location.blank?
@@ -77,11 +77,16 @@ module EDIFACT
 
         def debug
             out = []
-            CSV.open("./test.csv", "w") do |csv|
-                for row in container_table do
-                    csv << row
+            for row in container_table do
+                if row[2] == "001"
+                    puts row.join("\t")
                 end
             end
+            #CSV.open("./test.csv", "w") do |csv|
+            #    for row in container_table do
+            #        csv << row
+            #    end
+            #end
             
             #for group in @groups do
             #    unless group.get_segments_by_tag("LOC").empty?
