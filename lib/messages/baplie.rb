@@ -2,6 +2,7 @@ module EDIFACT
     class BAPLIEMessage < Message
         def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
             super(lines, interchange_version, chars)
+            @stowage_table = []
         end
 
         # LOC+147+0260284::5'
@@ -13,22 +14,27 @@ module EDIFACT
         # EQD+CN+EOLU6000828+45R1+++4'
         # NAD+CA+PL:172:ZZZ'
 
-        def container_table
+        def stowage_table
+            @stowage_table = build_stowage_table if @stowage_table.blank?
+            return @stowage_table
+        end
+
+        def build_stowage_table
             table = []
             table << [
-                "CONTAINER ID",      # Row #0
-                "STOWAGE CELL",      # Row #1
-                "STOWAGE BAY",       # Row #2
-                "STOWAGE ROW",       # Row #3
-                "STOWAGE TIER",      # Row #4
-                "FULL/EMPTY",        # Row #5
-                "SIZE/TYPE",         # Row #6
-                "WEIGHT",            # Row #7
-                "CARRIER ID",        # Row #8
-                "PORT OF LOADING",   # Row #9
-                "PORT OF DISCHARGE", # Row #10
-                "PORT OF DELIVERY",  # Row #11
-                "BILL OF LADING",    # Row #12
+                "CONTAINER ID",      #0
+                "STOWAGE CELL",      #1
+                "STOWAGE BAY",       #2
+                "STOWAGE ROW",       #3
+                "STOWAGE TIER",      #4
+                "FULL/EMPTY",        #5
+                "SIZE/TYPE",         #6
+                "WEIGHT",            #7
+                "CARRIER ID",        #8
+                "PORT OF LOADING",   #9
+                "PORT OF DISCHARGE", #10
+                "PORT OF DELIVERY",  #11
+                "BILL OF LADING",    #12
             ]
             for group in @groups do
                 unless group.get_segments_by_tag("LOC").empty?
@@ -75,60 +81,45 @@ module EDIFACT
             return table
         end
 
+        def stowage_row_sort(arr)
+            # Row ordering, e.g:
+            # 14 12 10 08 06 04 02 00 01 03 05 07 09 11 13
+            evens = arr.select { |n| n.to_i % 2 == 0 }
+            odds  = arr.select { |n| n.to_i % 2 == 1 }
+            return evens.sort.reverse + odds.sort
+        end
+
+        def stowage_ranges
+            bays, rows, tiers = [], [], []
+            for table_row in stowage_table[1..-1] do
+                bays  << table_row[2]
+                rows  << table_row[3]
+                tiers << table_row[4]
+            end
+            return [
+                bays.uniq.sort, 
+                stowage_row_sort(rows.uniq), 
+                tiers.uniq.sort.reverse,
+            ]
+        end
+
+        def stowage_hash_map
+            map = {}
+            for table_row in stowage_table[1..-1] do
+                map[table_row[1]] = true
+            end
+            return map
+        end
+
         def debug
             out = []
-            for row in container_table do
-                if row[2] == "001"
-                    puts row.join("\t")
-                end
-            end
-            #CSV.open("./test.csv", "w") do |csv|
-            #    for row in container_table do
-            #        csv << row
-            #    end
-            #end
-            
-            #for group in @groups do
-            #    unless group.get_segments_by_tag("LOC").empty?
-            #        for loc in group.get_segments_by_tag("LOC") do
-            #            out << "LOCATION #{loc.location_qualifier.readable.upcase}"
-            #            out << "  Code: " + loc.location_qualifier.value
-            #            out << "  ID: " + loc.location_id.readable unless loc.location_id.blank?
-            #            out << "  Agency: " + loc.location_responsible_agency.readable unless loc.location_responsible_agency.blank?
-            #            unless loc.stowage_location.blank?
-            #                out << "  Bay: "  + loc.stowage_location.bay
-            #                out << "  Row: "  + loc.stowage_location.row
-            #                out << "  Tier: " + loc.stowage_location.tier
-            #            end
-            #        end
-            #        # Equipment details
-            #        eqd = group.get_segments_by_tag("EQD").first
-            #        unless eqd.blank?
-            #            out << "EQUIPMENT DETAILS"
-            #            out << "  Equipment: " + eqd.equipment_qualifier.readable
-            #            out << "  ID: " + eqd.equipment_id_number.readable
-            #            out << "  Full/Empty: " + eqd.full_empty_indicator.readable
-            #            out << "  Size/Type: " + eqd.equipment_size_and_type.readable
-            #        end
-            #        # Reference
-            #        rff = group.get_segments_by_tag("RFF").first
-            #        unless rff.blank?
-            #            out << "REFERENCE"
-            #            out << "  Qualifier: " + rff.reference_qualifier.readable
-            #            out << "  Number: " + rff.reference_number.readable
-            #        end
-            #        # Name and address
-            #        nad = group.get_segments_by_tag("NAD").first
-            #        unless nad.blank?
-            #            out << "NAME AND ADDRESS"
-            #            out << "  Raw: " + nad.raw
-            #            out << "  Qualifier: " + nad.party_qualifier.readable
-            #            out << "  ID: " + nad.party_identification.readable
-            #            out << "  Code list: " + nad.party_code_list.readable
-            #            out << "  Agency: " + nad.party_responsible_agency.readable
-            #        end
-            #        # Measure
-            #        out << ""
+            bays, rows, tiers = stowage_ranges
+            out << [bays.join(","), bays.length]
+            out << [rows.join(","), rows.length]
+            out << [tiers.join(","), tiers.length]
+            #for row in container_table do
+            #    if row[2] == "001"
+            #        puts row.join("\t")
             #    end
             #end
             return out

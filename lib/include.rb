@@ -18,7 +18,6 @@ require_relative './generics.rb'
 require_relative './datatypes.rb'
 require_relative './paths.rb'
 require_relative './errors.rb'
-require_relative './html.rb'
 require_relative './reference.rb'
 require_relative './curator.rb'
 require_relative './dictionary.rb'
@@ -63,5 +62,8 @@ require_relative './associations.rb'
 
 require_relative './document/segment_map.rb'
 require_relative './document/message_map.rb'
+
+require_relative './html/html.rb'
+require_relative './html/bayplan.rb'
 
 require_relative './cli.rb'

@@ -1,8 +1,7 @@
 module EDIFACT
     class Interchange
         attr_reader :path, :raw
-        attr_reader :header, :trailer
-        attr_reader :messages, :version
+        attr_reader :header, :trailer, :version
         attr_reader :load_time, :process_time
 
         def initialize(path)
@@ -20,6 +19,11 @@ module EDIFACT
             split_lines_by_terminator()
             set_messages()
             @process_time = Time.now - start_process_time
+        end
+
+        def messages(filter = nil)
+            return @messages if filter == nil
+            return @messages.select { |message| message.is_a?(filter) }
         end
 
         def load_from_file(path = @path)

@@ -25,18 +25,18 @@ def routine_help
     return out
 end
 
-def routine_info(lines, path)
+def routine_info(path)
     out = []
     return out
 end
 
-def routine_html_info(lines, path)
+def routine_html_info(path)
     out = []
     #out << html_document_information(document)
     return out
 end
 
-def routine_parse(lines, path)
+def routine_parse(path)
     out = []
     interchange = load_interchange(path)
     for message in interchange.messages do
@@ -73,14 +73,14 @@ def routine_parse(lines, path)
     return out
 end
 
-def routine_html_parse(lines, path)
+def routine_html_parse(path)
     out = []
     interchange = load_interchange(path)
     out << html_reference_table(interchange)
     return out
 end
 
-def routine_structure(lines, path)
+def routine_structure(path)
     out = []
     interchange = load_interchange(path)
     messages = interchange.messages
@@ -102,7 +102,7 @@ def routine_structure(lines, path)
     return out
 end
 
-def routine_timeline(lines, path)
+def routine_timeline(path)
     out = []
     interchange = load_interchange(path)
     interchange.messages.each do |message|
@@ -123,7 +123,7 @@ def routine_timeline(lines, path)
     return out
 end
 
-def routine_html_timeline(lines, path)
+def routine_html_timeline(path)
     out = []
     interchange = load_interchange(path)
     timelines = interchange.timelines
@@ -157,7 +157,7 @@ def routine_html_timeline(lines, path)
     return out.join.html("div", :cl => "scroller is-gapless")
 end
 
-def routine_debug(lines, path)
+def routine_debug(path)
     out = []
     interchange = load_interchange(path)
     for message in interchange.messages do
@@ -182,10 +182,24 @@ def routine_debug(lines, path)
     return out
 end
 
-def routine_html_debug(lines, path)
+def routine_html_debug(path)
     out = []
     interchange = load_interchange(path)
     out << html_debug(interchange)
+    return out
+end
+
+def routine_bayplan(path)
+    out = []
+    interchange = load_interchange(path)
+    out << ascii_bayplan(interchange)
+    return out
+end
+
+def routine_html_bayplan(path)
+    out = []
+    interchange = load_interchange(path)
+    out << html_bayplan(interchange)
     return out
 end
 

@@ -5,6 +5,8 @@ OPT_DATA = {
     :structure  => ["-s", "--structure"],
     :timeline   => ["-t", "--timeline"],
     :headless   => ["-l", "--headless"],
+    # TODO: Generalise to a visual output
+    :bayplan    => ["-b", "--bayplan"],
     :collection => ["-c", "--collection"],
     :help       => ["-h", "--help"],
     :html       => ["--html"],
@@ -58,7 +60,7 @@ def process_paths(paths, dirs)
     end
     # Routines on singular files
     for path in paths do
-        arg = [read_document(path), path]
+        arg = [path]
         out << routine_info(*arg)          if opt?(:info) && no_opt?(:html)
         out << routine_html_info(*arg)     if opt?(:info) && opt?(:html)
         out << routine_parse(*arg)         if opt?(:parse) && no_opt?(:html)
@@ -68,6 +70,8 @@ def process_paths(paths, dirs)
         out << routine_structure(*arg)     if opt?(:structure)
         out << routine_timeline(*arg)      if opt?(:timeline) && no_opt?(:html)
         out << routine_html_timeline(*arg) if opt?(:timeline) && opt?(:html)
+        out << routine_bayplan(*arg)       if opt?(:bayplan) && no_opt?(:html)
+        out << routine_html_bayplan(*arg)  if opt?(:bayplan) && opt?(:html)
     end
     return out
 end
