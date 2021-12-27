@@ -126,35 +126,8 @@ end
 def routine_html_timeline(path)
     out = []
     interchange = load_interchange(path)
-    timelines = interchange.timelines
-    # Timeline
-    for timeline in timelines do
-        timeline.map! do |event, time|
-            [
-                # Marker
-                String.new.html("div", :cl => "timeline-marker"),
-                # Content
-                [
-                    time.html("p", :cl => "heading"), 
-                    event.html("p")
-                ].join.html("div", :cl => "timeline-content")
-                # 
-            ].join.html("div", :cl => "timeline-item")
-        end
-        # Tags
-        start_tag, end_tag = ["Start", "End"].map! do |caption|
-            caption
-                .html("span", :cl => "tag is-medium is-primary")
-                .html("header", :cl => "timeline-header")
-        end
-        # Assemble
-        out << [start_tag, timeline, end_tag]
-            .flatten.join.html("div", 
-                :cl => "timeline is-centered",
-                :st => "padding-top: 32px"
-        )
-    end
-    return out.join.html("div", :cl => "scroller is-gapless")
+    out << html_timeline(interchange)
+    return out
 end
 
 def routine_debug(path)

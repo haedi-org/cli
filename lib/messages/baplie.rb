@@ -1,8 +1,24 @@
 module EDIFACT
+    Stowage = Struct.new(
+        :container_id,
+        :stowage_cell,
+        :bay,
+        :row,
+        :tier,
+        :full_empty,
+        :size_type,
+        :weight,
+        :carrier_id,
+        :port_of_loading,
+        :port_of_discharge,
+        :port_of_delivery,
+        :bill_of_lading,
+    )
+
     class BAPLIEMessage < Message
         def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
             super(lines, interchange_version, chars)
-            @stowage_table = []
+            @stowage_list = []
         end
 
         # LOC+147+0260284::5'
@@ -14,71 +30,64 @@ module EDIFACT
         # EQD+CN+EOLU6000828+45R1+++4'
         # NAD+CA+PL:172:ZZZ'
 
-        def stowage_table
-            @stowage_table = build_stowage_table if @stowage_table.blank?
-            return @stowage_table
+        def stowage_list
+            @stowage_list = build_stowage_list if @stowage_list.blank?
+            return @stowage_list
         end
 
-        def build_stowage_table
-            table = []
-            table << [
-                "CONTAINER ID",      #0
-                "STOWAGE CELL",      #1
-                "STOWAGE BAY",       #2
-                "STOWAGE ROW",       #3
-                "STOWAGE TIER",      #4
-                "FULL/EMPTY",        #5
-                "SIZE/TYPE",         #6
-                "WEIGHT",            #7
-                "CARRIER ID",        #8
-                "PORT OF LOADING",   #9
-                "PORT OF DISCHARGE", #10
-                "PORT OF DELIVERY",  #11
-                "BILL OF LADING",    #12
-            ]
+        def build_stowage_list
+            list = []
             for group in @groups do
                 unless group.get_segments_by_tag("LOC").empty?
-                    row = Array.new(table.first.length) { "" }
+                    args = Array.new(13) { "" }
                     # LOCATION INFORMATION
                     for loc in group.get_segments_by_tag("LOC") do
                         case loc.location_qualifier.value
-                            when "9" ; row[9]  = loc.location_id.readable
-                            when "11"; row[10] = loc.location_id.readable
-                            when "83"; row[11] = loc.location_id.readable
+                            when "9" ; args[9]  = loc.location_id.readable
+                            when "11"; args[10] = loc.location_id.readable
+                            when "83"; args[11] = loc.location_id.readable
                         end
                         unless loc.stowage_location.blank?
-                            row[1] = loc.location_id.value
-                            row[2] = loc.stowage_location.bay
-                            row[3] = loc.stowage_location.row
-                            row[4] = loc.stowage_location.tier
+                            args[1] = loc.location_id.value
+                            args[2] = loc.stowage_location.bay
+                            args[3] = loc.stowage_location.row
+                            args[4] = loc.stowage_location.tier
                         end
                     end
                     # EQUIPMENT DETAILS
                     eqd = group.get_segments_by_tag("EQD").first
                     unless eqd.blank?
-                        row[0] = eqd.equipment_id_number.value
-                        row[5] = eqd.full_empty_indicator.readable
-                        row[6] = eqd.equipment_size_and_type.readable
+                        args[0] = eqd.equipment_id_number.value
+                        args[5] = eqd.full_empty_indicator.readable
+                        args[6] = eqd.equipment_size_and_type.readable
                     end
                     # REFERENCE INFORMATION
                     rff = group.get_segments_by_tag("RFF").first
                     unless rff.blank?
-                        row[12] = rff.reference_number.readable
+                        args[12] = rff.reference_number.readable
                     end
                     # NAME AND ADDRESS
                     nad = group.get_segments_by_tag("NAD").first
                     unless nad.blank?
-                        row[8] = nad.party_identification.readable
+                        args[8] = nad.party_identification.readable
                     end
                     # Measure
                     mea = group.get_segments_by_tag("MEA").first
                     unless mea.blank?
-                        row[7] = mea.measurement_value.value
+                        args[7] = mea.measurement_value.value
                     end
-                    table << row unless row.first.blank?
+                    list << Stowage.new(*args) unless args.first.blank?
                 end
             end
-            return table
+            return list
+        end
+
+        def carrier_list
+            arr = []
+            for stowage in stowage_list do
+                arr << stowage.carrier_id
+            end
+            return arr.uniq
         end
 
         def stowage_row_sort(arr)
@@ -89,12 +98,32 @@ module EDIFACT
             return evens.sort.reverse + odds.sort
         end
 
+        def stowage_table
+            return stowage_list.map do |stow|
+                [
+                    stow.container_id,
+                    stow.stowage_cell,
+                    stow.bay,
+                    stow.row,
+                    stow.tier,
+                    stow.full_empty,
+                    stow.size_type,
+                    stow.weight,
+                    stow.carrier_id,
+                    stow.port_of_loading,
+                    stow.port_of_discharge,
+                    stow.port_of_delivery,
+                    stow.bill_of_lading,
+                ]
+            end
+        end
+
         def stowage_ranges
             bays, rows, tiers = [], [], []
-            for table_row in stowage_table[1..-1] do
-                bays  << table_row[2]
-                rows  << table_row[3]
-                tiers << table_row[4]
+            for stowage in stowage_list do
+                bays  << stowage.bay
+                rows  << stowage.row
+                tiers << stowage.tier
             end
             return [
                 bays.uniq.sort, 
@@ -105,18 +134,21 @@ module EDIFACT
 
         def stowage_hash_map
             map = {}
-            for table_row in stowage_table[1..-1] do
-                map[table_row[1]] = true
+            for stowage in stowage_list do
+                map[stowage.stowage_cell] = stowage
             end
             return map
         end
 
         def debug
             out = []
-            bays, rows, tiers = stowage_ranges
-            out << [bays.join(","), bays.length]
-            out << [rows.join(","), rows.length]
-            out << [tiers.join(","), tiers.length]
+            for stow in stowage_list.flatten.compact do
+                puts stow.full_empty
+            end
+            #bays, rows, tiers = stowage_ranges
+            #out << [bays.join(","), bays.length]
+            #out << [rows.join(","), rows.length]
+            #out << [tiers.join(","), tiers.length]
             #for row in container_table do
             #    if row[2] == "001"
             #        puts row.join("\t")

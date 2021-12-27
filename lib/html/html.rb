@@ -251,6 +251,39 @@ def html_document_information(document)
         .html("div", :cl => "scroller p-4")
 end
 
+def html_timeline(interchange)
+    out = []
+    timelines = interchange.timelines
+    # Timeline
+    for timeline in timelines do
+        timeline.map! do |event, time|
+            [
+                # Marker
+                String.new.html("div", :cl => "timeline-marker"),
+                # Content
+                [
+                    time.html("p", :cl => "heading"), 
+                    event.html("p")
+                ].join.html("div", :cl => "timeline-content")
+                # 
+            ].join.html("div", :cl => "timeline-item")
+        end
+        # Tags
+        start_tag, end_tag = ["Start", "End"].map! do |caption|
+            caption
+                .html("span", :cl => "tag is-medium is-primary")
+                .html("header", :cl => "timeline-header")
+        end
+        # Assemble
+        out << [start_tag, timeline, end_tag]
+            .flatten.join.html("div", 
+                :cl => "timeline is-centered",
+                :st => "padding-top: 32px"
+        )
+    end
+    return out.join.html("div", :cl => "scroller is-gapless")
+end
+
 def html_error(error)
     # Error message
     message_title = [
