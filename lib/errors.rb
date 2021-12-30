@@ -76,6 +76,12 @@ class InvalidISSNError < StandardError
     end
 end
 
+class InvalidGTINError < StandardError
+    def message
+        return "Bad GTIN"
+    end
+end
+
 class MandatoryFieldError < StandardError
     def message
         return "Missing mandatory field"

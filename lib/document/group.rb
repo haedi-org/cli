@@ -28,7 +28,7 @@ module EDIFACT
 
         def get_segments_by_tag(tag)
             arr = []
-            for segment in @segments do
+            for segment in @segments.compact do
                 arr << segment if segment.tag.value == tag
             end
             return arr

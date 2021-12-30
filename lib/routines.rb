@@ -134,7 +134,7 @@ def routine_debug(path)
     out = []
     interchange = load_interchange(path)
     for message in interchange.messages do
-        if message.is_a?(EDIFACT::BAPLIEMessage)
+        if message.is_a?(EDIFACT::DESADVMessage)
             out << message.debug
         end
     end
