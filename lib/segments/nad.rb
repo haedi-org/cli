@@ -11,7 +11,9 @@ module EDIFACT
             @party_identification = get_elements_by_code("3039").first
             @party_code_list = get_elements_by_code("1131").first
             @party_responsible_agency = get_elements_by_code("3055").first
-            apply_code_list
+            unless @party_responsible_agency.blank? or @party_code_list.blank?
+                apply_code_list()
+            end
         end
 
         def apply_code_list
@@ -30,6 +32,9 @@ end
 
 # 0   1  20 21  22
 # NAD+CA+PL:172:ZZZ'
+
+# 0   1  20             22
+# NAD+DP+4260197450019::9'
 
 # 010  3035  Party qualifier                      M  1  an..3
 # 020  C082  PARTY IDENTIFICATION DETAILS         C  1

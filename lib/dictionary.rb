@@ -38,6 +38,14 @@ class Dictionary
     end
 
     def code_list_lookup(agency, qualifier = nil, code = nil)
+        # EANCOM
+        if (agency == "9")
+            data = retrieve_eancom_hash[qualifier]
+            if data.key?(code)
+                add_code_list_used("EANCOM #{qualifier}")
+                return data[code]
+            end
+        end
         # SMDG
         if (agency == "306")
             data = retrieve_smdg_hash[qualifier]
@@ -165,6 +173,10 @@ class Dictionary
             entry[key] = data
             return data
         end
+    end
+
+    def retrieve_eancom_hash
+        return retrieve_hash("eancom", "/eancom/cl.json")
     end
 
     def retrieve_bic_hash

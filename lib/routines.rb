@@ -138,6 +138,7 @@ def routine_debug(path)
             out << message.debug
         end
     end
+    out << "EANCOM = #{interchange.messages.first.association_assigned_code}"
     # Print processing times
     load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
     process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"

@@ -32,7 +32,16 @@ module EDIFACT
                     out << "Line item"
                     out << "Line number = #{lin.line_item_number.readable}"
                     out << "Item number = #{lin.item_number.readable}"
+                    out << "Valid? = #{lin.item_number.has_integrity?}"
                     out << "Item number type = #{lin.item_number_type.readable}"
+                    out << ""
+                end
+                # PCI
+                pci = group.get_segments_by_tag("PCI").first
+                unless pci.blank?
+                    out << "Package identification"
+                    out << "Instructions = #{pci.marking_instructions.readable}"
+                    out << "Marks = #{pci.shipping_marks.first.readable}"
                     out << ""
                 end
                 out << group.raw

@@ -14,7 +14,7 @@ module EDIFACT
         "GDSN23", # GDSN version 2.3 (GS1 Permanent Code)
     ]
 
-    class Document
+    class Message
         def is_eancom?
             return EANCOM_ASSOCIATION_CODES.include?(@association_assigned_code)
         end

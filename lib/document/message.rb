@@ -4,6 +4,7 @@
 module EDIFACT
     class Message
         attr_reader :version, :groups, :type, :reference
+        attr_reader :association_assigned_code
         attr_reader :header, :trailer
 
         def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
@@ -21,6 +22,22 @@ module EDIFACT
             set_trailer()
             set_spec()
             set_groups()
+            # Apply association code list
+            apply_association_code_list()
+        end
+
+        def apply_association_code_list()
+            for group in @groups do
+                for segment in group.segments do
+                    begin
+                        if self.is_eancom?
+                            segment.apply_association_code_list("9")
+                        end
+                    rescue
+                        # => Association method not defined
+                    end
+                end
+            end
         end
 
         def set_header()
@@ -31,6 +48,9 @@ module EDIFACT
                     @reference = @header.message_reference.data_value
                     @type = @header.message_type.data_value
                     @version = @header.version_key
+                    @association_assigned_code = (
+                        @header.association_assigned_code.data_value
+                    )
                 end
             end
         end

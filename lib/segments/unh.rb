@@ -14,6 +14,10 @@ module EDIFACT
             @association_assigned_code = get_elements_by_code("0057").first
         end
 
+        def assn_assigned_code
+            return @association_assigned_code
+        end
+
         def version_key
             return @message_version.value + @message_release.value
         end
