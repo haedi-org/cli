@@ -11,15 +11,7 @@ module EDIFACT
 
         def apply_association_code_list(qualifier)
             unless @marking_instructions.blank?
-                data = $dictionary.code_list_lookup(
-                    qualifier,
-                    @marking_instructions.code,
-                    @marking_instructions.value
-                )
-                unless data.blank?
-                    @marking_instructions.set_data_name(data["name"])
-                    @marking_instructions.set_data_desc(data["desc"])
-                end
+                @marking_instructions.apply_association_code_list(qualifier)
             end
         end
     end

@@ -1,6 +1,6 @@
 module EDIFACT
     class GINSegment < Segment
-        attr_reader :date_time_qualifier, :date_time
+        attr_reader :identity_number_qualifier, :identity_numbers
 
         def initialize(raw, line_no, version = nil, chars = nil)
             super(raw, line_no, version, chars)

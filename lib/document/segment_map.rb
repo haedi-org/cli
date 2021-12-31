@@ -4,6 +4,7 @@ module EDIFACT
         "UNB" => UNBSegment,
         "UNH" => UNHSegment,
         "UNT" => UNTSegment,
+        "ALI" => ALISegment,
         "CPS" => CPSSegment,
         "DOC" => DOCSegment,
         "DTM" => DTMSegment,
@@ -11,6 +12,7 @@ module EDIFACT
         "FTX" => FTXSegment,
         "GID" => GIDSegment,
         "GIN" => GINSegment,
+        "IMD" => IMDSegment,
         "LIN" => LINSegment,
         "LOC" => LOCSegment,
         "MEA" => MEASegment,
@@ -18,6 +20,7 @@ module EDIFACT
         "PAC" => PACSegment,
         "PCI" => PCISegment,
         "PIA" => PIASegment,
+        "QTY" => QTYSegment,
         "RFF" => RFFSegment,
     }
 end

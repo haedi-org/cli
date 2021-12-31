@@ -106,6 +106,20 @@ module EDIFACT
             return "N/A"
         end
 
+        def apply_association_code_list(qualifier)
+            unless self.blank?
+                data = $dictionary.code_list_lookup(
+                    qualifier, self.code, self.value
+                )
+                unless data.blank?
+                    self.set_data_name(data["name"])
+                    self.set_data_desc(data["desc"])
+                    return true
+                end
+            end
+            return false
+        end
+
         def debug
             unless @data_value.blank?
                 out = []

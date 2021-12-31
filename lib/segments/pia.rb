@@ -1,6 +1,6 @@
 module EDIFACT
     class PIASegment < Segment
-        attr_reader :date_time_qualifier, :date_time
+        attr_reader :item_number_types, :item_numbers
 
         def initialize(raw, line_no, version = nil, chars = nil)
             super(raw, line_no, version, chars)
