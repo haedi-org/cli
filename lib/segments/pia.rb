@@ -1,26 +1,28 @@
 module EDIFACT
     class PIASegment < Segment
+        attr_reader :product_id_function
         attr_reader :item_number_types, :item_numbers
 
         def initialize(raw, line_no, version = nil, chars = nil)
             super(raw, line_no, version, chars)
+            @product_id_function = get_elements_by_code("4347").first
             @item_number_types = get_elements_by_code("7143")
             @item_numbers = get_elements_by_code("7140")
             unless @item_number_types.blank? or @item_numbers.blank?
-                validate_identity_numbers(
-                    @item_number_types,
-                    @item_numbers
-                )
+                validate_identity_numbers()
             end
         end
 
-        def validate_identity_numbers(qualifiers, number_elements)
-            pairs = Array.new(qualifiers.length) do |i|
-                [qualifiers[i].value, number_elements[i]]
+        def item_numbers_with_type
+            pairs = Array.new(@item_number_types.length) do |i|
+                [item_number_types[i], @item_numbers[i]]
             end
-            for qualifier, element in pairs do
+        end
+
+        def validate_identity_numbers()
+            for qualifier, element in item_numbers_with_type do
                 element.value.tap do |value|
-                    result = case qualifier
+                    result = case qualifier.value
                     when 'IB' # ISBN International standard book number
                         value.is_isbn? ? true : InvalidISBNError.new
                     when 'IS' # ISSN International standard serial number

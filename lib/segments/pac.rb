@@ -10,6 +10,12 @@ module EDIFACT
             @packaging_level = get_elements_by_code("7075").first
             @type_of_packages_id = get_elements_by_code("7065").first
         end
+
+        def apply_association_code_list(qualifier)
+            unless @type_of_packages_id.blank?
+                @type_of_packages_id.apply_association_code_list(qualifier)
+            end
+        end
     end
 end
 
