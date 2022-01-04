@@ -3,7 +3,15 @@ module EDIFACT
         def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
             super(lines, interchange_version, chars)
             @consignment = {}
-            build_consignment
+        end
+
+        def to_json
+            return consignment().to_json
+        end
+
+        def stowage_list
+            @consignment = build_consignment if @consignment.blank?
+            return @consignment
         end
 
         def build_consignment
@@ -126,14 +134,10 @@ module EDIFACT
         end
 
         def debug
-            File.open("../desadv_test.json", "a") { |f| 
-                f.puts @consignment.to_json
-            }
-            return @consignment
             out = []
             for group in @groups do
                 out << group.name
-                out << group.raw
+               #out << group.raw
                 out << ""
                 # CPS
                 cps = group.get_segments_by_tag("CPS").first
@@ -243,9 +247,6 @@ module EDIFACT
                     out << "Unit = #{qty.measure_unit_qualifier.readable}"
                     out << ""
                 end
-            end
-            for group in @groups do
-                out << group.raw
             end
             return out
         end
