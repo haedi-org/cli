@@ -12,6 +12,14 @@
 
 FALLBACK_VERSION = "D97A"
 
+AGENCY_CODELIST_MAP = {
+    "9"     => ["eancom", "/eancom/cl.json"],
+    "20"    => ["bic", "/bic/cl.json"],
+    "166"   => ["nmfca", "/nmfca/cl.json"],
+    "306"   => ["smdg", "/smdg/cl.json"],
+    "6346"  => ["iso_6346", "/smdg/iso_6346.json"],
+}
+
 class Dictionary
     attr_reader :read_count
     attr_reader :code_lists_used
@@ -38,35 +46,11 @@ class Dictionary
     end
 
     def code_list_lookup(agency, qualifier = nil, code = nil)
-        # EANCOM
-        if (agency == "9")
-            data = retrieve_eancom_hash[qualifier]
+        if AGENCY_CODELIST_MAP.key?(agency)
+            name, path = AGENCY_CODELIST_MAP[agency]
+            data = retrieve_hash(name, path)[qualifier]
             if data.key?(code)
-                add_code_list_used("EANCOM #{qualifier}")
-                return data[code]
-            end
-        end
-        # SMDG
-        if (agency == "306")
-            data = retrieve_smdg_hash[qualifier]
-            if data.key?(code)
-                add_code_list_used("SMDG #{qualifier}")
-                return data[code]
-            end
-        end
-        # ISO-6346
-        if (agency == "6346")
-            data = retrieve_iso_6346_hash[qualifier]
-            if data.key?(code)
-                add_code_list_used("ISO-6346 #{qualifier}")
-                return data[code]
-            end
-        end
-        # BIC
-        if (agency == "20")
-            data = retrieve_bic_hash[qualifier]
-            if data.key?(code)
-                add_code_list_used("BIC #{qualifier}")
+                add_code_list_used("#{name.unkey.upcase} #{qualifier}")
                 return data[code]
             end
         end
@@ -173,22 +157,6 @@ class Dictionary
             entry[key] = data
             return data
         end
-    end
-
-    def retrieve_eancom_hash
-        return retrieve_hash("eancom", "/eancom/cl.json")
-    end
-
-    def retrieve_bic_hash
-        return retrieve_hash("bic", "/bic/cl.json")
-    end
-
-    def retrieve_iso_6346_hash
-        return retrieve_hash("iso_6346", "/smdg/iso_6346.json")
-    end
-
-    def retrieve_smdg_hash
-        return retrieve_hash("smdg", "/smdg/cl.json")
     end
 
     def retrieve_hash(key, path)
