@@ -61,6 +61,13 @@ ISO_6346_TESTS = [
     ["TOLU4734787", true],
 ]
 
+IMO_TESTS =[
+    ["IMO 9074729", true],
+    ["imo 9074729", true],
+    ["9074729", true],
+    ["IMO 9074728", false],
+]
+
 RSpec.describe("haedi datatypes") do
 
     describe("GSIN") do
@@ -123,6 +130,14 @@ RSpec.describe("haedi datatypes") do
         ISO_6346_TESTS.each do |code, bool|
             it("identifies '#{code}' as #{bool}") do
                 expect(code.is_iso_6346?).to(be(bool))
+            end
+        end
+    end
+
+    describe("IMO") do
+        IMO_TESTS.each do |code, bool|
+            it("identifies '#{code}' as #{bool}") do
+                expect(code.is_imo?).to(be(bool))
             end
         end
     end

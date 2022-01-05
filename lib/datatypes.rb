@@ -19,6 +19,31 @@ class String
         return check != nil
     end
 
+    # This is done by multiplying each of the first six digits by a factor of 
+    # 2 to 7 corresponding to their position from right to left. 
+    # The rightmost digit of this sum is the check digit. 
+
+    # For example, for IMO 9074729: 
+    # (9×7) + (0×6) + (7×5) + (4×4) + (7×3) + (2×2) = 139
+
+    def is_imo?
+        stripped = self.upcase.gsub("IMO ", "")
+        # Check numeric
+        return false unless stripped.is_number?
+        # Check for correct length
+        return false unless stripped.length == 7
+        # Split into data and check digit
+        digits, given_check_digit = stripped[0, 6].chars, stripped[6, 1].to_i
+        # Step 1: Apply weights
+        digits.map!.with_index do |digit, index|
+            digit.to_i * (7 - index)
+        end
+        # Step 2: Find check digit as sum % modulus
+        expected_check_digit = digits.sum % 10
+        # Step 3: Compare check digit
+        return given_check_digit == expected_check_digit
+    end
+
     def is_gtin_18?
         # Check numeric
         return false unless self.is_number?
