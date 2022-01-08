@@ -14,6 +14,23 @@ module EDIFACT
             unless @party_responsible_agency.blank? or @party_code_list.blank?
                 apply_code_list()
             end
+            unless @party_responsible_agency.blank?
+                validate_party_id()
+            end
+        end
+        
+
+        def validate_party_id
+            # EAN / GS1
+            if @party_responsible_agency.value == "9"
+                @party_identification.tap do |element|
+                    result = element.value.is_gtin_13?
+                    unless result == nil
+                        element.set_integrity(result == true)
+                        element.add_error(result) unless result == true
+                    end
+                end
+            end
         end
 
         def apply_code_list

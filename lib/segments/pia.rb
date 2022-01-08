@@ -19,7 +19,7 @@ module EDIFACT
             end
         end
 
-        def validate_identity_numbers()
+        def validate_identity_numbers
             for qualifier, element in item_numbers_with_type do
                 element.value.tap do |value|
                     result = case qualifier.value

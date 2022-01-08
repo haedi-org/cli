@@ -14,9 +14,11 @@ module EDIFACT
             @trailer = nil
             @version = '4'
             @chars = nil
+            @errors = []
             # Initial methods
             set_punctuation_values()
             split_lines_by_terminator()
+            set_interchange_envelope()
             set_messages()
             @process_time = Time.now - start_process_time
         end
@@ -62,6 +64,30 @@ module EDIFACT
             @lines[0] = una unless una.blank?
         end
 
+        def set_interchange_envelope()
+            @lines.each_with_index do |line, line_no|
+                params = [line, line_no, @version, @chars]
+                # Header
+                if line.first(3) == "UNB"
+                    if @header == nil
+                        @header = SegmentFactory.new(*params).segment
+                    else
+                        # Duplicate UNB segment
+                        @errors << StandardError.new
+                    end
+                end
+                # Trailer
+                if line.first(3) == "UNZ"
+                    if @trailer == nil
+                        @trailer = SegmentFactory.new(*params).segment
+                    else
+                        # Duplicate UNZ segment
+                        @errors << StandardError.new
+                    end
+                end
+            end
+        end
+
         def group_lines_by_envelope(opener, closer)
             groups, group, is_opened = [], [], false
             line_no = -1
@@ -87,15 +113,15 @@ module EDIFACT
 
         def segments()
             arr = []
-            arr << self.header
+            arr << @header
             for message in @messages do
                #arr << message.header
                 for group in message.groups do
                     arr << group.segments
                 end
-                arr << message.trailer
+               #arr << message.trailer
             end
-            arr << self.trailer
+            arr << @trailer
             return arr.flatten.compact
         end
 
