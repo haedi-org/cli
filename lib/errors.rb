@@ -1,12 +1,18 @@
 class NoDocumentError < StandardError
     def message
-        return "No document error"
+        return "Missing document"
     end
 end
 
 class NoElementError < StandardError
     def message
-        return "No element error"
+        return "Missing element"
+    end
+end
+
+class NoSpecificationError < StandardError
+    def message
+        return "Missing specification"
     end
 end
 
@@ -97,5 +103,17 @@ end
 class FieldRepresentationError < StandardError
     def message
         return "Invalid field representation"
+    end
+end
+
+class InterchangeHeaderDuplicateError < StandardError
+    def message
+        return "Duplicate interchange header segment"
+    end
+end
+
+class InterchangeTrailerDuplicateError < StandardError
+    def message
+        return "Duplicate interchange trailer segment"
     end
 end

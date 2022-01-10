@@ -133,7 +133,7 @@ def html_reference_table(interchange)
             #:colspan => 3
         )
         unless segment.is_valid?
-            caption = segment.error.message
+            caption = (segment.errors.map { |e| e.message }).join(", ")
             row += caption.html("span", :cl => "tag is-danger").html("th")
         else
             row += String.new.html("th", :st => "color: inherit")

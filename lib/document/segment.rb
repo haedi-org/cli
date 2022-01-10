@@ -1,6 +1,6 @@
 module EDIFACT
     class Segment
-        attr_reader :elements, :line_no, :raw, :error
+        attr_reader :elements, :line_no, :raw, :errors
         attr_reader :tag, :data, :chars, :version, :spec
 
         def initialize(raw, line_no, version = nil, chars = nil)
@@ -10,7 +10,7 @@ module EDIFACT
             @version = version
             @chars = chars
             @elements = []
-            @error = nil
+            @errors = []
             @tag = Tag.new(raw[0, 3], version)
             # Retrieve specification from dictionary
             unless $dictionary.is_service_segment?(@tag.value)
@@ -19,7 +19,11 @@ module EDIFACT
                 @spec = $dictionary.service_segment_specification(@tag.value)
             end
             split_data_by_chars() unless @chars.blank?
-            apply_segment_spec() unless @spec.blank?
+            unless @spec.blank?
+                apply_segment_spec()
+            else
+                @errors << NoSpecificationError.new
+            end
         end
 
         def get_elements_by_code(code)
@@ -73,7 +77,7 @@ module EDIFACT
         end
 
         def is_valid?
-            return true
+            return @errors.empty?
         end
 
         def is?(tag_value)

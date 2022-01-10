@@ -26,5 +26,9 @@ module EDIFACT
         def is_edigas?
             return @controlling_agency == "EG"
         end
+
+        def is_fhsa?
+            return @controlling_agency == "FH"
+        end
     end
 end

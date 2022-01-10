@@ -73,7 +73,7 @@ module EDIFACT
                         @header = SegmentFactory.new(*params).segment
                     else
                         # Duplicate UNB segment
-                        @errors << StandardError.new
+                        @errors << InterchangeHeaderDuplicateError.new
                     end
                 end
                 # Trailer
@@ -82,7 +82,7 @@ module EDIFACT
                         @trailer = SegmentFactory.new(*params).segment
                     else
                         # Duplicate UNZ segment
-                        @errors << StandardError.new
+                        @errors << InterchangeTrailerDuplicateError.new
                     end
                 end
             end

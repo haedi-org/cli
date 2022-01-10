@@ -6,7 +6,7 @@ module EDIFACT
         when "2"   # DDMMYY
             "#{d[0,2]}/#{d[2,2]}/#{d[4,2]}"
         when "3"   # MMDDYY
-            "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"
+            "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"P
         when "4"   # DDMMCCYY
             "#{d[0,2]}/#{d[2,2]}/#{d[4,4]}"
         when "101" # YYMMDD
@@ -19,10 +19,14 @@ module EDIFACT
             "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}"
         when "204" # CCYYMMDDHHMMSS
             "#{d[6,2]}/#{d[4,2]}/#{d[0,4]} #{d[8,2]}:#{d[10,2]}:#{d[12,2]}"
+        when "305" # MMDDHHMM
+            "##{d[2,2]}/#{d[0,2]} #{d[4,2]}:#{d[6,2]}"
+        when "306" # DDHHMM
+            "#{d[0,2]} #{d[2,2]}:#{d[4,2]}"
         when "401" # HHMM
             "#{d[0,2]}:#{d[2,2]}"
         else
-            puts "Unmatchable qualifier: #{f}"
+           #puts "Unmatchable qualifier: #{f}"
             d
         end
         # Return value
