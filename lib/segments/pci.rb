@@ -7,6 +7,9 @@ module EDIFACT
             super(raw, line_no, version, chars)
             @marking_instructions = get_elements_by_code("4233").first
             @shipping_marks = get_elements_by_code("7102")
+            @type_of_marking = get_elements_by_code("7511").first
+            @code_list_qualifier = get_elements_by_code("1131").first
+            @responsible_agency = get_elements_by_code("3055").first
         end
 
         def apply_association_code_list(qualifier)

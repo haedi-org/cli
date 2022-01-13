@@ -18,6 +18,7 @@ module EDIFACT
         "MEA" => MEASegment,
         "NAD" => NADSegment,
         "PAC" => PACSegment,
+        "PAI" => PAISegment,
         "PCI" => PCISegment,
         "PIA" => PIASegment,
         "QTY" => QTYSegment,

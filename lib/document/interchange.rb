@@ -30,7 +30,7 @@ module EDIFACT
 
         def load_from_file(path = @path)
             start_load_time = Time.now
-            lines = File.readlines(path)
+            lines = File.readlines(path, :encoding => "UTF-8")
             @load_time = Time.now - start_load_time
             return lines
         end

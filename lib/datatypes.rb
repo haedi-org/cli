@@ -19,13 +19,6 @@ class String
         return check != nil
     end
 
-    # This is done by multiplying each of the first six digits by a factor of 
-    # 2 to 7 corresponding to their position from right to left. 
-    # The rightmost digit of this sum is the check digit. 
-
-    # For example, for IMO 9074729: 
-    # (9×7) + (0×6) + (7×5) + (4×4) + (7×3) + (2×2) = 139
-
     def is_imo?
         stripped = self.upcase.gsub("IMO ", "")
         # Check numeric
@@ -83,6 +76,10 @@ class String
 
     def is_sscc?
         return self.is_gtin_18?
+    end
+
+    def is_gln?
+        return self.is_gtin_13?
     end
 
     def is_gs1_id?

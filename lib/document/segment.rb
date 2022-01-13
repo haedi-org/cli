@@ -83,6 +83,12 @@ module EDIFACT
         def is?(tag_value)
             return @tag.value == tag_value
         end
+        
+        def get_code_list_qualifier(code_list, element)
+            return code_list.value unless code_list.blank?
+            return element.code unless element.blank?
+            return nil
+        end
 
         def debug
             out = ["", "SEGMENT : #{@data.inspect}"]

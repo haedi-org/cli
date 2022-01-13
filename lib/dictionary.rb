@@ -13,7 +13,9 @@
 FALLBACK_VERSION = "D97A"
 
 AGENCY_CODELIST_MAP = {
+#   3055    => [name, path],
     "9"     => ["eancom", "/eancom/cl.json"],
+    "10"    => ["odette", "/odette/cl.json"],
     "20"    => ["bic", "/bic/cl.json"],
     "166"   => ["nmfca", "/nmfca/cl.json"],
     "306"   => ["smdg", "/smdg/cl.json"],
@@ -48,10 +50,11 @@ class Dictionary
     def code_list_lookup(agency, qualifier = nil, code = nil)
         if AGENCY_CODELIST_MAP.key?(agency)
             name, path = AGENCY_CODELIST_MAP[agency]
-            data = retrieve_hash(name, path)[qualifier]
-            if data.key?(code)
+            data = retrieve_hash(name, path)
+            return {} unless data.key?(qualifier)
+            if data[qualifier].key?(code)
                 add_code_list_used("#{name.unkey.upcase} #{qualifier}")
-                return data[code]
+                return data[qualifier][code]
             end
         end
         return {}

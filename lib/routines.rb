@@ -39,34 +39,52 @@ end
 def routine_parse(path)
     out = []
     interchange = load_interchange(path)
+    # Interchange header
+    unless interchange.header.blank?
+        out << "Group UNB [Interchange header]".colorize(:white)
+        out << "  Segment UNB".colorize(:light_cyan)
+        for element in interchange.header.flatten do
+            unless element.blank?
+                out << "    #{element.name.titleize}".colorize(:white)
+                line = "      #{element.data_value}"
+                unless element.data_name.blank?
+                    line += " [#{element.data_name}]"
+                end
+                out << line.colorize(:light_magenta)
+            end
+        end
+    end
     for message in interchange.messages do
-        out << message.type
+        out << "Message #{message.type}".colorize(:light_blue)
         for group in message.groups do
-            out << "Group #{group.name}"
+            out << "  Group #{group.name}".colorize(:white)
             for segment in group.segments do
-                out << "  Segment #{segment.tag.value}"
+                out << "    Segment #{segment.tag.value}".colorize(:light_cyan)
                 for element in segment.flatten do
                     unless element.blank?
-                        out << "    #{element.name.titleize}"
-                        line = "      #{element.data_value}"
+                        out << "      #{element.name.titleize} (#{element.code})"
+                        line = "        #{element.data_value}"
                         unless element.data_name.blank?
                             line += " [#{element.data_name}]"
                         end
-                        out << line
-                        #arr = [
-                        #    element.code,
-                        #    element.name.titleize,
-                        #    element.position.join("_"),
-                        #    element.data_value,
-                        #    element.repr,
-                        #]
-                        #unless element.is_valid?
-                        #    arr << element.errors.first.message
-                        #end
-                        ##arr << TICK_CHARACTER if element.has_integrity?
-                        #out << arr.inspect
+                        out << line.colorize(:light_magenta)
                     end
                 end
+            end
+        end
+    end
+    # Interchange trailer
+    unless interchange.trailer.blank?
+        out << "Group UNZ [Interchange trailer]".colorize(:white)
+        out << "  Segment UNZ".colorize(:light_cyan)
+        for element in interchange.trailer.flatten do
+            unless element.blank?
+                out << "    #{element.name.titleize}".colorize(:white)
+                line = "      #{element.data_value}"
+                unless element.data_name.blank?
+                    line += " [#{element.data_name}]"
+                end
+                out << line.colorize(:light_magenta)
             end
         end
     end

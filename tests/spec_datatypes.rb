@@ -26,6 +26,11 @@ GTIN_14_TESTS = [
     ["70811234001539", true],
 ]
 
+GTIN_13_TESTS = [
+    ["6291041500213", true],
+    ["0847976000005", true],
+]
+
 VIN_TESTS = [
     ["1FTRX12V69FA11242", true],
     ["4T1BE32K85U528911", true],
@@ -62,10 +67,20 @@ ISO_6346_TESTS = [
 ]
 
 IMO_TESTS =[
+    ["IMO 9319466", true],
     ["IMO 9074729", true],
     ["imo 9074729", true],
     ["9074729", true],
     ["IMO 9074728", false],
+]
+
+ACRN_TESTS = [
+    ["A1", true],
+    ["2B", true],
+    ["C3", true],
+    ["I1", false],
+    ["0O", false],
+    ["A1B", false],
 ]
 
 RSpec.describe("haedi datatypes") do
@@ -90,6 +105,14 @@ RSpec.describe("haedi datatypes") do
         GTIN_14_TESTS.each do |code, bool|
             it("identifies '#{code}' as #{bool}") do
                 expect(code.is_gtin_14?).to(be(bool))
+            end
+        end
+    end
+
+    describe("GTIN-13") do
+        GTIN_13_TESTS.each do |code, bool|
+            it("identifies '#{code}' as #{bool}") do
+                expect(code.is_gtin_13?).to(be(bool))
             end
         end
     end
@@ -138,6 +161,14 @@ RSpec.describe("haedi datatypes") do
         IMO_TESTS.each do |code, bool|
             it("identifies '#{code}' as #{bool}") do
                 expect(code.is_imo?).to(be(bool))
+            end
+        end
+    end
+
+    describe("ACRN") do
+        ACRN_TESTS.each do |code, bool|
+            it("identifies '#{code}' as #{bool}") do
+                expect(code.is_acrn?).to(be(bool))
             end
         end
     end

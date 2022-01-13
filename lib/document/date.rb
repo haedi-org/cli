@@ -6,7 +6,7 @@ module EDIFACT
         when "2"   # DDMMYY
             "#{d[0,2]}/#{d[2,2]}/#{d[4,2]}"
         when "3"   # MMDDYY
-            "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"P
+            "#{d[2,2]}/#{d[0,2]}/#{d[4,2]}"
         when "4"   # DDMMCCYY
             "#{d[0,2]}/#{d[2,2]}/#{d[4,4]}"
         when "101" # YYMMDD
