@@ -43,7 +43,7 @@ class String
 end
 
 def parse_iso_6346_size_type(code)
-    # Ensure given code is ISO 6346 compiant
+    # Ensure given code is ISO 6346 compliant
     return nil unless code.is_iso_6346_size_and_type?
     data = $dictionary.load_json("/agencies/smdg/iso_6346.json")
     # Return nil if no ISO 6346 information is present
