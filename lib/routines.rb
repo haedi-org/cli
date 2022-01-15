@@ -152,25 +152,14 @@ def routine_debug(path)
     out = []
     interchange = load_interchange(path)
     for message in interchange.messages do
-        if message.is_a?(EDIFACT::DESADVMessage)
+        if message.is_a?(EDIFACT::BAPLIEMessage)
             out << message.debug
         end
     end
-    out << "EANCOM = #{interchange.messages.first.association_assigned_code}"
     # Print processing times
     load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
     process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
     out << "Finished in #{process_time} (files took #{load_time} to load)"
-    #document = Document.new(lines, path)
-    #out << edi_to_xml(document)
-    #for segment in document.segments do
-    #    # DTM testing
-    #    if segment.is_a?(DTMSegment)
-    #        out << segment.raw
-    #        out << segment.version
-    #        out << segment.date_time.data_name
-    #    end
-    #end
     return out
 end
 

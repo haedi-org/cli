@@ -15,13 +15,19 @@ module EDIFACT
         end
 
         def apply_code_list
-            data = $dictionary.code_list_lookup(
-                "6346", "SIZETYPE", @equipment_size_and_type.value
-            )
-            unless data.blank?
-                @equipment_size_and_type.set_data_name(data["name"])
-                @equipment_size_and_type.set_data_desc(data["desc"])
+            if @equipment_size_and_type.value.is_iso_6346_size_and_type?
+                data = parse_iso_6346_size_type(
+                    @equipment_size_and_type.value
+                )
+                @equipment_size_and_type.set_data_name(data) unless data.blank?
             end
+           #data = $dictionary.code_list_lookup(
+           #    "6346", "SIZETYPE", @equipment_size_and_type.value
+           #)
+           #unless data.blank?
+           #    @equipment_size_and_type.set_data_name(data["name"])
+           #    @equipment_size_and_type.set_data_desc(data["desc"])
+           #end
         end
 
         def debug

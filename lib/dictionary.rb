@@ -47,6 +47,12 @@ class Dictionary
         @code_lists_used = (@code_lists_used + [code_list_name]).uniq
     end
 
+    def data_list_lookup(name, dir = @dir)
+        path = "#{dir}/lists/#{name}.csv"
+        return [] unless File.file?(path)
+        return File.readlines(path)
+    end
+
     def code_list_lookup(agency, qualifier = nil, code = nil)
         if AGENCY_CODELIST_MAP.key?(agency)
             name, path = AGENCY_CODELIST_MAP[agency]
@@ -62,7 +68,8 @@ class Dictionary
 
     def has_version?(version)
         for datatype in ["uncl", "edcd", "eded"] do
-            path = "/un_edifact/#{datatype}/#{datatype.upcase}_#{version}.json"
+            basename = "#{datatype.upcase}_#{version}"
+            path = "/agencies/un_edifact/#{datatype}/#{basename}.json"
             return false unless File.file?(@dir + path)
         end
         return true
@@ -150,7 +157,8 @@ class Dictionary
             key = message.blank? ? version : message + "_" + version
             return entry[key] if entry.key?(key)
             # Otherwise load, store, and return
-            path = "/un_edifact/#{datatype}/#{datatype.upcase}_#{key}.json"
+            basename = "#{datatype.upcase}_#{key}"
+            path = "/agencies/un_edifact/#{datatype}/#{basename}.json"
             data = load_json(path)
             if data.blank? and (version != FALLBACK_VERSION)
                 data = retrieve_un_edifact_data(
@@ -178,7 +186,7 @@ class Dictionary
                 csv = entry[file_name]
             else
                 # Otherwise load, and store
-                path = "#{@dir}/#{standard}/lists/#{file_name}.csv"
+                path = "#{@dir}/agencies/#{standard}/lists/#{file_name}.csv"
                 return [] unless File.file?(path)
                 csv = CSV.read(path)
                 entry[file_name] = csv

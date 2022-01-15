@@ -143,7 +143,7 @@ module EDIFACT
         def debug
             out = []
             for stow in stowage_list.flatten.compact do
-                puts stow.full_empty
+                puts stow.size_type
             end
             #bays, rows, tiers = stowage_ranges
             #out << [bays.join(","), bays.length]

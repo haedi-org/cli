@@ -1,8 +1,13 @@
-DATA_COLORS = [
+DEFAULT_DATA_COLORS = [
     "#f44336", "#e81e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4",
     "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107",
     "#ff9800", "#ff5722", "#795548", "#9e9e9e", "#607d8b",
 ]
+
+def get_data_colors
+    colors = $dictionary.data_list_lookup("datacolors")
+    return colors == [] ? DEFAULT_DATA_COLORS : colors
+end
 
 def bayplan_array(message)
     bays, rows, tiers = message.stowage_ranges
@@ -51,6 +56,7 @@ end
 def html_bayplan(interchange)
     out = []
     col_count = 4
+    colors = get_data_colors()
     for message in interchange.messages(EDIFACT::BAPLIEMessage) do
         cols, index = Array.new(col_count) { [] }, -1
         bay_range, row_range, tier_range = message.stowage_ranges
@@ -80,7 +86,7 @@ def html_bayplan(interchange)
                         end
                         unless stow == nil
                             clr_index = carrier_list.find_index(stow.carrier_id)
-                            clr = DATA_COLORS[clr_index % DATA_COLORS.length]
+                            clr = colors[clr_index % colors.length]
                             st = "background-color: #{clr};"
                         else
                             st = "" 

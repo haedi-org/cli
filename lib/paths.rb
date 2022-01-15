@@ -7,7 +7,7 @@ CODE_PATH = "./data/codes"
 MESSAGE_PATH = "./data/messages"
 STRUCTURE_PATH ="./data/structures"
 SEGMENT_RULES_PATH = "./data/structures"
-DATA_PATH = "../docs/data/agencies"
+DATA_PATH = "../docs/data"
 
 EDIFACT_DOCUMENTS_PATH = "#{CODE_PATH}/edifact_documents.csv"
 EDIFACT_SEGMENTS_PATH = "#{CODE_PATH}/edifact_segments.csv"

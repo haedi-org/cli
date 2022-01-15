@@ -15,7 +15,6 @@ require 'colorize'
 #require_relative './test.rb'
 
 require_relative './generics.rb'
-require_relative './datatypes.rb'
 require_relative './paths.rb'
 require_relative './errors.rb'
 require_relative './reference.rb'
@@ -24,6 +23,9 @@ require_relative './dictionary.rb'
 require_relative './routines.rb'
 require_relative './history.rb'
 require_relative './morph.rb'
+
+require_relative './datatypes/datatypes.rb'
+require_relative './datatypes/iso_6346.rb'
 
 require_relative './document/date.rb'
 require_relative './document/interchange.rb'
