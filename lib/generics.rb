@@ -93,7 +93,10 @@ end
 
 class String
     def html_sanitize
-        return self.gsub("<", "&lt;").gsub(">", "&gt;")
+        return self
+            .gsub("<", "&lt;")
+            .gsub(">", "&gt;")
+            .gsub("\"", "&quot;")
     end
 
     def html(tag, ti: nil, id: nil, cl: nil, st: nil, href: nil,
@@ -102,7 +105,7 @@ class String
             ["id", id&.quote],
             ["class", cl&.quote],
             ["style", st&.quote],
-            ["title", ti&.quote],
+            ["title", ti&.html_sanitize.quote],
             ["href", href&.quote],
             ["colspan", colspan&.quote],
             ["onclick", onclick&.quote("'")],

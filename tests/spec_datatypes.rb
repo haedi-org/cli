@@ -152,7 +152,7 @@ RSpec.describe("haedi datatypes") do
     describe("ISO 6346") do
         ISO_6346_TESTS.each do |code, bool|
             it("identifies '#{code}' as #{bool}") do
-                expect(code.is_iso_6346?).to(be(bool))
+                expect(code.is_iso_6346_container_code?).to(be(bool))
             end
         end
     end

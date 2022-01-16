@@ -38,9 +38,9 @@ end
 
 task :debug do
     require './lib/datatypes.rb'
-    puts "SUDU1234569".is_iso_6346?
-    puts "OOLU1996346".is_iso_6346?
-    puts "CMBU2366346".is_iso_6346?
+    puts "SUDU1234569".is_iso_6346_container_code?
+    puts "OOLU1996346".is_iso_6346_container_code?
+    puts "CMBU2366346".is_iso_6346_container_code?
 end
 
 task :row_order do

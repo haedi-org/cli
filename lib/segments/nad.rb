@@ -18,13 +18,16 @@ module EDIFACT
                 validate_party_id()
             end
         end
-        
 
         def validate_party_id
             # EAN / GS1
             if @party_responsible_agency.value == "9"
                 @party_identification.tap do |element|
-                    result = element.value.is_gtin_13?
+                    if element.value.is_gtin_13?
+                        result = true
+                    else
+                        result = InvalidGTINError.new
+                    end
                     unless result == nil
                         element.set_integrity(result == true)
                         element.add_error(result) unless result == true

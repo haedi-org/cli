@@ -22,8 +22,9 @@ module EDIFACT
             set_trailer()
             set_spec()
             set_groups()
-            # Apply association code list
+            # Apply association code list and integrity validation
             apply_association_code_list()
+            apply_association_validation()
         end
 
         def apply_association_code_list()
@@ -32,6 +33,26 @@ module EDIFACT
                     begin
                         if self.is_eancom?
                             segment.apply_association_code_list("9")
+                        end
+                        if self.is_smdg?
+                            segment.apply_association_code_list("306")
+                        end
+                    rescue
+                        # => Association method not defined
+                    end
+                end
+            end
+        end
+
+        def apply_association_validation()
+            for group in @groups do
+                for segment in group.segments do
+                    begin
+                        if self.is_eancom?
+                            segment.apply_association_validation("9")
+                        end
+                        if self.is_smdg?
+                            segment.apply_association_validation("306")
                         end
                     rescue
                         # => Association method not defined

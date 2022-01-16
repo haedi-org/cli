@@ -67,6 +67,9 @@ def routine_parse(path)
                         unless element.data_name.blank?
                             line += " [#{element.data_name}]"
                         end
+                        unless element.data_desc.blank?
+                            line += " (#{element.data_desc})"
+                        end
                         out << line.colorize(:light_magenta)
                     end
                 end

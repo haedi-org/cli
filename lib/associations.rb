@@ -1,22 +1,7 @@
 module EDIFACT
-    EANCOM_ASSOCIATION_CODES = [
-        "EAN001", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN002", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN003", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN004", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN005", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN006", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN007", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN008", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN009", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN010", # GS1 version control number (GS1 Permanent Code) 	
-        "EAN011", # GS1 version control number (GS1 Permanent Code) 	
-        "GDSN23", # GDSN version 2.3 (GS1 Permanent Code)
-    ]
-
     class Message
         def is_eancom?
-            return EANCOM_ASSOCIATION_CODES.include?(@association_assigned_code)
+            return @association_assigned_code[0, 3] == "EAN"
         end
     
         def is_iata?
@@ -29,6 +14,10 @@ module EDIFACT
 
         def is_fhsa?
             return @controlling_agency == "FH"
+        end
+
+        def is_smdg?
+            return @association_assigned_code[0, 4] == "SMDG"
         end
     end
 end

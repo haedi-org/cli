@@ -11,16 +11,47 @@ module EDIFACT
             @equipment_id_number = get_elements_by_code("8260").first
             @full_empty_indicator = get_elements_by_code("8169").first
             @equipment_size_and_type = get_elements_by_code("8155").first
-            apply_code_list()
+        end
+
+        def apply_association_code_list(qualifier)
+            # SMDG
+            if qualifier == "306"
+                if @equipment_size_and_type.value.is_iso_6346_size_and_type?
+                    data = parse_iso_6346_size_type(
+                        @equipment_size_and_type.value
+                    )
+                    unless data.blank?
+                        @equipment_size_and_type.set_data_name(data["name"])
+                        @equipment_size_and_type.set_data_desc(data["desc"])
+                        @equipment_size_and_type.set_integrity(true)
+                    end
+                end
+            end
+        end
+
+        def apply_association_validation(qualifier)
+            # SMDG
+            if qualifier == "306"
+                if !(@equipment_qualifier.blank? or @equipment_id_number.blank?)
+                    if @equipment_qualifier.value == "CN"
+                        @equipment_id_number.tap do |element|
+                            if element.value.is_iso_6346_container_code?
+                                result = true
+                            else
+                                result = InvalidISO6346ContainerCode.new
+                            end
+                            unless result == nil
+                                element.set_integrity(result == true)
+                                element.add_error(result) unless result == true
+                            end
+                        end
+                    end
+                end
+            end
         end
 
         def apply_code_list
-            if @equipment_size_and_type.value.is_iso_6346_size_and_type?
-                data = parse_iso_6346_size_type(
-                    @equipment_size_and_type.value
-                )
-                @equipment_size_and_type.set_data_name(data) unless data.blank?
-            end
+            
            #data = $dictionary.code_list_lookup(
            #    "6346", "SIZETYPE", @equipment_size_and_type.value
            #)
@@ -32,7 +63,7 @@ module EDIFACT
 
         def debug
             out = []
-            unless (@equipment_id_number.value.is_iso_6346?)
+            unless (@equipment_id_number.value.is_iso_6346_container_code?)
                 out << ""
                 out << @equipment_qualifier.readable
                 out << @full_empty_indicator.readable

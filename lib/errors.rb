@@ -88,6 +88,12 @@ class InvalidGTINError < StandardError
     end
 end
 
+class InvalidISO6346ContainerCode < StandardError
+    def message
+        return "Bad ISO 6346 Container Code"
+    end
+end
+
 class MandatoryFieldError < StandardError
     def message
         return "Missing mandatory field"

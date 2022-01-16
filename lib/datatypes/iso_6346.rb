@@ -10,7 +10,7 @@ class String
 
     ISO_6346_CATEGORY_IDS = ['U', 'J', 'Z']
 
-    def is_iso_6346?
+    def is_iso_6346_container_code?
         # Check for correct length
         return false unless self.length == 11
         # Check 4th character is a valid category identifier
@@ -49,8 +49,6 @@ def parse_iso_6346_size_type(code)
     # Return nil if no ISO 6346 information is present
     return nil if data.blank?
     data = data["SIZETYPE"]
-    # Find name if value is common
-    name = data["common"].key?(code) ? "#{data["common"][code]} (#{code})" : nil
     # Breakdown and parse code
     l_code, h_w_code, t_code = code[0, 1], code[1, 1], code[2, 2]
     l = data["length"].key?(l_code  ) ? data["length"][l_code  ] : nil
@@ -60,5 +58,8 @@ def parse_iso_6346_size_type(code)
     # Return nil if any values are not represented
     return nil unless [l, h, w, t].compact.length == 4
     # Return name and description of size and type
-    return [name == nil ? code : name, "L/H/W: #{l} × #{h} × #{w}; TYPE: #{t}"]
+    return {
+        "name" => data["common"].key?(code) ? data["common"][code] : code,
+        "desc" => "#{t} (#{l} × #{h} × #{w})"
+    }
 end
