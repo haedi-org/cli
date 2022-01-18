@@ -1,6 +1,14 @@
 # ROOT_DIR = __dir__
 require_relative './lib/paths.rb'
 
+task :formtest do
+    require './lib/forms/form.rb'
+    form = Form::Page.new(:name => 'TEST', :length => 30)
+    form.add_box(10, 20, 30, 40)
+    form.add_text(20, 20, 'BLAH', 40, 20)
+    puts "ZPL:", form.to_zpl
+end
+
 task :default do
     puts "build\t\tbuild executable using ocra"
     puts "test\t\trun rspec"

@@ -77,4 +77,6 @@ require_relative './document/message_map.rb'
 require_relative './html/html.rb'
 require_relative './html/bayplan.rb'
 
+require_relative './forms/form.rb'
+
 require_relative './cli.rb'
