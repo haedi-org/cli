@@ -22,6 +22,7 @@ module EDIFACT
             unless @spec.blank?
                 apply_segment_spec()
             else
+                parse_without_spec()
                 @errors << NoSpecificationError.new
             end
         end
@@ -49,9 +50,15 @@ module EDIFACT
             @elements = @spec["structure"].map do |code|
                 is_composite = ((code.first == "C") or (code.first == "S"))
                 index += 1
-                params = [code, @version, [index], get_data(index, is_composite)]
+                params = [
+                    code, @version, [index], get_data(index, is_composite)
+                ]
                 is_composite ? Composite.new(*params) : Element.new(*params)
             end
+        end
+
+        def parse_without_spec
+            # TODO
         end
 
         def split_data_by_chars
