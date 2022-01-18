@@ -13,6 +13,9 @@ module Form
         def FieldData(d); "^FD#{d}"; end
         def GraphicBox(w, h, t, c, r); "^GB#{w},#{h},#{t},#{c},#{r}"; end
         def Font(n = DEFAULT_FONT, w = 1, h = 1); "^A#{n},#{h},#{w}"; end
+        def Comment(d); "^FX#{d}"; end
+        def BarcodeField(w = 2, r = 3, h = 10); "^BY#{w},#{r},#{h}"; end
+        def Code128(o = 'N'); "^BC#{o}"; end
     end
 
     class Page
@@ -51,6 +54,10 @@ module Form
         def add_text(x = 0, y = 0, d = '', w = 1, h = 1)
             @form_elements << Text.new(x, y, d, w, h)
         end
+
+        def add_barcode(x = 0, y = 0, d = '')
+            @form_elements << Barcode.new(x, y, d)
+        end
     end
 
     class Element
@@ -87,6 +94,29 @@ module Form
         def debug
             super
             puts [@x, @y, @w, @h, @c, @r].inspect
+        end
+    end
+
+    class Barcode < Element
+        def initialize(x = 0, y = 0, d = '', w = 2, r = 3, h = 10)
+            super("BARCODE")
+            @x, @y, @d = x, y, d
+            @w, @r, @h = w, r, h
+        end
+
+        def to_zpl
+            @lines = []
+            @lines << ZPL::BarcodeField(@w, @r, @h)
+            @lines << ZPL::FieldPosition(@x, @y)
+            @lines << ZPL::Code128()
+            @lines << ZPL::FieldData(@d)
+            @lines << ZPL::FieldSeperator
+            return @lines
+        end
+
+        def debug
+            super
+            puts [@x, @y, @d, @w, @h].inspect
         end
     end
 
