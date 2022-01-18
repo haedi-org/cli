@@ -18,6 +18,11 @@ module Form
         def Code128(o = 'N'); "^BC#{o}"; end
     end
 
+    module Symbology
+        Default = 'code128'
+        Code128 = 'code128'
+    end
+
     class Page
         attr_reader :name, :length
 
@@ -26,21 +31,21 @@ module Form
             @form_elements = []
         end
 
-        def set_length(len)
-            @length = len
-        end
-
         def to_zpl
-            @lines = []
-            @lines << ZPL::Start
-            @lines << ZPL::LabelLength(@length) unless @length == nil
-            @lines << @form_elements.map { |element| element.to_zpl }
-            @lines << ZPL::End
-            return @lines.join
+            arr = []
+            arr << ZPL::Start
+            arr << ZPL::LabelLength(@length) unless @length == nil
+            arr << @form_elements.map { |element| element.to_zpl }
+            arr << ZPL::End
+            return arr
         end
 
         def debug
             # ...
+        end
+
+        def set_length(length)
+            @length = length
         end
 
         def set_font(n = ZPL::DEFAULT_FONT, w = 1, h = 1)
@@ -55,7 +60,7 @@ module Form
             @form_elements << Text.new(x, y, d, w, h)
         end
 
-        def add_barcode(x = 0, y = 0, d = '')
+        def add_barcode(x = 0, y = 0, d = '', sym = Symbology::Default)
             @form_elements << Barcode.new(x, y, d)
         end
     end
@@ -84,11 +89,12 @@ module Form
         end
 
         def to_zpl
-            @lines = []
-            @lines << ZPL::FieldPosition(@x, @y)
-            @lines << ZPL::GraphicBox(@w, @h, @t, @c, @r)
-            @lines << ZPL::FieldSeperator
-            return @lines
+            arr = []
+            arr << ZPL::Comment(@name)
+            arr << ZPL::FieldPosition(@x, @y)
+            arr << ZPL::GraphicBox(@w, @h, @t, @c, @r)
+            arr << ZPL::FieldSeperator
+            return arr
         end
 
         def debug
@@ -98,25 +104,31 @@ module Form
     end
 
     class Barcode < Element
-        def initialize(x = 0, y = 0, d = '', w = 2, r = 3, h = 10)
+        def initialize(x = 0, y = 0, d = '', w = 2, r = 3, h = 10, 
+        symbology: Symbology::Default)
             super("BARCODE")
             @x, @y, @d = x, y, d
             @w, @r, @h = w, r, h
+            @symbology = symbology
         end
 
         def to_zpl
-            @lines = []
-            @lines << ZPL::BarcodeField(@w, @r, @h)
-            @lines << ZPL::FieldPosition(@x, @y)
-            @lines << ZPL::Code128()
-            @lines << ZPL::FieldData(@d)
-            @lines << ZPL::FieldSeperator
-            return @lines
+            arr = []
+            arr << ZPL::Comment(@name)
+            arr << ZPL::BarcodeField(@w, @r, @h)
+            arr << ZPL::FieldPosition(@x, @y)
+            case @symbology
+                when Symbology::Code128; arr << ZPL::Code128()
+                else; arr << ZPL::Code128()
+            end
+            arr << ZPL::FieldData(@d)
+            arr << ZPL::FieldSeperator
+            return arr
         end
 
         def debug
             super
-            puts [@x, @y, @d, @w, @h].inspect
+            puts [@x, @y, @d, @w, @r, @h].inspect
         end
     end
 
@@ -127,12 +139,13 @@ module Form
         end
 
         def to_zpl
-            @lines = []
-            @lines << ZPL::FieldPosition(@x, @y)
-            @lines << ZPL::Font(ZPL::DEFAULT_FONT, @w, @h)
-            @lines << ZPL::FieldData(@d)
-            @lines << ZPL::FieldSeperator
-            return @lines
+            arr = []
+            arr << ZPL::Comment(@name)
+            arr << ZPL::FieldPosition(@x, @y)
+            arr << ZPL::Font(ZPL::DEFAULT_FONT, @w, @h)
+            arr << ZPL::FieldData(@d)
+            arr << ZPL::FieldSeperator
+            return arr
         end
 
         def debug
@@ -148,8 +161,10 @@ module Form
         end
 
         def to_zpl
-            @lines << ZPL.Font(@n, @w, @h)
-            
+            arr = []
+            arr << ZPL::Comment(@name)
+            arr << ZPL::Font(@n, @w, @h)
+            return arr
         end
 
         def debug
