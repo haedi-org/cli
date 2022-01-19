@@ -1,7 +1,9 @@
 module EDIFACT
     class DESADVMessage < Message
-        def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
-            super(lines, interchange_version, chars)
+        def initialize(
+            lines, interchange_version = '4', chars = DEFAULT_CHARS, 
+            application_reference = nil)
+            super(lines, interchange_version, chars, application_reference)
             @consignment = {}
         end
 

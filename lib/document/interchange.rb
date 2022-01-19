@@ -2,6 +2,7 @@ module EDIFACT
     class Interchange
         attr_reader :path, :raw
         attr_reader :header, :trailer, :version
+        attr_reader :application_reference
         attr_reader :load_time, :process_time
 
         def initialize(path)
@@ -15,17 +16,19 @@ module EDIFACT
             @version = '4'
             @chars = nil
             @errors = []
+            @application_reference = nil
             # Initial methods
             set_punctuation_values()
             split_lines_by_terminator()
             set_interchange_envelope()
+            set_critical_values()
             set_messages()
             @process_time = Time.now - start_process_time
         end
 
         def messages(filter = nil)
-            return @messages if filter == nil
-            return @messages.select { |message| message.is_a?(filter) }
+            return @messages.compact if filter == nil
+            return @messages.compact.select { |message| message.is_a?(filter) }
         end
 
         def load_from_file(path = @path)
@@ -88,6 +91,15 @@ module EDIFACT
             end
         end
 
+        def set_critical_values()
+            unless @header.blank?
+                @application_reference = @header.application_reference.value
+            end
+            unless @footer.blank?
+                # ...
+            end
+        end
+
         def group_lines_by_envelope(opener, closer)
             groups, group, is_opened = [], [], false
             line_no = -1
@@ -107,7 +119,8 @@ module EDIFACT
 
         def set_messages()
             @messages = group_lines_by_envelope('UNH', 'UNT').map! do |lines|
-                MessageFactory.new(lines, @version, @chars).message
+                params = [lines, @version, @chars, @application_reference]
+                MessageFactory.new(*params).message
             end
         end
 

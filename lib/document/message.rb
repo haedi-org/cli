@@ -4,13 +4,16 @@
 module EDIFACT
     class Message
         attr_reader :version, :groups, :type, :reference
-        attr_reader :association_assigned_code
+        attr_reader :association_assigned_code, :application_reference
         attr_reader :header, :trailer
 
-        def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS)
+        def initialize(
+            lines, interchange_version = '4', chars = DEFAULT_CHARS, 
+            application_reference = nil)
             @lines = lines
             @interchange_version = interchange_version
             @chars = chars
+            @application_reference = application_reference
             @spec = nil
             @type = nil
             @version = nil

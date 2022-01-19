@@ -19,5 +19,11 @@ module EDIFACT
         def is_smdg?
             return @association_assigned_code[0, 4] == "SMDG"
         end
+
+        def is_unicorn?
+            return true if @controlling_agency == "TTI"
+            return true if @application_reference.include?("UNICORN")
+            return false
+        end
     end
 end

@@ -67,9 +67,9 @@ def routine_parse(path)
                         unless element.data_name.blank?
                             line += " [#{element.data_name}]"
                         end
-                        unless element.data_desc.blank?
-                            line += " (#{element.data_desc})"
-                        end
+                       #unless element.data_desc.blank?
+                       #    line += " (#{element.data_desc})"
+                       #end
                         out << line.colorize(:light_magenta)
                     end
                 end
@@ -155,9 +155,7 @@ def routine_debug(path)
     out = []
     interchange = load_interchange(path)
     for message in interchange.messages do
-        if message.is_a?(EDIFACT::BAPLIEMessage)
-            out << message.debug
-        end
+        out << "UNICORN? = #{message.is_unicorn?}"
     end
     # Print processing times
     load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
