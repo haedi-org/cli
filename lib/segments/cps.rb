@@ -4,7 +4,7 @@ module EDIFACT
         attr_reader :packaging_level
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @hierarchical_id_number = get_elements_by_code("7164").first
             @hierarchical_parent_id = get_elements_by_code("7166").first
             @packaging_level = get_elements_by_code("7075").first

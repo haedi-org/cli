@@ -4,7 +4,7 @@ module EDIFACT
         attr_reader :code_list_qualifier, :responsible_agency
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @document_name = get_elements_by_code("1001").first
             @code_list_qualifier = get_elements_by_code("1131").first
             @responsible_agency = get_elements_by_code("3055").first

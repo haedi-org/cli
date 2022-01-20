@@ -5,21 +5,27 @@ module EDIFACT
         attr_reader :association_assigned_code
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
-            @message_reference = get_elements_by_code("0062").first
-            @message_type = get_elements_by_code("0065").first
-            @message_version = get_elements_by_code("0052").first
-            @message_release = get_elements_by_code("0054").first
-            @controlling_agency = get_elements_by_code("0051").first
-            @association_assigned_code = get_elements_by_code("0057").first
-            debug
+            super(raw, line_no, version, chars, subset)
+            set_critical_values()
         end
 
-        def debug
-            for element in flatten do
-                puts [element.code, element.value].join("\t")
+        def set_critical_values()
+            case @subset
+            when nil # UN/EDIFACT
+                @message_reference = get_elements_by_code("0062").first
+                @message_type = get_elements_by_code("0065").first
+                @message_version = get_elements_by_code("0052").first
+                @message_release = get_elements_by_code("0054").first
+                @controlling_agency = get_elements_by_code("0051").first
+                @association_assigned_code = get_elements_by_code("0057").first
+            when "UNICORN"
+                @message_reference = get_elements_by_code("0062").first
+                @message_type = get_elements_by_code("0065").first
+                @message_version = get_elements_by_code("0052").first
+                @common_access_reference = get_elements_by_code("0068").first
+                @sequence_of_transfers = get_elements_by_code("0070").first
+                @first_and_last_transfer = get_elements_by_code("0073").first
             end
-            puts @raw
         end
 
         def assn_assigned_code
@@ -27,6 +33,7 @@ module EDIFACT
         end
 
         def version_key
+            return @message_version.value if @message_release.blank?
             return @message_version.value + @message_release.value
         end
     end

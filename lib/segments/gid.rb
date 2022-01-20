@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :goods_item_number
         
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @goods_item_number = get_elements_by_code("1496").first
         end
     end

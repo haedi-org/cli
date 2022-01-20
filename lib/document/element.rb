@@ -5,24 +5,36 @@ module EDIFACT
         attr_reader :data_value, :data_name, :data_desc
         attr_reader :errors
 
-        def initialize(code, version, position, value = "")
+        def initialize(code, version, position, value = "", subset = nil)
             @code = code
             @version = version
             @data_value = value == nil ? "" : value
+            @subset = subset
             @position = position
             @integrity = false
             @errors = []
             # Retrieve and apply coded data
-            @coded_data = $dictionary.coded_data_reference(code, value, version)
+            set_coded_data()
             apply_coded_data()
             # Retrieve and apply element specification data
-            unless $dictionary.is_service_element?(@code)
-                @spec = $dictionary.element_specification(@code, @version)
-            else
-                @spec = $dictionary.service_element_specification(@code)
-            end
+            set_spec()
             apply_element_spec()
             check_against_repr() unless @repr.blank?
+        end
+
+        def set_coded_data()
+            params = [@code, @data_value, @version, @subset]
+            @coded_data = $dictionary.coded_data_reference(*params)
+        end
+
+        def set_spec()
+            unless $dictionary.is_service_element?(@code, @subset)
+                params = [@code, @version, @subset]
+                @spec = $dictionary.element_specification(*params)
+            else
+                params = [@code, nil, @subset]
+                @spec = $dictionary.service_element_specification(*params)
+            end
         end
 
         def check_against_repr

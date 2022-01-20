@@ -75,49 +75,87 @@ class Dictionary
         return true
     end
 
-    def is_service_segment?(value, standard = "un_edifact")
-        params = ["service_segments", standard]
+    def is_service_segment?(value, subset = nil)
+        subset = "un_edifact" if subset.blank?
+        params = ["service_segments", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
-    def is_service_element?(value, standard = "un_edifact")
-        params = ["service_simple_elements", standard]
+    def is_service_element?(value, subset = nil)
+        subset = "un_edifact" if subset.blank?
+        params = ["service_simple_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
-    def is_service_composite?(value, standard = "un_edifact")
-        params = ["service_composite_elements", standard]
+    def is_service_composite?(value, subset = nil)
+        subset = "un_edifact" if subset.blank?
+        params = ["service_composite_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
-    def coded_data_reference(code, value, version, standard = "un_edifact")
-        return {} if (version == nil) or (value == nil)
-        data = retrieve_un_edifact_data("UNCL", version)
+    def coded_data_reference(code, value, version = nil, subset = nil)
+        version = FALLBACK_VERSION if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("UNCL", version)
+        else
+            case subset
+            when "UNICORN"; params = ["CL", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return {} if data.dig(code, value) == nil
         return data[code][value]
     end
     
-    def element_specification(code, version, standard = "un_edifact")
-        return {} if version == nil
-        data = retrieve_un_edifact_data("EDED", version)
+    def element_specification(code, version = nil, subset = nil)
+        version = FALLBACK_VERSION if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("ED", version)
+        else
+            case subset
+            when "UNICORN"; params = ["ED", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(code) ? data[code] : {}
     end
 
-    def service_element_specification(code, version = "40000")
-        return {} if version == nil
-        data = retrieve_un_edifact_data("SE", version)
+    def service_element_specification(code, version = nil, subset = nil)
+        version = "40000" if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("SE", version)
+        else
+            case subset
+            when "UNICORN"; params = ["SE", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(code) ? data[code] : {}
     end
 
-    def composite_specification(code, version, standard = "un_edifact")
-        return {} if version == nil
-        data = retrieve_un_edifact_data("EDCD", version)
+    def composite_specification(code, version = nil, subset = nil)
+        version = FALLBACK_VERSION if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("EDCD", version)
+        else
+            case subset
+            when "UNICORN"; params = ["CD", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(code) ? data[code] : {}
     end
 
-    def service_composite_specification(code, version = "40000")
-        return {} if version == nil
-        data = retrieve_un_edifact_data("SC", version)
+    def service_composite_specification(code, version = "40000", subset = nil)
+        version = "40000" if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("SC", version)
+        else
+            case subset
+            when "UNICORN"; params = ["SC", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(code) ? data[code] : {}
     end
 
@@ -127,17 +165,24 @@ class Dictionary
             data = retrieve_un_edifact_data("EDSD", version)
         else
             case subset
-            when "UNICORN"; params = ["SD", "UNICORN", "22", message]
+            when "UNICORN"; params = ["SD", "UNICORN", "22"]
             end
             data = retrieve_subset_data(*params)
         end
         return data.key?(tag) ? data[tag] : {}
     end
 
-    def service_segment_specification(tag, version = "40000")
+    def service_segment_specification(tag, version = "40000", subset = nil)
         return self.una_segment_specification(version) if tag == 'UNA'
-        return {} if version == nil
-        data = retrieve_un_edifact_data("SS", version)
+        version = "40000" if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("SS", version)
+        else
+            case subset
+            when "UNICORN"; params = ["SS", "UNICORN", "22"]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(tag) ? data[tag] : {}
     end
 
@@ -160,12 +205,13 @@ class Dictionary
         return data
     end
 
-    def retrieve_subset_data(datatype, subset, version, message)
+    def retrieve_subset_data(datatype, subset, version, message = nil)
         # Ensure correct casing on all strings
         datatype = datatype.downcase
         version = version.upcase unless version == nil
         message = message.upcase unless message == nil
         #
+        @cache[subset] = {} unless @cache.key?(subset)
         if @cache.dig(subset, datatype).blank?
             @cache[subset] = { datatype => {} }
         end
@@ -175,7 +221,7 @@ class Dictionary
             return entry[key] if entry.key?(key)
             # Otherwise load, store, and return
             basename = "#{datatype.upcase}_#{key}"
-            path = "/agencies/#{subset}/#{datatype}/#{basename}.json"
+            path = "/agencies/#{subset.downcase}/#{datatype}/#{basename}.json"
             data = load_json(path)
             entry[key] = data unless data.blank?
             return data
@@ -215,14 +261,16 @@ class Dictionary
         return data
     end
 
-    def retrieve_csv_column(file_name, standard = "un_edifact", column = 0)
+    def retrieve_csv_column(file_name, subset = "un_edifact", column = 0)
         # In context of the correct entry in the cache
-        @cache[standard]["lists"].tap do |entry|
+        @cache[subset] = {} unless @cache.key?(subset)
+        @cache[subset]["lists"] = {} if @cache.dig(subset, "lists").blank?
+        @cache[subset]["lists"].tap do |entry|
             if entry.key?(file_name)
                 csv = entry[file_name]
             else
                 # Otherwise load, and store
-                path = "#{@dir}/agencies/#{standard}/lists/#{file_name}.csv"
+                path = "#{@dir}/agencies/#{subset}/lists/#{file_name}.csv"
                 return [] unless File.file?(path)
                 csv = CSV.read(path)
                 entry[file_name] = csv

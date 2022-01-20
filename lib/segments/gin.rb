@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :identity_number_qualifier, :identity_numbers
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @identity_number_qualifier = get_elements_by_code("7405").first
             @identity_numbers = get_elements_by_code("7402")
             unless @identity_number_qualifier.blank? or @identity_numbers.blank?

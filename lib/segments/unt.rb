@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :number_of_segments, :message_reference_number
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @number_of_segments = get_elements_by_code("0074").first
             @message_reference_number = get_elements_by_code("0062").first
         end

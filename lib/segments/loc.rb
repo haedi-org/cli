@@ -9,7 +9,7 @@ module EDIFACT
         attr_reader :stowage_location
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @stowage_location = nil
             # 010
             @location_qualifier = get_elements_by_code("3227").first

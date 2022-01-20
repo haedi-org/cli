@@ -12,7 +12,7 @@ module EDIFACT
             @subset = subset
             @elements = []
             @errors = []
-            @tag = Tag.new(raw[0, 3], version)
+            @tag = Tag.new(raw[0, 3], version, subset)
             # Retrieve specification from dictionary
             set_spec()
             split_data_by_chars() unless @chars.blank?
@@ -27,10 +27,10 @@ module EDIFACT
         def set_spec()
             unless $dictionary.is_service_segment?(@tag.value)
                 params = [@tag.value, @version, @subset]
-                puts params.inspect
-                @spec = {} #$dictionary.segment_specification(*params)
+                @spec = $dictionary.segment_specification(*params)
             else
-                @spec = $dictionary.service_segment_specification(@tag.value)
+                params = [@tag.value, nil, @subset]
+                @spec = $dictionary.service_segment_specification(*params)
             end
         end
 
@@ -55,10 +55,12 @@ module EDIFACT
         def apply_segment_spec
             index = 0 # Skip tag
             @elements = @spec["structure"].map do |code|
-                is_composite = ((code.first == "C") or (code.first == "S"))
+               #is_composite = ((code.first == "C") or (code.first == "S"))
+                is_composite = @spec["elements"][code]["composite"]
                 index += 1
                 params = [
-                    code, @version, [index], get_data(index, is_composite)
+                    code, @version, [index], 
+                    get_data(index, is_composite), @subset
                 ]
                 is_composite ? Composite.new(*params) : Element.new(*params)
             end

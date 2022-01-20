@@ -6,7 +6,7 @@ module EDIFACT
         attr_reader :measurement_value
         
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @measurement_purpose = get_elements_by_code("6311").first
             @property_measured = get_elements_by_code("6313").first
             @measure_unit_qualifier = get_elements_by_code("6411").first

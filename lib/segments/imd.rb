@@ -6,7 +6,7 @@ module EDIFACT
         attr_reader :item_description
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @item_description_type = get_elements_by_code("7077").first
             @item_characteristic = get_elements_by_code("7081").first
             @item_description_id = get_elements_by_code("7009").first

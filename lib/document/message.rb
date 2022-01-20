@@ -73,14 +73,21 @@ module EDIFACT
         def set_header()
             for line_no, line_data in @lines do
                 if line_data.first(3) == 'UNH'
-                    params = [line_data, line_no, @interchange_version, @chars]
+                    params = [
+                        line_data, line_no, @interchange_version, 
+                        @chars, get_subset()
+                    ]
                     @header = SegmentFactory.new(*params).segment
                     @reference = @header.message_reference.data_value
                     @type = @header.message_type.data_value
                     @version = @header.version_key
-                    @association_assigned_code = (
-                        @header.association_assigned_code.data_value
-                    )
+                    if @header.association_assigned_code.blank?
+                        @association_assigned_code = nil
+                    else
+                        @association_assigned_code = (
+                            @header.association_assigned_code.data_value
+                        )
+                    end
                 end
             end
         end
@@ -88,7 +95,10 @@ module EDIFACT
         def set_trailer()
             for line_no, line_data in @lines do
                 if line_data.first(3) == 'UNT'
-                    params = [line_data, line_no, @interchange_version, @chars]
+                    params = [
+                        line_data, line_no, @interchange_version, 
+                        @chars, get_subset()
+                    ]
                     @trailer = SegmentFactory.new(*params).segment
                 end
             end

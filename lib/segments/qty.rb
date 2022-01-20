@@ -5,7 +5,7 @@ module EDIFACT
         attr_reader :measure_unit_qualifier
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            super(raw, line_no, version, chars)
+            super(raw, line_no, version, chars, subset)
             @quantity_qualifier = get_elements_by_code("6063").first
             @quantity = get_elements_by_code("6060").first
             @measure_unit_qualifier = get_elements_by_code("6411").first
