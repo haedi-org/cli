@@ -5,7 +5,7 @@ module EDIFACT
         attr_reader :full_empty_indicator
         attr_reader :equipment_size_and_type
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @equipment_qualifier = get_elements_by_code("8053").first
             @equipment_id_number = get_elements_by_code("8260").first

@@ -5,7 +5,7 @@ module EDIFACT
         attr_reader :party_code_list
         attr_reader :party_responsible_agency
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @party_qualifier = get_elements_by_code("3035").first
             @party_identification = get_elements_by_code("3039").first

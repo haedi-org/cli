@@ -4,7 +4,7 @@ module EDIFACT
         attr_reader :message_type, :controlling_agency
         attr_reader :association_assigned_code
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @message_reference = get_elements_by_code("0062").first
             @message_type = get_elements_by_code("0065").first
@@ -12,6 +12,14 @@ module EDIFACT
             @message_release = get_elements_by_code("0054").first
             @controlling_agency = get_elements_by_code("0051").first
             @association_assigned_code = get_elements_by_code("0057").first
+            debug
+        end
+
+        def debug
+            for element in flatten do
+                puts [element.code, element.value].join("\t")
+            end
+            puts @raw
         end
 
         def assn_assigned_code

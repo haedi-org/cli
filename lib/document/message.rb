@@ -40,6 +40,9 @@ module EDIFACT
                         if self.is_smdg?
                             segment.apply_association_code_list("306")
                         end
+                        if self.is_unicorn?
+                            segment.apply_association_code_list("UNICORN")
+                        end
                     rescue
                         # => Association method not defined
                     end
@@ -56,6 +59,9 @@ module EDIFACT
                         end
                         if self.is_smdg?
                             segment.apply_association_validation("306")
+                        end
+                        if self.is_unicorn?
+                            segment.apply_association_validation("UNICORN")
                         end
                     rescue
                         # => Association method not defined
@@ -88,12 +94,18 @@ module EDIFACT
             end
         end
 
+        def get_subset()
+            return "UNICORN" if self.is_unicorn?
+            return nil
+        end
+
         def set_spec()
-            @spec = $dictionary.message_structure_specification(@type, @version)
+            params = [@type, @version, get_subset()]
+            @spec = $dictionary.message_structure_specification(*params)
         end
 
         def set_groups()
-            params = [@lines, @spec, @version, @chars]
+            params = [@lines, @spec, @version, @chars, get_subset()]
             group_factory = GroupFactory.new(*params)
             @groups = group_factory.groups
         end

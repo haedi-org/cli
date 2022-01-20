@@ -3,27 +3,34 @@ module EDIFACT
         attr_reader :elements, :line_no, :raw, :errors
         attr_reader :tag, :data, :chars, :version, :spec
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             @raw = raw
             @data = @raw.dup
             @line_no = line_no
             @version = version
             @chars = chars
+            @subset = subset
             @elements = []
             @errors = []
             @tag = Tag.new(raw[0, 3], version)
             # Retrieve specification from dictionary
-            unless $dictionary.is_service_segment?(@tag.value)
-                @spec = $dictionary.segment_specification(@tag.value, @version)
-            else
-                @spec = $dictionary.service_segment_specification(@tag.value)
-            end
+            set_spec()
             split_data_by_chars() unless @chars.blank?
             unless @spec.blank?
                 apply_segment_spec()
             else
                 parse_without_spec()
                 @errors << NoSpecificationError.new
+            end
+        end
+
+        def set_spec()
+            unless $dictionary.is_service_segment?(@tag.value)
+                params = [@tag.value, @version, @subset]
+                puts params.inspect
+                @spec = {} #$dictionary.segment_specification(*params)
+            else
+                @spec = $dictionary.service_segment_specification(@tag.value)
             end
         end
 

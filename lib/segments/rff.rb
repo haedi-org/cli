@@ -2,7 +2,7 @@ module EDIFACT
     class RFFSegment < Segment
         attr_reader :reference_qualifier, :reference_number
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @reference_qualifier = get_elements_by_code("1153").first
             @reference_number = get_elements_by_code("1154").first

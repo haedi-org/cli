@@ -8,7 +8,7 @@ module EDIFACT
         attr_reader :location_responsible_agency
         attr_reader :stowage_location
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @stowage_location = nil
             # 010

@@ -4,7 +4,7 @@ module EDIFACT
         attr_reader :packaging_level
         attr_reader :type_of_packages_id
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @number_of_packages = get_elements_by_code("7224").first
             @packaging_level = get_elements_by_code("7075").first

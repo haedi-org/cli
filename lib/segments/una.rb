@@ -1,6 +1,6 @@
 module EDIFACT
     class UNASegment < Segment
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             @raw = raw
             @data = @raw.dup
             @line_no = line_no

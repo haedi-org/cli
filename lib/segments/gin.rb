@@ -2,7 +2,7 @@ module EDIFACT
     class GINSegment < Segment
         attr_reader :identity_number_qualifier, :identity_numbers
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @identity_number_qualifier = get_elements_by_code("7405").first
             @identity_numbers = get_elements_by_code("7402")

@@ -121,9 +121,16 @@ class Dictionary
         return data.key?(code) ? data[code] : {}
     end
 
-    def segment_specification(tag, version, standard = "un_edifact")
+    def segment_specification(tag, version, subset = "un_edifact")
         return {} if version == nil
-        data = retrieve_un_edifact_data("EDSD", version)
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("EDSD", version)
+        else
+            case subset
+            when "UNICORN"; params = ["SD", "UNICORN", "22", message]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data.key?(tag) ? data[tag] : {}
     end
 
@@ -140,10 +147,39 @@ class Dictionary
         return data.key?("UNA") ? data["UNA"] : {}
     end
 
-    def message_structure_specification(message, version)
+    def message_structure_specification(message, version = nil, subset = nil)
         return {} if version == nil
-        data = retrieve_un_edifact_data("EDMD", version, message)
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("EDMD", version, message)
+        else
+            case subset
+            when "UNICORN"; params = ["MD", "UNICORN", "22", message]
+            end
+            data = retrieve_subset_data(*params)
+        end
         return data
+    end
+
+    def retrieve_subset_data(datatype, subset, version, message)
+        # Ensure correct casing on all strings
+        datatype = datatype.downcase
+        version = version.upcase unless version == nil
+        message = message.upcase unless message == nil
+        #
+        if @cache.dig(subset, datatype).blank?
+            @cache[subset] = { datatype => {} }
+        end
+        @cache[subset][datatype].tap do |entry|
+            # Return cached version if it exists
+            key = message.blank? ? version : message + "_" + version
+            return entry[key] if entry.key?(key)
+            # Otherwise load, store, and return
+            basename = "#{datatype.upcase}_#{key}"
+            path = "/agencies/#{subset}/#{datatype}/#{basename}.json"
+            data = load_json(path)
+            entry[key] = data unless data.blank?
+            return data
+        end
     end
 
     def retrieve_un_edifact_data(datatype, version, message = nil)

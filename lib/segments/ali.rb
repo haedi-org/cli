@@ -4,7 +4,7 @@ module EDIFACT
         attr_reader :type_of_duty_regime
         attr_reader :special_conditions
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @country_of_origin = get_elements_by_code("3239").first
             @type_of_duty_regime = get_elements_by_code("9213").first

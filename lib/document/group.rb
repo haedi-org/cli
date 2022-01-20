@@ -5,11 +5,12 @@ module EDIFACT
     class Group
         attr_reader :name, :segments
 
-        def initialize(name, lines, message_version, chars)
+        def initialize(name, lines, message_version, chars, subset = nil)
             @name = name
             @lines = lines
             @message_version = message_version
             @chars = chars
+            @subset = subset
             @segments = []
             # Initial methods
             set_segments()
@@ -21,7 +22,7 @@ module EDIFACT
 
         def set_segments()
             for line_no, line_data in @lines do
-                params = [line_data, line_no, @message_version, @chars]
+                params = [line_data, line_no, @message_version, @chars, @subset]
                 @segments << SegmentFactory.new(*params).segment
             end
         end

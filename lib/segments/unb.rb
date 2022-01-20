@@ -5,7 +5,7 @@ module EDIFACT
         attr_reader :date, :time
         attr_reader :application_reference
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @date = get_elements_by_code("0017").first
             @time = get_elements_by_code("0019").first

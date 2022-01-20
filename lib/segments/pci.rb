@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :marking_instructions
         attr_reader :shipping_marks
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @marking_instructions = get_elements_by_code("4233").first
             @shipping_marks = get_elements_by_code("7102")

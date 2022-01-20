@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :hierarchical_id_number, :hierarchical_parent_id
         attr_reader :packaging_level
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @hierarchical_id_number = get_elements_by_code("7164").first
             @hierarchical_parent_id = get_elements_by_code("7166").first

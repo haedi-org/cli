@@ -2,7 +2,7 @@ module EDIFACT
     class DTMSegment < Segment
         attr_reader :date_time_qualifier, :date_time
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @date_time_qualifier = get_elements_by_code("2005").first
             @date_time = get_elements_by_code("2380").first

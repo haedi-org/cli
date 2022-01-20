@@ -3,7 +3,7 @@ module EDIFACT
         attr_reader :free_text_identification
         attr_reader :code_list_qualifier, :responsible_agency
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @free_text_identification = get_elements_by_code("4441").first
             @code_list_qualifier = get_elements_by_code("1131").first

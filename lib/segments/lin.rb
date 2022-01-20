@@ -5,7 +5,7 @@ module EDIFACT
         attr_reader :item_number, :item_number_type
         attr_reader :sub_line_indicator
 
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @line_item_number = get_elements_by_code("1082").first
             @action_request = get_elements_by_code("1229").first

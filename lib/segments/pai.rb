@@ -1,6 +1,6 @@
 module EDIFACT
     class PAISegment < Segment
-        def initialize(raw, line_no, version = nil, chars = nil)
+        def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars)
             @payment_conditions = get_elements_by_code("4439").first
             @payment_guarentee = get_elements_by_code("4431").first

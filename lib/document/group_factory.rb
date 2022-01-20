@@ -2,11 +2,12 @@ module EDIFACT
     class GroupFactory
         attr_reader :groups
 
-        def initialize(lines, spec, message_version, chars)
+        def initialize(lines, spec, message_version, chars, subset = nil)
             @lines = lines
             @spec = spec
             @message_version = message_version
             @chars = chars
+            @subset = subset
             @groups = []
             @raw = []
             @errors = []
@@ -35,14 +36,14 @@ module EDIFACT
             for split_no, group_data in temp_hash do
                 group_no, lines = group_data["group_no"], group_data["lines"]
                 name = "GROUP_" + group_no.gsub("SG", "")
-                params = [name, lines, message_version, chars]
+                params = [name, lines, message_version, chars, @subset]
                 @groups << Group.new(*params)
             end
             # Add any trailing lines as individual groups
             n = @lines.length - @raw.length
             for line in @lines[@lines.length - n, n] do
                 name = line[1].first(3)
-                params = [name, [line], @message_version, @chars]
+                params = [name, [line], @message_version, @chars, @subset]
                 @groups << Group.new(*params)
             end
         end
@@ -194,14 +195,16 @@ module EDIFACT
             # Create group object
             for individual_no, group_data in group_hash do
                 name = "GROUP_#{group_data["group"]}"
-                params = [name, group_data["lines"], @message_version, @chars]
+                params = [
+                    name, group_data["lines"], @message_version, @chars, @subset
+                ]
                 @groups << Group.new(*params)
             end
             # Add any trailing lines as individual groups
             n = @lines.length - @raw.length
             for line in @lines[@lines.length - n, n] do
                 name = line[1].first(3)
-                params = [name, [line], @message_version, @chars]
+                params = [name, [line], @message_version, @chars, @subset]
                 @groups << Group.new(*params)
             end
         end
