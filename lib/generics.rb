@@ -16,6 +16,10 @@ class Object
         return false
     end
 
+    def not_blank?
+        return (!self.blank?)
+    end
+
     def quote(punc = "\"")
         return self.to_s.encap(punc, punc)
     end

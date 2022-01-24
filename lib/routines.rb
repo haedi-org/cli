@@ -59,7 +59,8 @@ def routine_parse(path)
         for group in message.groups do
             out << "  Group #{group.name}".colorize(:white)
             for segment in group.segments do
-                out << "    Segment #{segment.tag.value}".colorize(:light_cyan)
+                out << "    Segment #{segment.tag.value} [#{segment.tag.name}]"
+                    .colorize(:light_cyan)
                 for element in segment.flatten do
                     unless element.blank?
                         out << "      #{element.name.titleize} (#{element.code})"

@@ -2,7 +2,8 @@ module EDIFACT
     TAG_REPR = "a3"
 
     class Tag
-        attr_reader :value, :name, :desc
+        attr_reader :value
+        attr_accessor :name, :desc
 
         def initialize(value, version = nil, subset = nil)
             @value = value
@@ -15,7 +16,7 @@ module EDIFACT
         end
 
         def set_spec()
-            unless $dictionary.is_service_segment?(@value)
+            unless $dictionary.is_service_segment?(@value, @subset)
                 params = [@value, @version, @subset]
                 @spec = $dictionary.segment_specification(*params)
             else

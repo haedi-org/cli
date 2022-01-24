@@ -15,6 +15,8 @@ module EDIFACT
             @tag = Tag.new(raw[0, 3], version, subset)
             # Retrieve specification from dictionary
             set_spec()
+            # Assign tag values if not already set
+            set_tag_values() if @tag.name.blank? && @spec.not_blank?
             split_data_by_chars() unless @chars.blank?
             unless @spec.blank?
                 apply_segment_spec()
@@ -25,7 +27,7 @@ module EDIFACT
         end
 
         def set_spec()
-            unless $dictionary.is_service_segment?(@tag.value)
+            unless $dictionary.is_service_segment?(@tag.value, @subset)
                 params = [@tag.value, @version, @subset]
                 @spec = $dictionary.segment_specification(*params)
             else
@@ -68,6 +70,11 @@ module EDIFACT
 
         def parse_without_spec
             # TODO
+        end
+
+        def set_tag_values
+            @tag.name = @spec["name"] if @spec.key?("name")
+            @tag.desc = @spec["desc"] if @spec.key?("desc")
         end
 
         def split_data_by_chars

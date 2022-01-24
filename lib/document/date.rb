@@ -10,7 +10,7 @@ module EDIFACT
         when "4"   # DDMMCCYY
             "#{d[0,2]}/#{d[2,2]}/#{d[4,4]}"
         when "101" # YYMMDD
-            "#{d[4,2]}/#{d[2,2]}/20#{d[0,2]}"
+            "#{d[4,2]}/#{d[2,2]}/#{d[0,2]}"
         when "102" # CCYYMMDD
             "#{d[6,2]}/#{d[4,2]}/#{d[0,4]}"
         when "201" # YYMMDDHHMM

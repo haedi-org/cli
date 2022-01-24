@@ -65,6 +65,8 @@ require_relative './segments/pci.rb'
 require_relative './segments/pia.rb'
 require_relative './segments/qty.rb'
 require_relative './segments/rff.rb'
+# UNICORN
+require_relative './segments/mcr.rb'
 
 require_relative './messages/baplie.rb'
 require_relative './messages/desadv.rb'

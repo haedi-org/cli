@@ -23,5 +23,7 @@ module EDIFACT
         "PIA" => PIASegment,
         "QTY" => QTYSegment,
         "RFF" => RFFSegment,
+        # UNICORN
+        "MCR" => MCRSegment,
     }
 end

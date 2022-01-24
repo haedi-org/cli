@@ -5,11 +5,13 @@ module EDIFACT
         attr_reader :data_value, :data_name, :data_desc
         attr_reader :errors
 
-        def initialize(code, version, position, value = "", subset = nil)
+        def initialize(code, version, position, value = "", subset = nil, 
+            spec = nil)
             @code = code
             @version = version
             @data_value = value == nil ? "" : value
             @subset = subset
+            @spec = spec
             @position = position
             @integrity = false
             @errors = []
@@ -28,6 +30,7 @@ module EDIFACT
         end
 
         def set_spec()
+            return unless @spec.blank?
             unless $dictionary.is_service_element?(@code, @subset)
                 params = [@code, @version, @subset]
                 @spec = $dictionary.element_specification(*params)
