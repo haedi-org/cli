@@ -19,7 +19,7 @@ module EDIFACT
                 @controlling_agency = get_elements_by_code("0051").first
                 @association_assigned_code = get_elements_by_code("0057").first
             when "UNICORN"
-                @message_reference = get_elements_by_code("0062").first
+                @message_reference = get_elements_by_code("S040").first
                 @message_type = get_elements_by_code("0065").first
                 @message_version = get_elements_by_code("0052").first
                 @common_access_reference = get_elements_by_code("0068").first
