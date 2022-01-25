@@ -22,8 +22,8 @@ Options:
 
 ### Building
 
-Requires [Bundler](https://bundler.io/)
-Requires [OCRA (One-Click Ruby Application)](https://github.com/larsch/ocra)
+- Requires [Bundler](https://bundler.io/)
+- Requires [OCRA (One-Click Ruby Application)](https://github.com/larsch/ocra)
 
 ```
 git clone "https://github.com/haedi-org/cli"
