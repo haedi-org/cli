@@ -173,3 +173,9 @@ module Form
         end
     end
 end
+
+#form = Form::Page.new(:name => 'TEST', :length => 30)
+#form.add_box(10, 20, 30, 40)
+#form.add_text(20, 20, 'BLAH', 40, 20)
+#form.add_barcode(30, 30, '12345')
+#puts form.to_zpl
