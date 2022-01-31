@@ -152,19 +152,6 @@ def routine_html_timeline(path)
     return out
 end
 
-def routine_debug(path)
-    out = []
-    interchange = load_interchange(path)
-    for message in interchange.messages do
-        out << "UNICORN? = #{message.is_unicorn?}"
-    end
-    # Print processing times
-    load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
-    process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
-    out << "Finished in #{process_time} (files took #{load_time} to load)"
-    return out
-end
-
 def routine_html_debug(path)
     out = []
     interchange = load_interchange(path)

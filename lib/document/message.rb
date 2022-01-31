@@ -138,6 +138,22 @@ module EDIFACT
                             segment.date_time.readable
                         ]
                     end
+                    if segment.tag.value == "MCR" # UNICORN
+                        events << [
+                            segment.date.name,[
+                                segment.date.readable,
+                                segment.time.readable
+                            ].join(' ') 
+                        ]
+                    end
+                    if segment.tag.value == "RDQ" # UNICORN
+                        events << [
+                            segment.date.name,[
+                                segment.date.readable,
+                                segment.time.readable
+                            ].join(' ')
+                        ]
+                    end
                 end
             end
             events.sort! do |a, b| 

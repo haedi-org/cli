@@ -45,7 +45,7 @@ end
 def parse_iso_6346_size_type(code)
     # Ensure given code is ISO 6346 compliant
     return nil unless code.is_iso_6346_size_and_type?
-    data = $dictionary.load_json("/agencies/smdg/iso_6346.json")
+    data = $dictionary.code_list_lookup("6346")
     # Return nil if no ISO 6346 information is present
     return nil if data.blank?
     data = data["SIZETYPE"]

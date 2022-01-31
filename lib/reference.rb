@@ -9,23 +9,23 @@ Qualifier = Struct.new(:code, :value, :reference, :definition)
 
 NULL_VALUES = [nil, [], EMPTY_STRING]
 
-$code_lists = {}
-Dir["#{CODE_PATH}/*.json"].each do |path|
-    file = File.open(path)
-    version = File.basename(path, ".json")
-    $code_lists[version] = JSON.load(file)
-    file.close
-end
-
-$element_dictionary = {}
-CSV.foreach(EDIFACT_ELEMENTS_PATH, 'rb:utf-8') do |line|
-    code, definition = line[0], line[1].chomp
-    $element_dictionary[code] = Definition.new(code, definition)
-end
-CSV.foreach(EDIFACT_SERVICE_ELEMENTS_PATH, 'rb:utf-8') do |line|
-    code, definition = line[0], line[1].chomp
-    $element_dictionary[code] = Definition.new(code, definition)
-end
+#$code_lists = {}
+#Dir["#{CODE_PATH}/*.json"].each do |path|
+#    file = File.open(path)
+#    version = File.basename(path, ".json")
+#    $code_lists[version] = JSON.load(file)
+#    file.close
+#end
+#
+#$element_dictionary = {}
+#CSV.foreach(EDIFACT_ELEMENTS_PATH, 'rb:utf-8') do |line|
+#    code, definition = line[0], line[1].chomp
+#    $element_dictionary[code] = Definition.new(code, definition)
+#end
+#CSV.foreach(EDIFACT_SERVICE_ELEMENTS_PATH, 'rb:utf-8') do |line|
+#    code, definition = line[0], line[1].chomp
+#    $element_dictionary[code] = Definition.new(code, definition)
+#end
 
 
 def define_element_code(code)

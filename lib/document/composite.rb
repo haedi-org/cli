@@ -46,7 +46,10 @@ module EDIFACT
                     code, @version, [@position, index], get_value(index), 
                     @subset
                 ]
-                Element.new(*params)
+                Element.new(*params).tap do |element|
+                    # Set name from composite spec if simple spec not found
+                    element.set_name(data["name"]) if element.name.blank?
+                end
             end
         end
 

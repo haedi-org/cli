@@ -1,11 +1,11 @@
 module EDIFACT # UNICORN
-    class MCRSegment < Segment
+    class RDQSegment < Segment
         attr_reader :date, :time
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
             super(raw, line_no, version, chars, subset)
-            @date = get_elements_by_code("0017").first
-            @time = get_elements_by_code("0019").first
+            @date = get_elements_by_code("U247").first
+            @time = get_elements_by_code("U248").first
             unless @date.blank?
                 @date.set_data_name(
                     EDIFACT::interpret_date(@date.value, "101")

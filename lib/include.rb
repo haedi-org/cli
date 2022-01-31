@@ -21,6 +21,7 @@ require_relative './reference.rb'
 require_relative './curator.rb'
 require_relative './dictionary.rb'
 require_relative './routines.rb'
+require_relative './debug.rb'
 require_relative './history.rb'
 require_relative './morph.rb'
 
@@ -67,6 +68,7 @@ require_relative './segments/qty.rb'
 require_relative './segments/rff.rb'
 # UNICORN
 require_relative './segments/mcr.rb'
+require_relative './segments/rdq.rb'
 
 require_relative './messages/baplie.rb'
 require_relative './messages/desadv.rb'

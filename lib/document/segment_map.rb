@@ -25,5 +25,6 @@ module EDIFACT
         "RFF" => RFFSegment,
         # UNICORN
         "MCR" => MCRSegment,
+        "RDQ" => RDQSegment,
     }
 end

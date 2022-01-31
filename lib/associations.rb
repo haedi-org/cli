@@ -1,6 +1,7 @@
 module EDIFACT
     class Message
         def is_eancom?
+            return false if @association_assigned_code.blank?
             return @association_assigned_code[0, 3] == "EAN"
         end
     
@@ -17,6 +18,7 @@ module EDIFACT
         end
 
         def is_smdg?
+            return false if @association_assigned_code.blank?
             return @association_assigned_code[0, 4] == "SMDG"
         end
 

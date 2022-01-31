@@ -33,7 +33,7 @@ class Dictionary
         @cache = {
             "un_edifact" => {
                 "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
-                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {}, 
+                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {},
                 "unas" => {}, "lists" => {}
             }
         }
@@ -57,6 +57,10 @@ class Dictionary
         if AGENCY_CODELIST_MAP.key?(agency)
             name, path = AGENCY_CODELIST_MAP[agency]
             data = retrieve_hash(name, path)
+            if qualifier == nil
+                add_code_list_used("#{name.unkey.upcase}")
+                return data
+            end
             return {} unless data.key?(qualifier)
             if data[qualifier].key?(code)
                 add_code_list_used("#{name.unkey.upcase} #{qualifier}")
@@ -110,7 +114,7 @@ class Dictionary
     def element_specification(code, version = nil, subset = nil)
         version = FALLBACK_VERSION if version == nil
         if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("ED", version)
+            data = retrieve_un_edifact_data("EDED", version)
         else
             case subset
             when "UNICORN"; params = ["ED", "UNICORN", "22"]
@@ -256,6 +260,7 @@ class Dictionary
         # Use cached version if it exists
         return @cache[key] if @cache.key?(key)
         # Otherwise load, and store
+        # puts path
         data = load_json(path)
         @cache[key] = data
         return data
@@ -275,6 +280,7 @@ class Dictionary
                 csv = CSV.read(path)
                 entry[file_name] = csv
                 # Increment dictionary read count
+                # puts file_name
                 @read_count += 1
             end
             # Return given column of csv
