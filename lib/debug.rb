@@ -13,3 +13,10 @@ def routine_debug(path)
     out << "Finished in #{process_time} (files took #{load_time} to load)"
     return out
 end
+
+def routine_html_debug(path)
+    out = []
+    interchange = load_interchange(path)
+    out << html_debug(interchange)
+    return out
+end

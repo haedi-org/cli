@@ -9,6 +9,15 @@ def html_table(values, cl = "table")
     }.join.html("table", :cl => cl)
 end
 
+
+def html_button(caption, onclick: "", cl: "")
+    cl = "button m-2 my-1 is-small " + cl
+    return caption.html("button", :onclick => onclick, :cl => cl)
+end
+
+# html_button("Test button"),
+# html_button("Another test button", :cl => "is-danger is-outlined"),
+
 def html_debug(interchange)
     file_info = [
         ["File path", html_file_path(interchange.path)]
@@ -41,7 +50,7 @@ def html_debug(interchange)
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
-    #    html_table(error_info, classes),
+   #    html_table(error_info, classes),
     ]
 end
 
