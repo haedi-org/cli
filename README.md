@@ -1,4 +1,4 @@
-# edi-cli
+# haedi cli
 CLI for EDI parsing, validation and manipulation
 
 ```
