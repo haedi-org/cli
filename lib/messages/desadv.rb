@@ -8,11 +8,11 @@ module EDIFACT
         end
 
         def to_json
-            return consignment().to_json
+            return stowage_list().to_json
         end
 
         def stowage_list
-            @consignment = build_consignment if @consignment.blank?
+            build_consignment if @consignment.blank?
             return @consignment
         end
 

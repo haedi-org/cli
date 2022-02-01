@@ -1,6 +1,11 @@
 def routine_debug(path)
     out = []
     interchange = load_interchange(path)
+    # Message specific outputs
+    for message in interchange.messages do
+        out << message.to_json if message.type == "DESADV"
+    end
+    # Agency
     for message in interchange.messages do
         out << "SMDG? = #{message.is_smdg?}"
         out << "UNICORN? = #{message.is_unicorn?}"

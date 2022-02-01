@@ -6,7 +6,7 @@ OPT_DATA = {
     :timeline   => ["-t", "--timeline"],
     :headless   => ["-l", "--headless"],
     # TODO: Generalise to a visual output
-    :bayplan    => ["-b", "--bayplan"],
+    :bayplan    => ["--bayplan"],
     :collection => ["-c", "--collection"],
     :help       => ["-h", "--help"],
     :html       => ["--html"],

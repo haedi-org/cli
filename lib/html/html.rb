@@ -10,8 +10,8 @@ def html_table(values, cl = "table")
 end
 
 
-def html_button(caption, onclick: "", cl: "")
-    cl = "button m-2 my-1 is-small " + cl
+def html_button(caption, onclick: "", cl: "is-outlined is-link")
+    cl = "button is-small " + cl
     return caption.html("button", :onclick => onclick, :cl => cl)
 end
 
@@ -50,7 +50,7 @@ def html_info(interchange)
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
-        buttons,
+        buttons.join.html("div", :cl => "buttons m-2"),
     ]
 end
 
