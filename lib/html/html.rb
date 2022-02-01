@@ -18,7 +18,7 @@ end
 # html_button("Test button"),
 # html_button("Another test button", :cl => "is-danger is-outlined"),
 
-def html_debug(interchange)
+def html_info(interchange)
     file_info = [
         ["File path", html_file_path(interchange.path)]
     ]
@@ -32,25 +32,38 @@ def html_debug(interchange)
     else
         used_version = FALLBACK_VERSION
     end
-    load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
-    process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
     system_info = [
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
         ["Third party code lists", $dictionary.code_lists_used.join(", ")],
-        ["File load time", load_time],
-        ["Interchange processing time", process_time],
     ]
     #error_info = [
     #    ["Error count", interchange.error_count],
     #]
     #error_info += interchange.error_descriptions
+    buttons = []
+    if interchange.messages.first.type == "BAPLIE"
+        buttons << html_button("Bayplan view", :onclick => "onBayplan()")
+    end
     classes = "table is-bordered is-narrow m-2"
     return [
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
-   #    html_table(error_info, classes),
+        buttons,
+    ]
+end
+
+def html_debug(interchange)
+    load_time = sprintf("%.2f", interchange.load_time * 1000).to_s + "ms"
+    process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"
+    system_info = [
+        ["File load time", load_time],
+        ["Interchange processing time", process_time],
+    ]
+    classes = "table is-bordered is-narrow m-2"
+    return [
+        html_table(system_info, classes),
     ]
 end
 

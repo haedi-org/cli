@@ -32,7 +32,8 @@ end
 
 def routine_html_info(path)
     out = []
-    #out << html_document_information(document)
+    interchange = load_interchange(path)
+    out << html_info(interchange)
     return out
 end
 
