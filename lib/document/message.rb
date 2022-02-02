@@ -5,6 +5,7 @@ module EDIFACT
     class Message
         attr_reader :version, :groups, :type, :reference
         attr_reader :association_assigned_code, :application_reference
+        attr_reader :controlling_agency
         attr_reader :header, :trailer
 
         def initialize(
@@ -86,6 +87,13 @@ module EDIFACT
                     else
                         @association_assigned_code = (
                             @header.association_assigned_code.data_value
+                        )
+                    end
+                    if @header.controlling_agency.blank?
+                        @controlling_agency = nil
+                    else
+                        @controlling_agency = (
+                            @header.controlling_agency.data_value
                         )
                     end
                 end
