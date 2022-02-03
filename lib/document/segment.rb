@@ -26,6 +26,12 @@ module EDIFACT
             end
         end
 
+        def apply_association_code_list(qualifier)
+            for element in self.flatten do
+                element.apply_association_code_list(qualifier)
+            end
+        end
+
         def set_spec()
             unless $dictionary.is_service_segment?(@tag.value, @subset)
                 params = [@tag.value, @version, @subset]

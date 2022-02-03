@@ -13,13 +13,14 @@
 FALLBACK_VERSION = "D97A"
 
 AGENCY_CODELIST_MAP = {
-#   3055    => [name, path],
-    "9"     => ["eancom", "/eancom/cl.json"],
-    "10"    => ["odette", "/odette/cl.json"],
-    "20"    => ["bic", "/bic/cl.json"],
-    "166"   => ["nmfca", "/nmfca/cl.json"],
-    "306"   => ["smdg", "/smdg/cl.json"],
-    "6346"  => ["iso_6346", "/smdg/iso_6346.json"],
+#   3055   => [name, path],
+    "9"    => ["eancom", "/agencies/eancom/cl.json"],
+    "10"   => ["odette", "/agencies/odette/cl.json"],
+    "20"   => ["bic", "/agencies/bic/cl.json"],
+    "166"  => ["nmfca", "/agencies/nmfca/cl.json"],
+    "306"  => ["smdg", "/agencies/smdg/cl.json"],
+    "6346" => ["iso_6346", "/agencies/smdg/iso_6346.json"],
+    "ZEW"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
 }
 
 class Dictionary
@@ -260,8 +261,8 @@ class Dictionary
         # Use cached version if it exists
         return @cache[key] if @cache.key?(key)
         # Otherwise load, and store
-        # puts path
         data = load_json(path)
+        return {} if data == {}
         @cache[key] = data
         return data
     end

@@ -25,6 +25,10 @@ module EDIFACT
             "#{d[0,2]} #{d[2,2]}:#{d[4,2]}"
         when "401" # HHMM
             "#{d[0,2]}:#{d[2,2]}"
+        when "719" # CCYYMMDDHHMM-CCYYMMDDHHMM
+            e = d.gsub("-", "")
+            ("#{e[6,2]}/#{e[4,2]}/#{e[0,4]} #{e[8,2]}:#{e[10,2]} - " +
+            "#{e[18,2]}/#{e[16,2]}/#{e[12,4]} #{e[20,2]}:#{e[22,2]}")
         else
            #puts "Unmatchable qualifier: #{f}"
             d

@@ -44,6 +44,9 @@ module EDIFACT
                         if self.is_unicorn?
                             segment.apply_association_code_list("UNICORN")
                         end
+                        if self.is_edigas?
+                            segment.apply_association_code_list("ZEW")
+                        end
                     rescue
                         # => Association method not defined
                     end
@@ -63,6 +66,9 @@ module EDIFACT
                         end
                         if self.is_unicorn?
                             segment.apply_association_validation("UNICORN")
+                        end
+                        if self.is_edigas?
+                            segment.apply_association_validation("ZEW")
                         end
                     rescue
                         # => Association method not defined
