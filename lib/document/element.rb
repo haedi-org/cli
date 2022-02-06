@@ -3,7 +3,6 @@ module EDIFACT
         attr_reader :code, :position
         attr_reader :name, :desc, :repr
         attr_reader :data_value, :data_name, :data_desc
-        attr_reader :errors
 
         def initialize(code, version, position, value = "", subset = nil, 
             spec = nil)
@@ -64,9 +63,13 @@ module EDIFACT
             return @integrity
         end
 
-        def error
-            return NoElementError.new if @errors.blank?
-            return @errors.first
+       #def error
+       #    return [NoElementError.new, @position] if @errors.blank?
+       #    return [@errors.first, @position]
+       #end
+
+        def errors
+            return @errors.map { |error| [error, @position] }
         end
 
         def add_error(err)

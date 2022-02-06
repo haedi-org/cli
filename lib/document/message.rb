@@ -21,6 +21,8 @@ module EDIFACT
             @header = nil
             @trailer = nil
             @groups = []
+            @errors = []
+            @subset = get_subset()
             # Initial methods
             set_header()
             set_trailer()
@@ -29,6 +31,20 @@ module EDIFACT
             # Apply association code list and integrity validation
             apply_association_code_list()
             apply_association_validation()
+        end
+
+        def is_valid?
+            return errors().empty?
+        end
+
+        def errors
+            group_errors = []
+            for group in @groups do
+                unless group.is_valid?
+                    group_errors += group.errors
+                end
+            end
+            return (@errors + group_errors).compact
         end
 
         def apply_association_code_list()
@@ -82,7 +98,7 @@ module EDIFACT
                 if line_data.first(3) == 'UNH'
                     params = [
                         line_data, line_no, @interchange_version, 
-                        @chars, get_subset()
+                        @chars, @subset
                     ]
                     @header = SegmentFactory.new(*params).segment
                     @reference = @header.message_reference.data_value
@@ -124,7 +140,10 @@ module EDIFACT
         end
 
         def set_spec()
-            params = [@type, @version, get_subset()]
+            params = [@type, @version, @subset]
+            if @type == "NOMINT" # NOMINT based on UN/EDIFACT ORDERS D08B
+                params = ["ORDERS", "D08B", @subset]
+            end
             @spec = $dictionary.message_structure_specification(*params)
         end
 

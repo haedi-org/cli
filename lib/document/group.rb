@@ -12,8 +12,23 @@ module EDIFACT
             @chars = chars
             @subset = subset
             @segments = []
+            @errors = []
             # Initial methods
             set_segments()
+        end
+
+        def is_valid?
+            return errors().empty?
+        end
+
+        def errors
+            segment_errors = []
+            for segment in @segments do
+                unless segment.is_valid?
+                    segment_errors += segment.errors
+                end
+            end
+            return (@errors + segment_errors).compact
         end
         
         def raw

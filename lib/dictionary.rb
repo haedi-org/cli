@@ -19,8 +19,9 @@ AGENCY_CODELIST_MAP = {
     "20"   => ["bic", "/agencies/bic/cl.json"],
     "166"  => ["nmfca", "/agencies/nmfca/cl.json"],
     "306"  => ["smdg", "/agencies/smdg/cl.json"],
-    "6346" => ["iso_6346", "/agencies/smdg/iso_6346.json"],
+    "321"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
     "ZEW"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
+    "6346" => ["iso_6346", "/agencies/smdg/iso_6346.json"],
 }
 
 class Dictionary

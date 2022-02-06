@@ -37,10 +37,11 @@ def html_info(interchange)
         ["Dictionary read count", $dictionary.read_count],
         ["Third party code lists", $dictionary.code_lists_used.join(", ")],
     ]
-    #error_info = [
-    #    ["Error count", interchange.error_count],
-    #]
-    #error_info += interchange.error_descriptions
+    errors = interchange.errors
+    error_info = [
+        ["Error count", errors.length],
+    ]
+    error_info += interchange.errors.map { |e, p| [p.join(":"), e.message] }
     buttons = []
     if interchange.messages.first.type == "BAPLIE"
         buttons << html_button("Bayplan view", :onclick => "onBayplan()")
@@ -50,8 +51,10 @@ def html_info(interchange)
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
+        html_table(error_info, classes),
         buttons.join.html("div", :cl => "buttons m-2"),
     ]
+    .join.html("div", :cl => "column scroller p-0")
 end
 
 def html_debug(interchange)

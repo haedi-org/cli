@@ -3,21 +3,24 @@ def routine_debug(path)
     interchange = load_interchange(path)
     # Message specific outputs
     for message in interchange.messages do
-        out << message.to_json if message.type == "DESADV"
+        # out << message.to_json if message.type == "DESADV"
     end
+    out << ""
     # Association and agency
     for message in interchange.messages do
-        out << ""
-        out << "SMDG? = #{message.is_smdg?}"
-        out << "UNICORN? = #{message.is_unicorn?}"
-        out << "EDIGAS? = #{message.is_edigas?}"
-        out << ""
+        out << "Subset = #{message.get_subset().inspect}"
         out << "Assc assigned code = #{message.association_assigned_code}"
         out << "Controlling agency = #{message.controlling_agency}"
     end
-    # Dictionary information
     out << ""
-    out << "Third-party code lists: #{$dictionary.code_lists_used.join(" ")}"
+    # Dictionary information
+    used = $dictionary.code_lists_used
+    out << "Third-party code lists (#{used.length}):\n- #{used.join("\n- ")}"
+    out << ""
+    # Errors
+    messages = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
+    out << "Errors (#{messages.length}):\n- #{messages.join("\n- ")}"
+        .colorize(:light_red)
     out << ""
     # Print processing times
     load_time    = sprintf("%.2f", interchange.load_time    * 1000).to_s + "ms"

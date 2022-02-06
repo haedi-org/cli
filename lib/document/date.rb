@@ -29,6 +29,8 @@ module EDIFACT
             e = d.gsub("-", "")
             ("#{e[6,2]}/#{e[4,2]}/#{e[0,4]} #{e[8,2]}:#{e[10,2]} - " +
             "#{e[18,2]}/#{e[16,2]}/#{e[12,4]} #{e[20,2]}:#{e[22,2]}")
+        when "805" # Hour
+            "Hour #{d}"
         else
            #puts "Unmatchable qualifier: #{f}"
             d

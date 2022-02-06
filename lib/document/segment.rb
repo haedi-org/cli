@@ -1,6 +1,6 @@
 module EDIFACT
     class Segment
-        attr_reader :elements, :line_no, :raw, :errors
+        attr_reader :elements, :line_no, :raw
         attr_reader :tag, :data, :chars, :version, :spec
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
@@ -24,6 +24,19 @@ module EDIFACT
                 parse_without_spec()
                 @errors << NoSpecificationError.new
             end
+        end
+
+        def errors
+            element_errors = []
+            for element in flatten do
+                unless element.is_valid?
+                    for error, position in element.errors do
+                        position = [@line_no, position].flatten
+                        element_errors << [error, position]
+                    end
+                end
+            end
+            return (@errors + element_errors).compact
         end
 
         def apply_association_code_list(qualifier)
@@ -106,7 +119,7 @@ module EDIFACT
         end
 
         def is_valid?
-            return @errors.empty?
+            return errors().empty?
         end
 
         def is?(tag_value)

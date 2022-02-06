@@ -26,6 +26,16 @@ module EDIFACT
             @process_time = Time.now - start_process_time
         end
 
+        def errors
+            message_errors = []
+            for message in @messages do
+                unless message.is_valid?
+                    message_errors += message.errors
+                end
+            end
+            return (@errors + message_errors).compact
+        end
+
         def messages(filter = nil)
             return @messages.compact if filter == nil
             return @messages.compact.select { |message| message.is_a?(filter) }

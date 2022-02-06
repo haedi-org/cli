@@ -9,9 +9,19 @@ module EDIFACT
             @data_values = values.blank? ? [] : values
             @elements = []
             @subset = subset
+            @errors = []
             set_spec()
             apply_composite_spec() unless @spec.blank?
         end
+
+        def is_valid?
+            return errors().blank?
+        end
+
+       #def errors
+       #    element_errors = @elements.map { |element| element.errors }
+       #    return (@errors + element_errors).compact
+       #end
 
         def set_spec()
             unless $dictionary.is_service_composite?(@code, @subset)

@@ -15,7 +15,7 @@ module EDIFACT
         end
 
         def validate_identity_numbers(qualifier, number_elements)
-            for element in number_elements do
+            number_elements.each_with_index do |element, index|
                 element.value.tap do |value|
                     result = case qualifier
                     when 'AW' # GS1 serial shipping container code
@@ -31,8 +31,11 @@ module EDIFACT
                     else
                         true
                     end
-                    element.set_integrity(result == true)
-                    element.add_error(result) unless result == true
+                    # Don't validate empty values after the mandatory first
+                    unless (element.value.blank? && (index > 0))
+                        element.set_integrity(result == true)
+                        element.add_error(result) unless result == true
+                    end
                 end
             end
         end
