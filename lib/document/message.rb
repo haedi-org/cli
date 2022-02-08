@@ -44,7 +44,9 @@ module EDIFACT
                     group_errors += group.errors
                 end
             end
-            return (@errors + group_errors).compact
+            return (@errors + group_errors).compact.map do |error, position|
+                [error, ([@type] + position)]
+            end
         end
 
         def apply_association_code_list()
@@ -148,8 +150,18 @@ module EDIFACT
         end
 
         def set_groups()
-            params = [@lines, @spec, @version, @chars, get_subset()]
-            group_factory = GroupFactory.new(*params)
+            begin
+                params = [@lines, @spec, @version, @chars, get_subset()]
+                group_factory = GroupFactory.new(*params)
+            rescue
+                params = [@lines, nil, @version, @chars, get_subset()]
+                group_factory = GroupFactory.new(*params)
+                if @spec.blank?
+                    @errors << [NoSpecificationError.new, []]
+                else
+                    @errors << [GroupMatchError.new, []]
+                end
+            end
             @groups = group_factory.groups
         end
 

@@ -24,7 +24,9 @@ module EDIFACT
 
         def is_unicorn?
             return true if @controlling_agency == "TTI"
-            return true if @application_reference.include?("UNICORN")
+            unless @application_reference.blank?
+                return true if @application_reference.include?("UNICORN")
+            end
             return false
         end
     end

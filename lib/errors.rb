@@ -1,3 +1,9 @@
+class GroupMatchError < StandardError
+    def message
+        return "Cannot fit to group specification"
+    end
+end
+
 class NoDocumentError < StandardError
     def message
         return "Missing document"

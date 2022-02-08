@@ -11,33 +11,36 @@ module EDIFACT
             @groups = []
             @raw = []
             @errors = []
-            group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
-            # Recursively process groups
-            line_no, split_no, error = 0, 0, nil
-            for group_no in group_structure do
-                if error.blank?
-                    params = [group_no, line_no, split_no]
-                    line_no, split_no, error = process_group(*params)
-                    @errors << error unless error.blank?
+            unless spec == nil
+                group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
+                # Recursively process groups
+                line_no, split_no, error = 0, 0, nil
+                for group_no in group_structure do
+                    if error.blank?
+                        params = [group_no, line_no, split_no]
+                        line_no, split_no, error = process_group(*params)
+                        @errors << error unless error.blank?
+                    end
                 end
-            end
-            # Split groups by split_no
-            temp_hash = {}
-            for group_no, line, split_no in @raw do
-               #puts [group_no, split_no, line].flatten.join("\t")
-                unless temp_hash.key?(split_no)
-                    temp_hash[split_no] = { 
-                        "group_no" => group_no, "lines" => []
-                    }
+                # Split groups by split_no
+                temp_hash = {}
+                for group_no, line, split_no in @raw do
+                   #puts [group_no, split_no, line].flatten.join("\t")
+                    unless temp_hash.key?(split_no)
+                        temp_hash[split_no] = { 
+                            "group_no" => group_no, "lines" => []
+                        }
+                    end
+                    temp_hash[split_no]["lines"] << line
                 end
-                temp_hash[split_no]["lines"] << line
-            end
-            # Build groups from hash (name, lines, message_version, chars)
-            for split_no, group_data in temp_hash do
-                group_no, lines = group_data["group_no"], group_data["lines"]
-                name = "GROUP_" + group_no.gsub("SG", "")
-                params = [name, lines, message_version, chars, @subset]
-                @groups << Group.new(*params)
+                # Build groups from hash (name, lines, message_version, chars)
+                for split_no, group_data in temp_hash do
+                    group_no = group_data["group_no"]
+                    lines = group_data["lines"]
+                    name = "GROUP_" + group_no.gsub("SG", "")
+                    params = [name, lines, message_version, chars, @subset]
+                    @groups << Group.new(*params)
+                end
             end
             # Add any trailing lines as individual groups
             n = @lines.length - @raw.length
