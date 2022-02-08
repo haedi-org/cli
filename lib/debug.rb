@@ -15,13 +15,17 @@ def routine_debug(path)
     out << ""
     # Dictionary information
     used = $dictionary.code_lists_used
-    out << "Third-party code lists (#{used.length}):\n- #{used.join("\n- ")}"
-    out << ""
+    unless used.length == 0
+        out << "3rd-party code lists (#{used.length}):\n- #{used.join("\n- ")}"
+        out << ""
+    end
     # Errors
     messages = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
-    out << "Errors (#{messages.length}):\n- #{messages.join("\n- ")}"
-        .colorize(:light_red)
-    out << ""
+    unless messages.length == 0
+        out << "Errors (#{messages.length}):\n- #{messages.join("\n- ")}"
+            .colorize(:light_red)
+        out << ""
+    end
     # Print processing times
     load_time    = sprintf("%.2f", interchange.load_time    * 1000).to_s + "ms"
     process_time = sprintf("%.2f", interchange.process_time * 1000).to_s + "ms"

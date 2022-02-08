@@ -22,7 +22,7 @@ module EDIFACT
                 apply_segment_spec()
             else
                 parse_without_spec()
-                @errors << NoSpecificationError.new
+                @errors << [NoSpecificationError.new, [@line_no]]
             end
         end
 
