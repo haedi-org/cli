@@ -83,18 +83,21 @@ class Dictionary
 
     def is_service_segment?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
+        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
         params = ["service_segments", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
     def is_service_element?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
+        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
         params = ["service_simple_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
     def is_service_composite?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
+        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
         params = ["service_composite_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
@@ -106,6 +109,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["CL", "UNICORN", "22"]
+            else; return coded_data_reference(code, value, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -120,6 +124,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["ED", "UNICORN", "22"]
+            else; return element_specification(code, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -133,6 +138,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["SE", "UNICORN", "22"]
+            else; return service_element_specification(code, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -146,6 +152,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["CD", "UNICORN", "22"]
+            else; return composite_specification(code, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -159,6 +166,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["SC", "UNICORN", "22"]
+            else; return service_composite_specification(code, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -172,6 +180,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["SD", "UNICORN", "22"]
+            else; return segment_specification(tag, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -186,6 +195,7 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["SS", "UNICORN", "22"]
+            else; return service_segment_specification(tag, version)
             end
             data = retrieve_subset_data(*params)
         end
@@ -205,6 +215,8 @@ class Dictionary
         else
             case subset
             when "UNICORN"; params = ["MD", "UNICORN", "22", message]
+            when "EDIFICE"; params = ["MD", "EDIFICE", "D10A", message]
+            else; return message_structure_specification(message, version)
             end
             data = retrieve_subset_data(*params)
         end

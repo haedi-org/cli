@@ -11,13 +11,6 @@ module EDIFACT
 
         def set_critical_values()
             case @subset
-            when nil # UN/EDIFACT
-                @message_reference = get_elements_by_code("0062").first
-                @message_type = get_elements_by_code("0065").first
-                @message_version = get_elements_by_code("0052").first
-                @message_release = get_elements_by_code("0054").first
-                @controlling_agency = get_elements_by_code("0051").first
-                @association_assigned_code = get_elements_by_code("0057").first
             when "UNICORN"
                 @message_reference = get_elements_by_code("S040").first
                 @message_type = get_elements_by_code("0065").first
@@ -25,6 +18,13 @@ module EDIFACT
                 @common_access_reference = get_elements_by_code("0068").first
                 @sequence_of_transfers = get_elements_by_code("0070").first
                 @first_and_last_transfer = get_elements_by_code("0073").first
+            else # UN/EDIFACT
+                @message_reference = get_elements_by_code("0062").first
+                @message_type = get_elements_by_code("0065").first
+                @message_version = get_elements_by_code("0052").first
+                @message_release = get_elements_by_code("0054").first
+                @controlling_agency = get_elements_by_code("0051").first
+                @association_assigned_code = get_elements_by_code("0057").first
             end
         end
 

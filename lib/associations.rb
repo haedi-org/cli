@@ -21,6 +21,11 @@ module EDIFACT
             return false if @association_assigned_code.blank?
             return @association_assigned_code[0, 4] == "SMDG"
         end
+        
+        def is_edifice?
+            return false if @association_assigned_code.blank?
+            return @association_assigned_code[0, 2] == "ED"
+        end
 
         def is_unicorn?
             return true if @controlling_agency == "TTI"

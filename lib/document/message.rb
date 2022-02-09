@@ -3,7 +3,7 @@
 
 module EDIFACT
     class Message
-        attr_reader :version, :groups, :type, :reference
+        attr_reader :version, :groups, :type, :reference, :subset
         attr_reader :association_assigned_code, :application_reference
         attr_reader :controlling_agency
         attr_reader :header, :trailer
@@ -22,9 +22,9 @@ module EDIFACT
             @trailer = nil
             @groups = []
             @errors = []
-            @subset = get_subset()
             # Initial methods
             set_header()
+            @subset = get_subset()
             set_trailer()
             set_spec()
             set_groups()
@@ -138,6 +138,7 @@ module EDIFACT
 
         def get_subset()
             return "UNICORN" if self.is_unicorn?
+            return "EDIFICE" if self.is_edifice?
             return nil
         end
 

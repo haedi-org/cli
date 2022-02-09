@@ -36,16 +36,26 @@ module EDIFACT
             return true
         end
 
+        # UN/EDIFACT         EDIFICE
+        # M (Mandatory)   => M (Mandatory)
+        # C (Conditional) => R (Required)
+        # C (Conditional) => D (Depending)
+        # C (Conditional) => A (Advised)
+        # C (Conditional) => O (Optional)
+        # C (Conditional) => N (Not Used)
+
+        def m_c
+            return @data["m/c"] if @data.key?("m/c")
+            return @data["m_c"] if @data.key?("m_c")
+            return @inherited_m_c
+        end
+
         def mandatory?
-            return false if @inherited_m_c == "C"
-            return false unless @data.key?("m/c")
-            return @data["m/c"] == "M"
+            return m_c == "M"
         end
 
         def conditional?
-            return true if @inherited_m_c == "C"
-            return true unless @data.key?("m/c")
-            return @data["m/c"] == "C"
+            return m_c != "M"
         end
 
         def alphanumeric?

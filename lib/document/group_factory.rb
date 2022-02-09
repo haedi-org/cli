@@ -1,4 +1,6 @@
 module EDIFACT
+    DEBUG_GROUP_FACTORY = false
+
     class GroupFactory
         attr_reader :groups
 
@@ -12,7 +14,9 @@ module EDIFACT
             @raw = []
             @errors = []
             unless spec == nil
-                group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
+                group_structure = @spec.map { |k, v| k.to_i }.sort
+                group_structure.map! { |i| "SG#{i}" }
+                #group_structure = Array.new(@spec.length) { |i| "SG#{i}" }
                 # Recursively process groups
                 line_no, split_no, error = 0, 0, nil
                 for group_no in group_structure do
@@ -25,7 +29,9 @@ module EDIFACT
                 # Split groups by split_no
                 temp_hash = {}
                 for group_no, line, split_no in @raw do
-                   #puts [group_no, split_no, line].flatten.join("\t")
+                    if DEBUG_GROUP_FACTORY
+                        puts [group_no, split_no, line].flatten.join("\t")
+                    end
                     unless temp_hash.key?(split_no)
                         temp_hash[split_no] = { 
                             "group_no" => group_no, "lines" => []
@@ -53,7 +59,9 @@ module EDIFACT
 
         def process_group(group_no, line_no, split_no = 0, is_first = true, iteration = 1, from_group = nil)
             errors = []
-           #puts "\nGroup #{group_no}"
+            if DEBUG_GROUP_FACTORY
+                puts "\nGroup #{group_no}"
+            end
             # Set variables
             group_spec = @spec[group_no.gsub("SG", "")]
             group_is_mandatory = (group_spec["m_c"] == "M") && is_first
@@ -63,8 +71,10 @@ module EDIFACT
             return line_no, split_no + 1 if line_no >= @lines.length
             # Assert iteration is under repeat count
             if (iteration > group_repeats)
-               #puts "\nToo many iterations (#{iteration} > #{group_repeats})"
-               #puts "\nReturning #{group_no}"
+                if DEBUG_GROUP_FACTORY
+                    puts "\nToo many iterations (#{iteration}>#{group_repeats})"
+                    puts "\nReturning #{group_no}"
+                end
                 errors << StandardError.new
             end
             # Skip if nested group or repeated group and first mandatory element does not match
@@ -75,9 +85,10 @@ module EDIFACT
             # mandatory - and it has not been referenced by another group
             if (group_is_mandatory) && (is_first)
                 unless structure.first == @lines[line_no][1][0, 3]
-                   #puts "Absent mandatory first segment"
-                   errors << StandardError.new
-                    
+                    if DEBUG_GROUP_FACTORY
+                        puts "Absent mandatory first segment"
+                    end
+                    errors << StandardError.new
                 end
             end
             # Iterate through structure and assign lines as they match
@@ -87,7 +98,9 @@ module EDIFACT
                     segment_repeats = segment_spec["repeat"].to_i
                     segment_iterations = 1
                     until (line_no >= @lines.length) || (tag[0, 3] != @lines[line_no][1][0, 3]) || (segment_iterations > segment_repeats)
-                       #puts "  Assigned #{@lines[line_no][0]}:#{@lines[line_no][1]}"
+                        if DEBUG_GROUP_FACTORY    
+                            puts "  Assigned #{@lines[line_no][0]}:#{@lines[line_no][1]}"
+                        end
                         @raw << [from_group == nil ? group_no : from_group, @lines[line_no], split_no]
                         # TODO: Match repeating elements
                         line_no += 1
@@ -100,12 +113,16 @@ module EDIFACT
                         segment_spec = group_spec["segments"][tag]
                         segment_is_mandatory = (segment_spec["m_c"] == "M")
                         if group_is_mandatory && segment_is_mandatory
-                           #puts "Absent mandatory segment"
+                            if DEBUG_GROUP_FACTORY
+                                puts "Absent mandatory segment"
+                            end
                             errors << StandardError.new
                         end
                     else
                         # Nested segment group
-                       #puts "\nNested group #{group_no} => #{tag}"
+                        if DEBUG_GROUP_FACTORY
+                            puts "\nNested group #{group_no} => #{tag}"
+                        end
                         from_group = from_group == nil ? group_no : from_group
                         params = [tag, line_no, split_no, false, 1, from_group]
                         line_no, split_no = process_group(*params)
@@ -116,15 +133,21 @@ module EDIFACT
             end
             # Check if group should be repeated
             if (iteration < group_repeats) && (structure.include?(@lines[line_no][1][0, 3]))
-               #puts "\nRepeating #{group_no} #{iteration + 1}"
+                if DEBUG_GROUP_FACTORY
+                    puts "\nRepeating #{group_no} #{iteration + 1}"
+                end
                 params = [group_no, line_no, split_no + 1, false, iteration + 1]
                 line_no, split_no = process_group(*params)
                 # EOF
                 return line_no, split_no + 1 if line_no >= @lines.length
             else
-               #puts "\nCan't match #{@lines[line_no][0]}:#{@lines[line_no][1][0, 3]} to #{group_no} #{structure.inspect}"
+                if DEBUG_GROUP_FACTORY
+                    puts "\nCan't match #{@lines[line_no][0]}:#{@lines[line_no][1][0, 3]} to #{group_no} #{structure.inspect}"
+                end
             end
-           #puts "\nReturning #{group_no}"
+            if DEBUG_GROUP_FACTORY
+                puts "\nReturning #{group_no}"
+            end
             return line_no, split_no + 1, errors
         end
     end
@@ -296,7 +319,7 @@ module EDIFACT
         end
 
         def group_is_conditional()
-            return (@is_repeating_group ? true : (group_spec()["m_c"] == "C"))
+            return (@is_repeating_group ? true : (group_spec()["m_c"] != "M"))
         end
 
         def segment_is_mandatory()
@@ -304,7 +327,7 @@ module EDIFACT
         end
 
         def segment_is_conditional()
-            return (@is_repeating_group ? true : (segment_spec()["m_c"] == "C"))
+            return (@is_repeating_group ? true : (segment_spec()["m_c"] != "M"))
         end
 
         def segment_matches_line()

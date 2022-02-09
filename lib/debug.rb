@@ -6,11 +6,15 @@ def routine_debug(path)
         # out << message.to_json if message.type == "DESADV"
     end
     out << ""
-    # Association and agency
+    # Message info
     for message in interchange.messages do
-        out << "Subset = #{message.get_subset().inspect}"
-        out << "Assc assigned code = #{message.association_assigned_code}"
-        out << "Controlling agency = #{message.controlling_agency}"
+        out << [
+            "Message type = #{message.type}",
+            "Message version = #{message.version}",
+            "Subset = #{message.subset == nil ? "none" : message.subset}",
+            "Association assigned code = #{message.association_assigned_code}",
+            "Controlling agency = #{message.controlling_agency}",
+        ]
     end
     out << ""
     # Dictionary information

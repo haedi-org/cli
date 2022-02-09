@@ -64,7 +64,9 @@ def routine_parse(path)
                     .colorize(:light_cyan)
                 for element in segment.flatten do
                     unless element.blank?
-                        out << "      #{element.name.titleize} (#{element.code})"
+                        line = "      #{element.name.titleize}"
+                        line += "(#{element.code}) [#{element.rule.m_c}]"
+                        out << line 
                         line = "        #{element.data_value}"
                         unless element.data_name.blank?
                             line += " [#{element.data_name}]"

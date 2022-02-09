@@ -3,6 +3,7 @@ module EDIFACT
         attr_reader :code, :position
         attr_reader :name, :desc, :repr
         attr_reader :data_value, :data_name, :data_desc
+        attr_reader :rule
 
         def initialize(code, version, position, value = "", subset = nil, 
             spec = nil)
@@ -40,16 +41,16 @@ module EDIFACT
         end
 
         def check_against_repr
-            rule = Rule.new(@spec)
+            @rule = Rule.new(@spec)
             if @data_value.blank?
-                add_error(MandatoryFieldError.new) unless rule.conditional?
+                add_error(MandatoryFieldError.new) unless @rule.conditional?
                 return
             end
             unless rule.check_length(@data_value)
-                add_error(InvalidLengthError.new(rule.describe_length))
+                add_error(InvalidLengthError.new(@rule.describe_length))
             end
             unless rule.check_symbols(@data_value)
-                add_error(InvalidSymbolsError.new(rule.describe_symbols))
+                add_error(InvalidSymbolsError.new(@rule.describe_symbols))
             end
         end
 

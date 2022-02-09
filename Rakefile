@@ -34,3 +34,14 @@ task :datatypes do
     ]
     puts `rspec #{params.join(" ")}`
 end
+
+task :debug do
+    hash = {
+        "2" => { "a" => 1 },
+        "1" => { "b" => 2 },
+        "12" => { "c" => 3 },
+        "7" => { "c" => 3 }
+    }
+    arr = hash.map { |k, v| k.to_i }.sort.map { |i| "SG#{i}" }
+    puts arr.inspect
+end

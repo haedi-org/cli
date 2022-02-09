@@ -27,7 +27,6 @@ NULL_VALUES = [nil, [], EMPTY_STRING]
 #    $element_dictionary[code] = Definition.new(code, definition)
 #end
 
-
 def define_element_code(code)
     if $element_dictionary.include?(code)
         return $element_dictionary[code]

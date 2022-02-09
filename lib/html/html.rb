@@ -71,7 +71,7 @@ def html_debug(interchange)
 end
 
 def html_interactive_tag(tag, segment)
-    valid = segment.is_valid?
+    valid = segment.is_valid?(false)
     clr = valid ? "#2B2B2B" : "#F14668"
     fwt = valid ? "normal"  : "bold"
     class_name = "L-#{segment.line_no}-0"
@@ -87,10 +87,9 @@ def html_interactive_tag(tag, segment)
 end
 
 def html_interactive_element(element, segment)
-    no_error = element.is_valid? and segment.is_valid?
     clr, fwt = "#2B2B2B", "normal"
     clr, fwt = "#48C774", "bold" if element.has_integrity?
-    clr, fwt = "#F14668", "bold" unless no_error
+    clr, fwt = "#F14668", "bold" unless element.is_valid?
     class_name = "L-#{segment.line_no}-#{element.position.join("-")}"
     onmouseover = "highlightElement(#{class_name.quote})"
     onmouseleave = "restoreElement(#{class_name.quote}, #{clr.quote})"
@@ -128,7 +127,7 @@ def html_reference_table(interchange)
     # Raw data
     html_raw_data = String.new
     for segment in interchange.segments do
-        clr = segment.is_valid? ? "#2B2B2B" : "#F14668"
+        clr = segment.is_valid?(false) ? "#2B2B2B" : "#F14668"
         html_raw_data += html_interactive_segment(segment).html("b",
             :st => "font-weight: normal; color: #{clr}"
         )
@@ -157,9 +156,11 @@ def html_reference_table(interchange)
             :st => "color: inherit",
             #:colspan => 3
         )
-        unless segment.is_valid?
-            caption = (segment.errors.map { |e| e.message }).join(", ")
-            row += caption.html("span", :cl => "tag is-danger").html("th")
+        unless segment.is_valid?(false)
+            row += segment.errors(false).map { |e, l| 
+                e.message 
+            }.join(", ").html("span", :cl => "tag is-danger").html("th")
+             caption
         else
             row += String.new.html("th", :st => "color: inherit")
         end
@@ -199,7 +200,7 @@ def html_reference_table(interchange)
                 end
                 # Error tag
                 unless e.is_valid?
-                    error_tag = e.error.message.html("span", 
+                    error_tag = e.errors.first[0].message.html("span", 
                         :cl => "tag is-danger"
                     )
                 else

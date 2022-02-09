@@ -12,7 +12,9 @@ module EDIFACT
             @subset = subset
             @elements = []
             @errors = []
-            @tag = Tag.new(raw[0, 3], version, subset)
+            # Construct tag object
+            params = [raw[0, 3], version, subset]
+            @tag = Tag.new(*params)
             # Retrieve specification from dictionary
             set_spec()
             # Assign tag values if not already set
@@ -26,7 +28,8 @@ module EDIFACT
             end
         end
 
-        def errors
+        def errors(include_element_errors = true)
+            return @errors unless include_element_errors
             element_errors = []
             for element in flatten do
                 unless element.is_valid?
@@ -118,8 +121,8 @@ module EDIFACT
             return is_composite ? @data[index] : @data[index].first
         end
 
-        def is_valid?
-            return errors().empty?
+        def is_valid?(include_element_errors = true)
+            return errors(include_element_errors).empty?
         end
 
         def is?(tag_value)
