@@ -34,6 +34,10 @@ class Array
     def words
         return self.join(" ")
     end
+
+    def merge
+        return self.reduce({}, :merge)
+    end
 end
 
 class String
@@ -57,7 +61,10 @@ class String
     end
     
     def key
-        return self.gsub(" ", "_").downcase
+        return self
+            .gsub("'", "")
+            .gsub(" ", "_")
+            .downcase
     end
 
     def unkey

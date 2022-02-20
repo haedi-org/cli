@@ -1,8 +1,10 @@
+haedi $VERSION ✧･ﾟ*
+
 Usage:
- ./haedi.exe [options] [arguments]
+ ./haedi.exe [options] <path>...
 
 Arguments:
- paths              One or more path to an EDI file
+ path               One or more path to an EDI file
 
 Options:
  -u  --unit         Parse and display unit test results
@@ -11,6 +13,5 @@ Options:
  -d  --debug        Attempt to parse file and display cropped data
  -s  --structure    Parse and display EDI document structure
  -t  --timeline     Parse and display chronological information
- -c  --collection   List files given with general document information
  -l  --headless     Continually read-in paths without terminal
  --html             HTML output compatible with EDI client

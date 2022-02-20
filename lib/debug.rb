@@ -1,34 +1,21 @@
-def routine_debug(path)
+def routine_debug(path, interchange = nil)
     out = []
-    interchange = load_interchange(path)
-    # Message specific outputs
-    for message in interchange.messages do
-        # out << message.to_json if message.type == "DESADV"
-    end
-    out << ""
-    # Message info
-    for message in interchange.messages do
-        out << [
-            "Message type = #{message.type}",
-            "Message version = #{message.version}",
-            "Subset = #{message.subset == nil ? "none" : message.subset}",
-            "Association assigned code = #{message.association_assigned_code}",
-            "Controlling agency = #{message.controlling_agency}",
-        ]
-    end
-    out << ""
-    # Dictionary information
-    used = $dictionary.code_lists_used
-    unless used.length == 0
-        out << "3rd-party code lists (#{used.length}):\n- #{used.join("\n- ")}"
+    interchange = load_interchange(path) if interchange == nil
+    # Output info routine
+    out << routine_info(path, interchange)
+    # DESADV debugging
+    if interchange.messages.first.type == "DESADV"
+        # Print roots and leaves
+        roots = interchange.messages.first.stowage_roots.map { |k, v| k }
+        leaves = interchange.messages.first.stowage_leaves.map { |k, v| k }
+        out << "Roots:\t#{roots}\nLeaves:\t#{leaves}\n\n"
+        # Print hierarchy
+        hierarchy = interchange.messages.first.stowage_hierarchy
+        out << "Hier:\t#{hierarchy}\n\n"
+        # Print debug
+        out << interchange.messages.first.debug
         out << ""
-    end
-    # Errors
-    messages = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
-    unless messages.length == 0
-        out << "Errors (#{messages.length}):\n- #{messages.join("\n- ")}"
-            .colorize(:light_red)
-        out << ""
+        out << interchange.messages.first.consignment.to_json
     end
     # Print processing times
     load_time    = sprintf("%.2f", interchange.load_time    * 1000).to_s + "ms"

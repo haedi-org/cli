@@ -88,15 +88,19 @@ end
 $paths = extract_paths(ARGV)
 $dirs  = extract_dirs(ARGV)
 $opts  = extract_tags(ARGV)
-$opts << "--collection" unless $dirs.empty?
+#$opts << "--collection" unless $dirs.empty?
 
 out = []
 
-if opt?(:help) or $opts.empty?
+if (opt?(:help) || $paths.empty?)
+    puts opt?(:help)
     out << routine_help()
     print_out(out)
     exit
 end
+
+# Display info by default
+$opts << "--info" if $opts.empty?
 
 if opt?(:headless)
     $stdout.sync = true

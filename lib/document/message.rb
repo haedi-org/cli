@@ -33,6 +33,11 @@ module EDIFACT
             apply_association_validation()
         end
 
+        def name
+            # TODO: return name of message type
+            # e.g. DESADV => Despatch advice
+        end
+
         def is_valid?
             return errors().empty?
         end
@@ -137,16 +142,16 @@ module EDIFACT
         end
 
         def get_subset()
-            return "UNICORN" if self.is_unicorn?
-            return "EDIFICE" if self.is_edifice?
-            return nil
+            return case self
+                when self.is_unicorn?; "UNICORN"
+                when self.is_edifice?; "EDIFICE"
+                when self.is_iata?; "IATA"
+                else; nil
+            end
         end
 
         def set_spec()
             params = [@type, @version, @subset]
-            if @type == "NOMINT" # NOMINT based on UN/EDIFACT ORDERS D08B
-                params = ["ORDERS", "D08B", @subset]
-            end
             @spec = $dictionary.message_structure_specification(*params)
         end
 

@@ -1,6 +1,9 @@
 module EDIFACT
+    DEFAULT_LENGTH = 512
+    DEFAULT_M_C = "C"
+
     class Rule
-        def initialize(data, inherited_m_c = "C")
+        def initialize(data, inherited_m_c = DEFAULT_M_C)
             @data = data
             @inherited_m_c = inherited_m_c
         end
@@ -69,7 +72,7 @@ module EDIFACT
         end
 
         def length
-            return 512 unless @data.key?("repr")
+            return DEFAULT_LENGTH unless @data.key?("repr")
             return split_repr[1].to_i
         end
 
@@ -86,7 +89,11 @@ module EDIFACT
         def split_repr
             return nil unless @data.key?("repr")
             @data["repr"].gsub("..", "").tap do |r|
-                return r.include?("an") ? [r[0, 2], r[2..-1]] : [r[0, 1], r[1..-1]]
+                if r.include?("an")
+                    return [r[0, 2], r[2..-1]]
+                else
+                    return [r[0, 1], r[1..-1]]
+                end
             end
         end
     end

@@ -7,11 +7,72 @@ module EDIFACT
             @consignment = {}
         end
 
+        def pallet_label
+            for root in stowage_roots do
+                form = Form::Page.new("Pallet label") # TODO: pass length
+                #form.add_box()
+            end
+        end
+
+        def debug
+            out = []
+            # NAME AND ADDRESS GLN
+            nads = groups.map { |g| g.get_segments_by_tag("NAD") }.compact
+            out << nads.flatten.map do |nad|
+                gln = nad.party_identification.readable
+                [
+                    nad.party_qualifier.readable,
+                    gln.colorize(gln.is_gln? ? :light_green : :white),
+                ].join(":\n- ")
+            end
+            # REFERENCE
+            rffs = groups.map { |g| g.get_segments_by_tag("RFF") }.compact
+            out << rffs.flatten.map do |rff|
+                [
+                    rff.reference_qualifier.readable,
+                    rff.reference_number.readable,
+                ].join(":\n- ")
+            end
+            return out
+        end
+
+        def stowage_hierarchy
+            def traverse(node)
+                children = cnmt[node]["children"].map { |c| traverse(c) }
+                return children.blank? ? node : { node => children }
+            end
+            # Recursively map list of root keys into a hierarchy
+            return stowage_roots.keys.map { |root| traverse(root) }
+            # e.g. [ { "1": { "2": ["3", "4"], "5": ["6"] }, ... ]
+        end
+
+        def stowage_roots
+            # Initialize parent_ids as list of all stow IDs in the consignment
+            parent_ids = consignment.keys
+            # Remove any IDs that exist as children
+            consignment.each { |k, v| parent_ids -= v["children"] }
+            # Return list of consignments that are not referenced as children
+            return consignment.select { |k, v| parent_ids.include?(k) }
+        end
+
+        def stowage_leaves
+            # Return list of consigment hashes that do not reference children
+            return consignment.select { |k, v| v["children"].empty? }
+        end
+
         def to_json
-            return stowage_list().to_json
+            return consignment().to_json
         end
 
         def stowage_list
+            return consignment()
+        end
+
+        def cnmt
+            return consignment()
+        end
+
+        def consignment
             build_consignment if @consignment.blank?
             return @consignment
         end
@@ -36,6 +97,9 @@ module EDIFACT
                 # PAC - Package
                 pac = group.get_segments_by_tag("PAC").first
                 unless pac.blank? or cons_id.blank?
+                    @consignment[cons_id]["type_of_packages"] = (
+                        pac.type_of_packages_id.readable
+                    )
                     @consignment[cons_id]["no_of_packages"] = (
                         pac.number_of_packages.value
                     )
@@ -88,9 +152,8 @@ module EDIFACT
                         for type, number in pia.item_numbers_with_type do
                             type, number = type.readable, number.value
                             unless type.blank? or number.blank?
-                                @consignment[cons_id]["item_numbers"][type] = (
-                                    number
-                                )
+                                @consignment[cons_id
+                                    ]["item_numbers"][type.key] = number
                             end
                         end
                     end
@@ -135,7 +198,7 @@ module EDIFACT
             end
         end
 
-        def debug
+        def _debug
             out = []
             for group in @groups do
                 out << group.name
@@ -250,6 +313,7 @@ module EDIFACT
                     out << ""
                 end
             end
+            out << stowage_list.to_json
             return out
         end
     end
