@@ -92,8 +92,7 @@ $opts  = extract_tags(ARGV)
 
 out = []
 
-if (opt?(:help) || $paths.empty?)
-    puts opt?(:help)
+if (opt?(:help) || ($paths.empty? && no_opt?(:headless)))
     out << routine_help()
     print_out(out)
     exit

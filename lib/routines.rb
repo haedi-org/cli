@@ -46,8 +46,9 @@ def routine_info(path, interchange = nil)
     out << ""
     # Dictionary information
     used = $dictionary.code_lists_used
-    unless used.length == 0
-        out << "3rd-party code lists (#{used.length}):\n- #{used.join("\n- ")}"
+    used_count = $dictionary.code_lists_used_count
+    unless used_count == 0
+        out << "3rd-party code lists (#{used_count}):\n- #{used.join("\n- ")}"
         out << ""
     end
     # Errors

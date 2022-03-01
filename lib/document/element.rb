@@ -26,6 +26,7 @@ module EDIFACT
 
         def set_coded_data()
             params = [@code, @data_value, @version, @subset]
+            #puts params.inspect
             @coded_data = $dictionary.coded_data_reference(*params)
         end
 
@@ -128,6 +129,7 @@ module EDIFACT
         def apply_association_code_list(qualifier)
             unless self.blank?
                 params = [qualifier, self.code, self.value]
+                puts params.inspect
                 data = $dictionary.code_list_lookup(*params)
                 unless data.blank?
                     self.set_data_name(data["name"])

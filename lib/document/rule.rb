@@ -8,12 +8,21 @@ module EDIFACT
             @inherited_m_c = inherited_m_c
         end
 
+        def random_string
+            # Generate a valid string length
+            l = self.fixed_length? ? self.length : 1 + rand(self.length)
+            # Define charset
+            s = self.numeric? ? [*'0'..'9'] : [*'a'..'z', *'A'..'Z', *'0'..'9']
+            # Return a string built as a joined list of random characters
+            return (Array.new(l) { s.sample }).join
+        end
+
         def describe_length
             str = ''
             str += '=' if self.fixed_length?
             str += '<' if self.variable_length?
-            str += length.to_s if self.fixed_length?
-            str += (length + 1).to_s if self.variable_length?
+            str += self.length.to_s if self.fixed_length?
+            str += (self.length + 1).to_s if self.variable_length?
             return str
         end
 

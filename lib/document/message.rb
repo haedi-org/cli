@@ -32,6 +32,16 @@ module EDIFACT
             apply_association_code_list()
             apply_association_validation()
         end
+        
+        def get_subset()
+            return case
+                when self.is_unicorn?; "UNICORN"
+                when self.is_edifice?; "EDIFICE"
+                when self.is_eancom?; "EANCOM"
+                when self.is_iata?; "IATA"
+                else; nil
+            end
+        end
 
         def name
             # TODO: return name of message type
@@ -69,6 +79,9 @@ module EDIFACT
                         end
                         if self.is_edigas?
                             segment.apply_association_code_list("ZEW")
+                        end
+                        if self.is_iata?
+                            segment.apply_association_code_list("IATA")
                         end
                     rescue
                         # => Association method not defined
@@ -138,15 +151,6 @@ module EDIFACT
                     ]
                     @trailer = SegmentFactory.new(*params).segment
                 end
-            end
-        end
-
-        def get_subset()
-            return case self
-                when self.is_unicorn?; "UNICORN"
-                when self.is_edifice?; "EDIFICE"
-                when self.is_iata?; "IATA"
-                else; nil
             end
         end
 

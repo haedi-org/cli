@@ -19,33 +19,40 @@ end
 # html_button("Another test button", :cl => "is-danger is-outlined"),
 
 def html_info(interchange)
+    # File information
     file_info = [
         ["File path", html_file_path(interchange.path)]
     ]
+    # Document information
     document_info = [
         ["Interchange version", interchange.version],
         ["Message version", interchange.messages.first.version],
         ["Message", interchange.messages.first.type],
     ]
+    # System information
     if $dictionary.has_version?(interchange.messages.first.version)
         used_version = interchange.messages.first.version
     else
         used_version = FALLBACK_VERSION
     end
+    code_lists_used = $dictionary.code_lists_used.join(HTML_LINE_BREAK)
+    code_lists_used_count = $dictionary.code_lists_used_count
     system_info = [
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
-        ["Third party code lists", $dictionary.code_lists_used.join(", ")],
+        ["Third party code lists (#{code_lists_used_count})", code_lists_used],
     ]
+    # Buttons
+    buttons = []
+    if interchange.messages.first.type == "BAPLIE"
+        buttons << html_button("Bayplan view", :onclick => "onBayplan()")
+    end
+    # Errors
     errors = interchange.errors
     error_info = [
         ["Error count", errors.length],
     ]
     error_info += interchange.errors.map { |e, p| [p.join(":"), e.message] }
-    buttons = []
-    if interchange.messages.first.type == "BAPLIE"
-        buttons << html_button("Bayplan view", :onclick => "onBayplan()")
-    end
     classes = "table is-bordered is-narrow m-2"
     return [
         html_table(file_info, classes),

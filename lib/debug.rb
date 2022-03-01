@@ -15,7 +15,7 @@ def routine_debug(path, interchange = nil)
         # Print debug
         out << interchange.messages.first.debug
         out << ""
-        out << interchange.messages.first.consignment.to_json
+        #out << interchange.messages.first.consignment.to_json
     end
     # Print processing times
     load_time    = sprintf("%.2f", interchange.load_time    * 1000).to_s + "ms"

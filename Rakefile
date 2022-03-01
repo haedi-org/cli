@@ -1,4 +1,5 @@
 require_relative './lib/paths.rb'
+WITHOUT_CLI = true
 
 task :default do
     puts "build\t\tbuild executable using ocra"
@@ -44,4 +45,12 @@ task :debug do
     }
     arr = hash.map { |k, v| k.to_i }.sort.map { |i| "SG#{i}" }
     puts arr.inspect
+end
+
+task :repr do
+    require_relative './lib/include.rb'
+    rule = EDIFACT::Rule.new({ "repr" => "an..9" })
+    (0..10).each do
+        puts rule.random_string
+    end
 end

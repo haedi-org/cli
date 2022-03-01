@@ -17,6 +17,7 @@ module EDIFACT
             @tag = Tag.new(*params)
             # Retrieve specification from dictionary
             set_spec()
+            set_spec("D97A", nil) if @spec.blank?
             # Assign tag values if not already set
             set_tag_values() if @tag.name.blank? && @spec.not_blank?
             split_data_by_chars() unless @chars.blank?
@@ -43,17 +44,18 @@ module EDIFACT
         end
 
         def apply_association_code_list(qualifier)
+           #puts self.tag.value, self.elements.length
             for element in self.flatten do
                 element.apply_association_code_list(qualifier)
             end
         end
 
-        def set_spec()
+        def set_spec(version = @version, subset = @subset)
             unless $dictionary.is_service_segment?(@tag.value, @subset)
-                params = [@tag.value, @version, @subset]
+                params = [@tag.value, version, subset]
                 @spec = $dictionary.segment_specification(*params)
             else
-                params = [@tag.value, nil, @subset]
+                params = [@tag.value, nil, subset]
                 @spec = $dictionary.service_segment_specification(*params)
             end
         end

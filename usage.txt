@@ -1,4 +1,4 @@
-haedi $VERSION ✧･ﾟ*
+haedi v0.0.1 ✧･ﾟ*
 
 Usage:
  ./haedi.exe [options] <path>...

@@ -37,11 +37,12 @@ module EDIFACT
         end
 
         def apply_code_list
-            data = $dictionary.code_list_lookup(
+            params = [
                 @party_responsible_agency.value,
                 @party_code_list.value,
                 @party_identification.value
-            )
+            ]
+            data = $dictionary.code_list_lookup(*params)
             unless data.blank?
                 @party_identification.set_data_name(data["name"])
                 @party_identification.set_data_desc(data["desc"])

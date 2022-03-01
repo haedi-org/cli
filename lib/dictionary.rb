@@ -11,9 +11,19 @@
 #   unas/  "UNA segment specs"                (e.g. UNAS.json)
 
 FALLBACK_VERSION = "D97A"
+DEFAULT_CODE_LIST = "UNCL"
+DEFAULT_CODE_LIST_PATH = "/agencies/un_edifact/uncl/UNCL_D20B.json"
+DEFAULT_CACHE = {
+    "un_edifact" => {
+        "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
+        "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {},
+        "unas" => {}, "lists" => {}
+    }
+}
 
 AGENCY_CODELIST_MAP = {
 #   3055   => [name, path],
+    DEFAULT_CODE_LIST => [DEFAULT_CODE_LIST.downcase, DEFAULT_CODE_LIST_PATH],
     "9"    => ["eancom", "/agencies/eancom/cl.json"],
     "10"   => ["odette", "/agencies/odette/cl.json"],
     "20"   => ["bic", "/agencies/bic/cl.json"],
@@ -22,31 +32,51 @@ AGENCY_CODELIST_MAP = {
     "321"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
     "ZEW"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
     "6346" => ["iso_6346", "/agencies/smdg/iso_6346.json"],
+    "IATA" => ["iata", "/agencies/iata/cl.json"],
 }
 
 class Dictionary
     attr_reader :read_count
-    attr_reader :code_lists_used
 
     def initialize(dir = DATA_PATH)
         @dir = dir
         @read_count = 0
         @code_lists_used = []
-        @cache = {
-            "un_edifact" => {
-                "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
-                "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {},
-                "unas" => {}, "lists" => {}
-            }
-        }
-    end
-    
-    def debug
-        # NOTE: Leave for debug purposes
+        @cache = DEFAULT_CACHE
     end
 
-    def add_code_list_used(code_list_name)
-        @code_lists_used = (@code_lists_used + [code_list_name]).uniq
+    def code_lists_used_count
+        return @code_lists_used.length
+    end
+
+    def code_lists_used
+        list, splits = [], {}
+        begin
+            @code_lists_used.each do |name, qualifier|
+                if qualifier == nil
+                    list << name
+                else
+                    splits[name] = [] unless splits.key?(name)
+                    splits[name] << qualifier
+                end
+            end
+            for key, qualifiers in splits do
+                if qualifiers.length < 5
+                    list << "#{key} #{qualifiers.join(", ")}"
+                else
+                    list << "#{key} (#{qualifiers.length})"
+                end
+            end
+            return list
+        rescue
+            return []
+        end
+    end
+
+    def add_code_list_used(name, qualifier = nil)
+        return if name == DEFAULT_CODE_LIST
+        @code_lists_used << [name, qualifier]
+        @code_lists_used = @code_lists_used.uniq
     end
 
     def data_list_lookup(name, dir = @dir)
@@ -60,13 +90,17 @@ class Dictionary
             name, path = AGENCY_CODELIST_MAP[agency]
             data = retrieve_hash(name, path)
             if qualifier == nil
-                add_code_list_used("#{name.unkey.upcase}")
+                add_code_list_used(name.unkey.upcase)
                 return data
             end
-            return {} unless data.key?(qualifier)
-            if data[qualifier].key?(code)
-                add_code_list_used("#{name.unkey.upcase} #{qualifier}")
+            puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
+            unless data.dig(qualifier, code).blank?
+                add_code_list_used(name.unkey.upcase, qualifier)
                 return data[qualifier][code]
+            else
+                unless agency == DEFAULT_CODE_LIST
+                    code_list_lookup(DEFAULT_CODE_LIST, qualifier, code)
+                end
             end
         end
         return {}
@@ -84,6 +118,7 @@ class Dictionary
     def is_service_segment?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
         subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_segments", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
@@ -91,6 +126,7 @@ class Dictionary
     def is_service_element?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
         subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_simple_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
@@ -98,6 +134,7 @@ class Dictionary
     def is_service_composite?(value, subset = nil)
         subset = "un_edifact" if subset.blank?
         subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_composite_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
@@ -112,11 +149,15 @@ class Dictionary
             else; return coded_data_reference(code, value, version)
             end
             data = retrieve_subset_data(*params)
+            # Default to no subset if data is blank
+            if data.dig(code, value).blank?
+                return coded_data_reference(code, value, version)
+            end
         end
         return {} if data.dig(code, value) == nil
         return data[code][value]
     end
-    
+
     def element_specification(code, version = nil, subset = nil)
         version = FALLBACK_VERSION if version == nil
         if subset.blank? or (subset == "un_edifact")
@@ -183,6 +224,10 @@ class Dictionary
             else; return segment_specification(tag, version)
             end
             data = retrieve_subset_data(*params)
+            # Default to no subset if data is blank
+            if data.dig(tag).blank?
+                return segment_specification(tag, version)
+            end
         end
         return data.key?(tag) ? data[tag] : {}
     end
@@ -198,6 +243,10 @@ class Dictionary
             else; return service_segment_specification(tag, version)
             end
             data = retrieve_subset_data(*params)
+            # Default to no subset if data is blank
+            if data.dig(tag).blank?
+                return service_segment_specification(tag, version)
+            end
         end
         return data.key?(tag) ? data[tag] : {}
     end
@@ -271,8 +320,10 @@ class Dictionary
     end
 
     def retrieve_hash(key, path)
-        # Use cached version if it exists
-        return @cache[key] if @cache.key?(key)
+        # Use cached version if it exists (and not only "lists")
+        if @cache.key?(key) && (@cache[key].keys != ["lists"])
+            return @cache[key]
+        end
         # Otherwise load, and store
         data = load_json(path)
         return {} if data == {}
