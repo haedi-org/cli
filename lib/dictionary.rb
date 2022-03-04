@@ -11,13 +11,14 @@
 #   unas/  "UNA segment specs"                (e.g. UNAS.json)
 
 FALLBACK_VERSION = "D97A"
+FALLBACK_SERVICE_VERSION = "40000"
 DEFAULT_CODE_LIST = "UNCL"
 DEFAULT_CODE_LIST_PATH = "/agencies/un_edifact/uncl/UNCL_D20B.json"
 DEFAULT_CACHE = {
     "un_edifact" => {
         "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
         "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {},
-        "unas" => {}, "lists" => {}
+        "unas" => {}, "lists" => {}, "scl" => {}
     }
 }
 
@@ -93,7 +94,7 @@ class Dictionary
                 add_code_list_used(name.unkey.upcase)
                 return data
             end
-            puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
+           #puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
             unless data.dig(qualifier, code).blank?
                 add_code_list_used(name.unkey.upcase, qualifier)
                 return data[qualifier][code]
@@ -139,7 +140,7 @@ class Dictionary
         return retrieve_csv_column(*params).include?(value)
     end
 
-    def coded_data_reference(code, value, version = nil, subset = nil)
+    def coded_data_reference(code, value, version = "40000", subset = nil)
         version = FALLBACK_VERSION if version == nil
         if subset.blank? or (subset == "un_edifact")
             data = retrieve_un_edifact_data("UNCL", version)
@@ -152,6 +153,25 @@ class Dictionary
             # Default to no subset if data is blank
             if data.dig(code, value).blank?
                 return coded_data_reference(code, value, version)
+            end
+        end
+        return {} if data.dig(code, value) == nil
+        return data[code][value]
+    end
+
+    def service_coded_data_reference(code, value, version = "40000", subset = nil)
+        version = FALLBACK_SERVICE_VERSION if version == nil
+        if subset.blank? or (subset == "un_edifact")
+            data = retrieve_un_edifact_data("SCL", version)
+        else
+            case subset
+            when "UNICORN"; params = ["SCL", "UNICORN", "22"]
+            else; return service_coded_data_reference(code, value, version)
+            end
+            data = retrieve_subset_data(*params)
+            # Default to no subset if data is blank
+            if data.dig(code, value).blank?
+                return service_coded_data_reference(code, value, version)
             end
         end
         return {} if data.dig(code, value) == nil

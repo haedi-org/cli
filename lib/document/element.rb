@@ -25,9 +25,13 @@ module EDIFACT
         end
 
         def set_coded_data()
-            params = [@code, @data_value, @version, @subset]
-            #puts params.inspect
-            @coded_data = $dictionary.coded_data_reference(*params)
+            unless $dictionary.is_service_element?(@code, @subset)
+                params = [@code, @data_value, @version, @subset]
+                @coded_data = $dictionary.coded_data_reference(*params)
+            else
+                params = [@code, @data_value, nil, @subset]
+                @coded_data = $dictionary.service_coded_data_reference(*params)
+            end
         end
 
         def set_spec()
@@ -105,11 +109,11 @@ module EDIFACT
         end
 
         def set_data_name(data_name)
-            @data_name = data_name
+            @data_name = data_name.chomp
         end
         
         def set_data_desc(data_desc)
-            @data_desc = data_desc
+            @data_desc = data_desc.chomp
         end
 
         def set_repr(repr)
@@ -129,11 +133,11 @@ module EDIFACT
         def apply_association_code_list(qualifier)
             unless self.blank?
                 params = [qualifier, self.code, self.value]
-                puts params.inspect
+               #puts params.inspect
                 data = $dictionary.code_list_lookup(*params)
                 unless data.blank?
-                    self.set_data_name(data["name"])
-                    self.set_data_desc(data["desc"])
+                    self.set_data_name(data["name"].chomp)
+                    self.set_data_desc(data["desc"].chomp)
                     return true
                 end
             end

@@ -1,5 +1,8 @@
 module EDIFACT
     SEGMENT_MAP = {
+        "UCI" => UCISegment,
+        "UCM" => UCMSegment,
+        "UCS" => UCSSegment,
         "UNA" => UNASegment,
         "UNB" => UNBSegment,
         "UNH" => UNHSegment,
@@ -9,6 +12,7 @@ module EDIFACT
         "DOC" => DOCSegment,
         "DTM" => DTMSegment,
         "EQD" => EQDSegment,
+        "ERC" => ERCSegment,
         "FTX" => FTXSegment,
         "GID" => GIDSegment,
         "GIN" => GINSegment,
