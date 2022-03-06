@@ -97,22 +97,26 @@ class Dictionary
     end
 
     def code_list_lookup(agency, qualifier = nil, code = nil)
-        if AGENCY_CODELIST_MAP.key?(agency)
-            name, path = AGENCY_CODELIST_MAP[agency]
-            data = retrieve_hash(name, path)
-            if qualifier == nil
-                add_code_list_used(name.unkey.upcase)
-                return data
-            end
-           #puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
-            unless data.dig(qualifier, code).blank?
-                add_code_list_used(name.unkey.upcase, qualifier)
-                return data[qualifier][code]
-            else
-                unless agency == DEFAULT_CODE_LIST
-                    code_list_lookup(DEFAULT_CODE_LIST, qualifier, code)
+        begin
+            if AGENCY_CODELIST_MAP.key?(agency)
+                name, path = AGENCY_CODELIST_MAP[agency]
+                data = retrieve_hash(name, path, true)
+                if qualifier == nil
+                    add_code_list_used(name.unkey.upcase)
+                    return data
+                end
+               #puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
+                unless data.dig(qualifier, code).blank?
+                    add_code_list_used(name.unkey.upcase, qualifier)
+                    return data[qualifier][code]
+                else
+                    unless agency == DEFAULT_CODE_LIST
+                        code_list_lookup(DEFAULT_CODE_LIST, qualifier, code)
+                    end
                 end
             end
+        rescue => e
+            puts e.message
         end
         return {}
     end
@@ -273,15 +277,18 @@ class Dictionary
         return data
     end
 
-    def retrieve_hash(key, path)
+    def retrieve_hash(key, path, codelist = false)
         # Use cached version if it exists (and not only "lists")
         if @cache.key?(key) && (@cache[key].keys != ["lists"])
-            return @cache[key]
+            if (codelist && @cache[key].key?("codelist")) || (!codelist)
+                return codelist ? @cache[key]["codelist"] : @cache[key]
+            end
         end
         # Otherwise load, and store
         data = load_json(path)
         return {} if data == {}
-        @cache[key] = data
+        @cache[key] = {} unless @cache.key?(key)
+        codelist ? @cache[key]["codelist"] = data : @cache[key] = data
         return data
     end
 

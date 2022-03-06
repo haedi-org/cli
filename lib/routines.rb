@@ -19,9 +19,8 @@ def load_interchange(path)
 end
 
 def routine_help
-    out = []
+    out = [""]
     version = File.readlines(VERSION_PATH).first.chomp
-    out << ""
     out << File.readlines(USAGE_PATH).map { |l| l.gsub("VERSION", version) }
     return out
 end

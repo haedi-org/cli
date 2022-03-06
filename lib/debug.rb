@@ -56,6 +56,9 @@ def routine_debug(path, interchange = nil)
         # Print hierarchy
         hierarchy = interchange.messages.first.stowage_hierarchy
         out << "Hier = #{hierarchy}\n\n"
+        # Print consignment
+        consignment = interchange.messages.first.to_json
+        out << "Consignment = #{consignment}\n\n"
         # Print debug
         out << interchange.messages.first.debug
         out << ""
