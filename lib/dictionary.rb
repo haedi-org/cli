@@ -14,13 +14,7 @@ FALLBACK_VERSION = "D97A"
 FALLBACK_SERVICE_VERSION = "40000"
 DEFAULT_CODE_LIST = "UNCL"
 DEFAULT_CODE_LIST_PATH = "/agencies/un_edifact/uncl/UNCL_D20B.json"
-DEFAULT_CACHE = {
-    "un_edifact" => {
-        "edcd" => {}, "eded" => {}, "edmd" => {}, "edsd" => {},
-        "uncl" => {}, "ss" => {}, "sc" => {}, "se" => {},
-        "unas" => {}, "lists" => {}, "scl" => {}
-    }
-}
+DEFAULT_CACHE = {}
 
 AGENCY_CODELIST_MAP = {
 #   3055   => [name, path],
@@ -34,6 +28,21 @@ AGENCY_CODELIST_MAP = {
     "ZEW"  => ["edigas", "/agencies/edigas/cl/CL_4.json"],
     "6346" => ["iso_6346", "/agencies/smdg/iso_6346.json"],
     "IATA" => ["iata", "/agencies/iata/cl.json"],
+}
+
+SERVICE_DATATYPES = ["SCL", "SE", "SC", "SS", "UNAS"]
+
+EDIFACT_DATATYPE = {
+    "CL" => "UNCL",
+    "SCL" => "SCL",
+    "ED" => "EDED",
+    "SE" => "SE",
+    "CD" => "EDCD",
+    "SC" => "SC",
+    "SD" => "EDSD",
+    "SS" => "SS",
+    "UNAS" => "UNAS",
+    "MD" => "EDMD"
 }
 
 class Dictionary
@@ -140,203 +149,127 @@ class Dictionary
         return retrieve_csv_column(*params).include?(value)
     end
 
-    def coded_data_reference(code, value, version = "40000", subset = nil)
-        version = FALLBACK_VERSION if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("UNCL", version)
-        else
-            case subset
-            when "UNICORN"; params = ["CL", "UNICORN", "22"]
-            else; return coded_data_reference(code, value, version)
-            end
-            data = retrieve_subset_data(*params)
-            # Default to no subset if data is blank
-            if data.dig(code, value).blank?
-                return coded_data_reference(code, value, version)
+    def retrieve_specification_datum(datatype, code, version = nil, 
+        subset = nil, message = nil, fallback = nil)
+        # Assign default fallback version if given as nil
+        if fallback == nil
+            if SERVICE_DATATYPES.include?(datatype)
+                fallback = FALLBACK_SERVICE_VERSION
+            else
+                fallback = FALLBACK_VERSION
             end
         end
-        return {} if data.dig(code, value) == nil
-        return data[code][value]
+        # Reassign values if given as nil or default
+        version = fallback if version == nil
+        subset = "un_edifact" if subset == nil
+        datatype = EDIFACT_DATATYPE[datatype] if subset == "un_edifact"
+        # Retrieve EDI data using parameters
+        params = [datatype, subset, version, message, fallback]
+        data = retrieve_edi_data(*params)
+        # Reattempt without subset if no data is found
+        if data.blank? && (subset != "un_edifact")
+            params = [datatype, code, version, nil, message, nil]
+            return retrieve_specification_datum(*params)
+        end
+        return data if code == nil
+        return data.key?(code) ? data[code] : {}
     end
 
-    def service_coded_data_reference(code, value, version = "40000", subset = nil)
-        version = FALLBACK_SERVICE_VERSION if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("SCL", version)
-        else
-            case subset
-            when "UNICORN"; params = ["SCL", "UNICORN", "22"]
-            else; return service_coded_data_reference(code, value, version)
-            end
-            data = retrieve_subset_data(*params)
-            # Default to no subset if data is blank
-            if data.dig(code, value).blank?
-                return service_coded_data_reference(code, value, version)
-            end
-        end
-        return {} if data.dig(code, value) == nil
-        return data[code][value]
+    def coded_data_reference(code, value, version = nil, subset = nil)
+        params = ["CL", code, version, subset]
+        data = retrieve_specification_datum(*params)
+        return data.key?(value) ? data[value] : {}
+    end
+
+    def service_coded_data_reference(code, value, version = nil, subset = nil)
+        params = ["SCL", code, version, subset]
+        data = retrieve_specification_datum(*params)
+        return data.key?(value) ? data[value] : {}
     end
 
     def element_specification(code, version = nil, subset = nil)
-        version = FALLBACK_VERSION if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("EDED", version)
-        else
-            case subset
-            when "UNICORN"; params = ["ED", "UNICORN", "22"]
-            else; return element_specification(code, version)
-            end
-            data = retrieve_subset_data(*params)
-        end
-        return data.key?(code) ? data[code] : {}
+        params = ["ED", code, version, subset]
+        return retrieve_specification_datum(*params)
     end
 
     def service_element_specification(code, version = nil, subset = nil)
-        version = "40000" if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("SE", version)
-        else
-            case subset
-            when "UNICORN"; params = ["SE", "UNICORN", "22"]
-            else; return service_element_specification(code, version)
-            end
-            data = retrieve_subset_data(*params)
-        end
-        return data.key?(code) ? data[code] : {}
+        params = ["SE", code, version, subset]
+        return retrieve_specification_datum(*params)
     end
 
     def composite_specification(code, version = nil, subset = nil)
-        version = FALLBACK_VERSION if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("EDCD", version)
-        else
-            case subset
-            when "UNICORN"; params = ["CD", "UNICORN", "22"]
-            else; return composite_specification(code, version)
-            end
-            data = retrieve_subset_data(*params)
-        end
-        return data.key?(code) ? data[code] : {}
+        params = ["CD", code, version, subset]
+        return retrieve_specification_datum(*params)
     end
 
-    def service_composite_specification(code, version = "40000", subset = nil)
-        version = "40000" if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("SC", version)
-        else
-            case subset
-            when "UNICORN"; params = ["SC", "UNICORN", "22"]
-            else; return service_composite_specification(code, version)
-            end
-            data = retrieve_subset_data(*params)
-        end
-        return data.key?(code) ? data[code] : {}
+    def service_composite_specification(code, version = nil, subset = nil)
+        params = ["SC", code, version, subset]
+        return retrieve_specification_datum(*params)
     end
 
-    def segment_specification(tag, version, subset = "un_edifact")
-        return {} if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("EDSD", version)
-        else
-            case subset
-            when "UNICORN"; params = ["SD", "UNICORN", "22"]
-            else; return segment_specification(tag, version)
-            end
-            data = retrieve_subset_data(*params)
-            # Default to no subset if data is blank
-            if data.dig(tag).blank?
-                return segment_specification(tag, version)
-            end
-        end
-        return data.key?(tag) ? data[tag] : {}
+    def segment_specification(tag, version, subset = nil)
+        params = ["SD", tag, version, subset]
+        return retrieve_specification_datum(*params)
     end
 
-    def service_segment_specification(tag, version = "40000", subset = nil)
-        return self.una_segment_specification(version) if tag == 'UNA'
-        version = "40000" if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("SS", version)
-        else
-            case subset
-            when "UNICORN"; params = ["SS", "UNICORN", "22"]
-            else; return service_segment_specification(tag, version)
-            end
-            data = retrieve_subset_data(*params)
-            # Default to no subset if data is blank
-            if data.dig(tag).blank?
-                return service_segment_specification(tag, version)
-            end
-        end
-        return data.key?(tag) ? data[tag] : {}
+    def service_segment_specification(tag, version = nil, subset = nil)
+        params = [(tag == 'UNA') ? "UNAS" : "SS", tag, version, subset]
+        data = retrieve_specification_datum(*params)
+        return data.key?(tag) ? data[tag] : data
     end
 
-    def una_segment_specification(version = "40000")
-        return {} if version == nil
-        data = retrieve_un_edifact_data("UNAS", version)
-        return data.key?("UNA") ? data["UNA"] : {}
+    def una_segment_specification(version = nil)
+        params = ["UNAS", nil, version]
+        data = retrieve_specification_datum(*params)
+        return data.key?("UNA") ? data["UNA"] : data
     end
 
     def message_structure_specification(message, version = nil, subset = nil)
-        return {} if version == nil
-        if subset.blank? or (subset == "un_edifact")
-            data = retrieve_un_edifact_data("EDMD", version, message)
-        else
-            case subset
-            when "UNICORN"; params = ["MD", "UNICORN", "22", message]
-            when "EDIFICE"; params = ["MD", "EDIFICE", "D10A", message]
-            else; return message_structure_specification(message, version)
-            end
-            data = retrieve_subset_data(*params)
-        end
-        return data
+        params = ["MD", nil, version, subset, message]
+        return retrieve_specification_datum(*params)
     end
+    
+    #case subset
+    #when "UNICORN"; params = ["MD", "UNICORN", "22", message]
+    #when "EDIFICE"; params = ["MD", "EDIFICE", "D10A", message]
+    #else; return message_structure_specification(message, version)
+    #end
 
-    def retrieve_subset_data(datatype, subset, version, message = nil)
+    def retrieve_edi_data(datatype, subset, version, message = nil, 
+        fallback_version = nil)
+        # TODO: if version given is nil, find fallback version from the 
+        #       root directory of the subset (normal and service)
+        # Default to fallback_version if version given is nil
+        version = fallback_version if version == nil
+        return {} if version == nil
         # Ensure correct casing on all strings
         datatype = datatype.downcase
+        subset = subset.downcase
         version = version.upcase unless version == nil
         message = message.upcase unless message == nil
-        #
+       #puts @cache.keys.inspect
+       #@cache.keys.each { |key| puts @cache[key].keys.inspect }
         @cache[subset] = {} unless @cache.key?(subset)
         if @cache.dig(subset, datatype).blank?
-            @cache[subset] = { datatype => {} }
+            @cache[subset][datatype] = {}
         end
-        @cache[subset][datatype].tap do |entry|
-            # Return cached version if it exists
-            key = message.blank? ? version : message + "_" + version
-            return entry[key] if entry.key?(key)
-            # Otherwise load, store, and return
-            basename = "#{datatype.upcase}_#{key}"
-            path = "/agencies/#{subset.downcase}/#{datatype}/#{basename}.json"
-            data = load_json(path)
-            entry[key] = data unless data.blank?
-            return data
+        # Return cached version if it exists
+        key = message.blank? ? version : message + "_" + version
+        if @cache[subset][datatype].key?(key)
+           #puts "Returning cache entry"
+            return @cache[subset][datatype][key]
         end
-    end
-
-    def retrieve_un_edifact_data(datatype, version, message = nil)
-        # Ensure correct casing on all strings
-        datatype = datatype.downcase
-        version = version.upcase unless version == nil
-        message = message.upcase unless message == nil
-        # In context of the correct entry in the cache
-        @cache["un_edifact"][datatype].tap do |entry|
-            # Return cached version if it exists
-            key = message.blank? ? version : message + "_" + version
-            return entry[key] if entry.key?(key)
-            # Otherwise load, store, and return
-            basename = "#{datatype.upcase}_#{key}"
-            path = "/agencies/un_edifact/#{datatype}/#{basename}.json"
-            data = load_json(path)
-            if data.blank? and (version != FALLBACK_VERSION)
-                data = retrieve_un_edifact_data(
-                    datatype, FALLBACK_VERSION, message
-                )
-            end
-            entry[key] = data
-            return data
+        # Otherwise load, store, and return
+        basename = "#{datatype.upcase}_#{key}"
+        path = "/agencies/#{subset.downcase}/#{datatype}/#{basename}.json"
+        data = load_json(path)
+        if data.blank? and (version != fallback_version)
+            data = retrieve_edi_data(
+                datatype, subset, fallback_version, message
+            )
         end
+        @cache[subset][datatype][key] = data unless data.blank?
+        return data
     end
 
     def retrieve_hash(key, path)

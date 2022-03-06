@@ -47,14 +47,16 @@ def routine_info(path, interchange = nil)
     # Dictionary information
     used = $dictionary.code_lists_used
     used_count = $dictionary.code_lists_used_count
+    read_count = $dictionary.read_count
+    out << "Dictionary read count: #{read_count}"
     unless used_count == 0
         out << "3rd-party code lists (#{used_count}):\n- #{used.join("\n- ")}"
-        out << ""
     end
+    out << ""
     # Errors
-    messages = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
-    unless messages.length == 0
-        out << "Errors (#{messages.length}):\n- #{messages.join("\n- ")}"
+    errs = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
+    unless errs.length == 0
+        out << "Errors (#{errs.length}):\n- #{errs.first(10).join("\n- ")}"
             .colorize(:light_red)
         out << ""
     end

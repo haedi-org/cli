@@ -16,7 +16,6 @@ module EDIFACT
                 @responsible_agency.value,
                 @code_list_qualifier.value,
                 @application_error_id.value
-                @code_list
             )
             unless data.blank?
                 @application_error_id.set_data_name(data["name"])
