@@ -1,4 +1,4 @@
-haedi v0.0.1 ✧･ﾟ*
+haedi - CLI for EDI parsing, validation, and manipulation [version VERSION]
 
 Usage:
  ./haedi.exe [options] <path>...

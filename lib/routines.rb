@@ -20,8 +20,9 @@ end
 
 def routine_help
     out = []
-    out << print_header()
-    out << File.readlines(USAGE_PATH)
+    version = File.readlines(VERSION_PATH).first.chomp
+    out << ""
+    out << File.readlines(USAGE_PATH).map { |l| l.gsub("VERSION", version) }
     return out
 end
 

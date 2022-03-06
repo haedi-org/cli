@@ -19,5 +19,6 @@ JSON_EXT = ".json"
 
 USAGE_PATH = "./usage.txt"
 RECENT_LOG_PATH = "./recent.log"
+VERSION_PATH = "./version"
 
 TEST_MESSAGE_PATH = "./data/messages/tests/"
