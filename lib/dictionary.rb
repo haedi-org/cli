@@ -14,6 +14,7 @@ FALLBACK_VERSION = "D97A"
 FALLBACK_SERVICE_VERSION = "40000"
 DEFAULT_CODE_LIST = "UNCL"
 DEFAULT_CODE_LIST_PATH = "/agencies/un_edifact/uncl/UNCL_D20B.json"
+DEFAULT_SUBSET = "un_edifact"
 DEFAULT_CACHE = {}
 
 AGENCY_CODELIST_MAP = {
@@ -119,32 +120,32 @@ class Dictionary
     def has_version?(version)
         for datatype in ["uncl", "edcd", "eded"] do
             basename = "#{datatype.upcase}_#{version}"
-            path = "/agencies/un_edifact/#{datatype}/#{basename}.json"
+            path = "/agencies/#{DEFAULT_SUBSET}/#{datatype}/#{basename}.json"
             return false unless File.file?(@dir + path)
         end
         return true
     end
 
     def is_service_segment?(value, subset = nil)
-        subset = "un_edifact" if subset.blank?
-        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
-        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
+        subset = DEFAULT_SUBSET if subset.blank?
+        subset = DEFAULT_SUBSET if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = DEFAULT_SUBSET if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_segments", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
     def is_service_element?(value, subset = nil)
-        subset = "un_edifact" if subset.blank?
-        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
-        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
+        subset = DEFAULT_SUBSET if subset.blank?
+        subset = DEFAULT_SUBSET if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = DEFAULT_SUBSET if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_simple_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
 
     def is_service_composite?(value, subset = nil)
-        subset = "un_edifact" if subset.blank?
-        subset = "un_edifact" if subset == "EDIFICE" # TODO: implement EDIFICE
-        subset = "un_edifact" if subset == "EANCOM"  # TODO: implement EANCOM
+        subset = DEFAULT_SUBSET if subset.blank?
+        subset = DEFAULT_SUBSET if subset == "EDIFICE" # TODO: implement EDIFICE
+        subset = DEFAULT_SUBSET if subset == "EANCOM"  # TODO: implement EANCOM
         params = ["service_composite_elements", subset.downcase]
         return retrieve_csv_column(*params).include?(value)
     end
@@ -161,13 +162,13 @@ class Dictionary
         end
         # Reassign values if given as nil or default
         version = fallback if version == nil
-        subset = "un_edifact" if subset == nil
-        datatype = EDIFACT_DATATYPE[datatype] if subset == "un_edifact"
+        subset = DEFAULT_SUBSET if subset == nil
+        datatype = EDIFACT_DATATYPE[datatype] if subset == DEFAULT_SUBSET
         # Retrieve EDI data using parameters
         params = [datatype, subset, version, message, fallback]
         data = retrieve_edi_data(*params)
         # Reattempt without subset if no data is found
-        if data.blank? && (subset != "un_edifact")
+        if data.blank? && (subset != DEFAULT_SUBSET)
             params = [datatype, code, version, nil, message, nil]
             return retrieve_specification_datum(*params)
         end
@@ -284,7 +285,7 @@ class Dictionary
         return data
     end
 
-    def retrieve_csv_column(file_name, subset = "un_edifact", column = 0)
+    def retrieve_csv_column(file_name, subset = DEFAULT_SUBSET, column = 0)
         # In context of the correct entry in the cache
         @cache[subset] = {} unless @cache.key?(subset)
         @cache[subset]["lists"] = {} if @cache.dig(subset, "lists").blank?
