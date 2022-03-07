@@ -8,23 +8,20 @@ module EDIFACT
         attr_reader :controlling_agency
         attr_reader :header, :trailer
 
-        def initialize(
-            lines, interchange_version = '4', chars = DEFAULT_CHARS, 
+        def initialize(lines, interchange_version = '4', chars = DEFAULT_CHARS, 
             application_reference = nil)
-            @lines = lines
-            @interchange_version = interchange_version
-            @chars = chars
-            @application_reference = application_reference
-            @spec = nil
-            @type = nil
-            @version = nil
-            @header = nil
-            @trailer = nil
-            @groups = []
-            @errors = []
-            # Initial methods
+            # Define values from given arguments
+            @lines, @interchange_version = lines, interchange_version
+            @chars, @application_reference = chars, application_reference
+            # Define spec, type, and version variables
+            @spec, @type, @version = nil, nil, nil
+            # Define header and trailer variables
+            @header, @trailer = nil, nil
+            # Define groups list and errors list
+            @groups, @errors = [], []
+            # Initial methods to generate objects
             set_header()
-            @subset = get_subset()
+            set_subset()
             set_trailer()
             set_spec()
             set_groups()
@@ -33,8 +30,8 @@ module EDIFACT
             apply_association_validation()
         end
         
-        def get_subset()
-            return case
+        def set_subset()
+            @subset = case
                 when self.is_unicorn?; "UNICORN"
                 when self.is_edifice?; "EDIFICE"
                 when self.is_eancom?; "EANCOM"
@@ -147,7 +144,7 @@ module EDIFACT
                 if line_data.first(3) == 'UNT'
                     params = [
                         line_data, line_no, @interchange_version, 
-                        @chars, get_subset()
+                        @chars, @subset
                     ]
                     @trailer = SegmentFactory.new(*params).segment
                 end
@@ -161,10 +158,10 @@ module EDIFACT
 
         def set_groups()
             begin
-                params = [@lines, @spec, @version, @chars, get_subset()]
+                params = [@lines, @spec, @version, @chars, @subset]
                 group_factory = GroupFactory.new(*params)
             rescue
-                params = [@lines, nil, @version, @chars, get_subset()]
+                params = [@lines, nil, @version, @chars, @subset]
                 group_factory = GroupFactory.new(*params)
                 if @spec.blank?
                     @errors << [NoSpecificationError.new, []]

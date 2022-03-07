@@ -4,8 +4,8 @@ module EDIFACT
 
     class Rule
         def initialize(data, inherited_m_c = DEFAULT_M_C)
-            @data = data
-            @inherited_m_c = inherited_m_c
+            # Define values from given arguments
+            @data, @inherited_m_c = data, inherited_m_c
         end
 
         def random_string

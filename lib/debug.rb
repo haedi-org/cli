@@ -49,6 +49,9 @@ def routine_debug(path, interchange = nil)
     end
     # DESADV debugging
     if interchange.messages.first.type == "DESADV"
+        # Print debug
+        out << interchange.messages.first.debug
+        out << ""
         # Print roots and leaves
         roots = interchange.messages.first.stowage_roots.map { |k, v| k }
         leaves = interchange.messages.first.stowage_leaves.map { |k, v| k }
@@ -56,13 +59,12 @@ def routine_debug(path, interchange = nil)
         # Print hierarchy
         hierarchy = interchange.messages.first.stowage_hierarchy
         out << "Hier = #{hierarchy}\n\n"
-        # Print consignment
-        consignment = interchange.messages.first.to_json
-        out << "Consignment = #{consignment}\n\n"
-        # Print debug
-        out << interchange.messages.first.debug
+        # Print test ASCII
+        out << interchange.messages.first.ascii
         out << ""
-        #out << interchange.messages.first.consignment.to_json
+        # Print consignment
+       #consignment = interchange.messages.first.consignment
+       #out << "Consignment = #{JSON.pretty_generate(consignment)}\n\n"
     end
     # Print processing times
     load_time    = sprintf("%.2f", interchange.load_time    * 1000).to_s + "ms"

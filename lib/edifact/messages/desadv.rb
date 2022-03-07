@@ -36,6 +36,38 @@ module EDIFACT
             return out
         end
 
+        def ascii
+            out = ["Consignment:"]
+            def traverse(out, node, lv = 1)
+                if cnmt[node].key?("type_of_packages")
+                    out << "  " * lv + cnmt[node]["type_of_packages"] + ":"
+                else
+                    out << "  " * lv + "Level:"
+                end
+                if cnmt[node].key?("lines")
+                    for line_no, line_data in cnmt[node]["lines"] do
+                        unless cnmt[node]["no_of_packages"].blank?
+                            out << [
+                                "  " * (lv + 1), cnmt[node]["no_of_packages"],
+                                " × ", line_data["item_number"]
+                            ].join
+                        else
+                            out << [
+                                "  " * (lv + 1), line_data["item_number"]
+                            ].join
+                        end
+                    end
+                end
+                chln = cnmt[node]["children"].map { |c| traverse(out, c, lv+1) }
+                return [out, chln.blank? ? node : { node => chln }]
+            end
+            stowage_roots.keys.map do |root| 
+                out, nodes = traverse(out, root)
+                nodes
+            end
+            return out
+        end
+
         def stowage_hierarchy
             def traverse(node)
                 children = cnmt[node]["children"].map { |c| traverse(c) }

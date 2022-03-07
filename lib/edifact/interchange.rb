@@ -6,23 +6,27 @@ module EDIFACT
         attr_reader :load_time, :process_time
 
         def initialize(path)
+            # Save initial time for debugging
             start_process_time = Time.now
+            # Define values from given arguments
             @path = path
+            # Load raw data and map to list of strings without escape chars
             @raw = load_from_file(path)
             @lines = @raw.map { |line| line.chomp }.join
-            @header = nil
-            @messages = []
-            @trailer = nil
-            @version = '4'
-            @chars = nil
-            @errors = []
-            @application_reference = nil
-            # Initial methods
+            # Define header and trailer variables
+            @header, @trailer = nil, nil
+            # Define messages list and errors list
+            @messages, @errors = [], []
+            # Define version, chars, and application_reference variables
+            @version = '4' # TODO: Get interchange version from file
+            @chars, @application_reference = nil, nil
+            # Methods to parse data and build interchange object
             set_punctuation_values()
             split_lines_by_terminator()
             set_interchange_envelope()
             set_critical_values()
             set_messages()
+            # Calculate total time taken to initialize
             @process_time = Time.now - start_process_time
         end
 

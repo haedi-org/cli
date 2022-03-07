@@ -7,14 +7,12 @@ module EDIFACT
 
         def initialize(code, version, position, value = "", subset = nil, 
             spec = nil)
-            @code = code
-            @version = version
+            # Define values from given arguments
+            @code, @version, @position = code, version, position
             @data_value = value == nil ? "" : value
-            @subset = subset
-            @spec = spec
-            @position = position
-            @integrity = false
-            @errors = []
+            @subset, @spec = subset, spec
+            # Definite integrity bool and errors list
+            @integrity, @errors = false, []
             # Retrieve and apply coded data
             set_coded_data()
             apply_coded_data()
@@ -22,6 +20,10 @@ module EDIFACT
             set_spec()
             apply_element_spec()
             check_against_repr() unless @repr.blank?
+        end
+
+        def obfuscate()
+            @data_value = @rule.random_string unless @repr.blank?
         end
 
         def set_coded_data()

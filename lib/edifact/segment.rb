@@ -4,14 +4,13 @@ module EDIFACT
         attr_reader :tag, :data, :chars, :version, :spec
 
         def initialize(raw, line_no, version = nil, chars = nil, subset = nil)
-            @raw = raw
+            # Define values from given arguments
+            @raw, @line_no, @version = raw, line_no, version
+            @chars, @subset = chars, subset
+            # Duplicate raw data for reference
             @data = @raw.dup
-            @line_no = line_no
-            @version = version
-            @chars = chars
-            @subset = subset
-            @elements = []
-            @errors = []
+            # Define elements list and errors list
+            @elements, @errors = [], []
             # Construct tag object
             params = [raw[0, 3], version, subset]
             @tag = Tag.new(*params)
