@@ -21,15 +21,15 @@ require_relative './dictionary.rb'
 require_relative './debug.rb'
 require_relative './history.rb'
 
-require_relative './html/html.rb'
-require_relative './html/bayplan.rb'
-
 require_relative './routines/routines.rb'
 require_relative './routines/collection.rb'
 require_relative './routines/info.rb'
 require_relative './routines/parse.rb'
 require_relative './routines/structure.rb'
 require_relative './routines/timeline.rb'
+
+require_relative './routines/html/html.rb'
+require_relative './routines/html/bayplan.rb'
 
 require_relative './datatypes/datatypes.rb'
 require_relative './datatypes/iso_6346.rb'
@@ -79,9 +79,9 @@ require_relative './edifact/segments/pci.rb'
 require_relative './edifact/segments/pia.rb'
 require_relative './edifact/segments/qty.rb'
 require_relative './edifact/segments/rff.rb'
-# UNICORN
-require_relative './edifact/segments/mcr.rb'
-require_relative './edifact/segments/rdq.rb'
+
+require_relative './edifact/segments/mcr.rb' # UNICORN
+require_relative './edifact/segments/rdq.rb' # UNICORN
 
 require_relative './edifact/messages/aperak.rb'
 require_relative './edifact/messages/baplie.rb'
