@@ -6,14 +6,12 @@ module EDIFACT
         attr_reader :name, :segments
 
         def initialize(name, lines, message_version, chars, subset = nil)
-            @name = name
-            @lines = lines
-            @message_version = message_version
-            @chars = chars
-            @subset = subset
-            @segments = []
-            @errors = []
-            # Initial methods
+            # Define values from given arguments
+            @name, @lines = name, lines
+            @message_version, @chars, @subset = message_version, chars, subset
+            # Define segments list and errors list
+            @segments, @errors = [], []
+            # Initial methods to generate objects
             set_segments()
         end
 
