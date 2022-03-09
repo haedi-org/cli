@@ -18,9 +18,18 @@ require_relative './generics.rb'
 require_relative './paths.rb'
 require_relative './errors.rb'
 require_relative './dictionary.rb'
-require_relative './routines.rb'
 require_relative './debug.rb'
 require_relative './history.rb'
+
+require_relative './html/html.rb'
+require_relative './html/bayplan.rb'
+
+require_relative './routines/routines.rb'
+require_relative './routines/collection.rb'
+require_relative './routines/info.rb'
+require_relative './routines/parse.rb'
+require_relative './routines/structure.rb'
+require_relative './routines/timeline.rb'
 
 require_relative './datatypes/datatypes.rb'
 require_relative './datatypes/iso_6346.rb'
@@ -83,9 +92,6 @@ require_relative './edifact/associations.rb'
 
 require_relative './edifact/segment_map.rb'
 require_relative './edifact/message_map.rb'
-
-require_relative './html/html.rb'
-require_relative './html/bayplan.rb'
 
 require_relative './forms/form.rb'
 
