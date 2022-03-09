@@ -130,7 +130,7 @@ class String
         return self.encap(open_tag + ">", tag.encap("</", ">"))
     end
 end
-    
+
 class String
     def split_with_release(split_char, release_char)
         temp, word, is_released = [], "", false
@@ -154,7 +154,17 @@ class String
     end
 end
 
+class Float
+    def prettify
+        return (self % 1 == 0) ? self.to_i : self
+    end
+end
+
 class Integer
+    def prettify
+        return self
+    end
+
     def to_filesize
         {
           'B'  => 1024,
@@ -162,8 +172,10 @@ class Integer
           'MB' => 1024 ** 3,
           'GB' => 1024 ** 4,
           'TB' => 1024 ** 5,
-        }.each_pair do |e, s| 
-            return "#{(self.to_f / (s / 1024)).round(2)}#{e}" if self < s
+        }.each_pair do |e, s|
+            if self < s
+                return "#{(self.to_f / (s / 1024)).round(2).prettify}#{e}"
+            end
         end
     end
 end
