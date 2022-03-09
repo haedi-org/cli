@@ -33,6 +33,10 @@ def routine_info(path, interchange = nil)
         # out << message.to_json if message.type == "DESADV"
     end
     out << ""
+    # File info
+    out << "File path = #{path}"
+    out << "File size = #{File.size(path).to_filesize}"
+    out << ""
     # Message info
     for message in interchange.messages do
         out << [
@@ -48,15 +52,15 @@ def routine_info(path, interchange = nil)
     used = $dictionary.code_lists_used
     used_count = $dictionary.code_lists_used_count
     read_count = $dictionary.read_count
-    out << "Dictionary read count: #{read_count}"
+    out << "Dictionary read count = #{read_count}"
     unless used_count == 0
-        out << "3rd-party code lists (#{used_count}):\n- #{used.join("\n- ")}"
+        out << "3rd-party code lists (#{used_count})\n- #{used.join("\n- ")}"
     end
     out << ""
     # Errors
     errs = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
     unless errs.length == 0
-        out << "Errors (#{errs.length}):\n- #{errs.first(10).join("\n- ")}"
+        out << "Errors (#{errs.length})\n- #{errs.first(10).join("\n- ")}"
             .colorize(:light_red)
         out << ""
     end

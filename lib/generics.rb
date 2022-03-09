@@ -153,3 +153,17 @@ class String
         return temp
     end
 end
+
+class Integer
+    def to_filesize
+        {
+          'B'  => 1024,
+          'KB' => 1024 ** 2,
+          'MB' => 1024 ** 3,
+          'GB' => 1024 ** 4,
+          'TB' => 1024 ** 5,
+        }.each_pair do |e, s| 
+            return "#{(self.to_f / (s / 1024)).round(2)}#{e}" if self < s
+        end
+    end
+end
