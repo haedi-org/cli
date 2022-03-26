@@ -55,11 +55,11 @@ def html_info(interchange)
     error_info += interchange.errors.map { |e, p| [p.join(":"), e.message] }
     classes = "table is-bordered is-narrow m-2"
     return [
+        buttons.join.html("div", :cl => "buttons m-2"),
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
         html_table(error_info, classes),
-        buttons.join.html("div", :cl => "buttons m-2"),
     ]
     .join.html("div", :cl => "column scroller p-0")
 end

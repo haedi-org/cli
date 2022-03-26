@@ -23,8 +23,9 @@ Options:
 ### Building
 
 Requires:
-- [Bundler](https://bundler.io/)
-- [OCRA (One-Click Ruby Application)](https://github.com/larsch/ocra)
+- [Ruby 2.6.0](https://www.ruby-lang.org)
+- [Bundler 2.1.4](https://bundler.io/)
+- [OCRA 1.3.10 (One-Click Ruby Application)](https://github.com/larsch/ocra)
 
 ```
 git clone "https://github.com/haedi-org/cli"

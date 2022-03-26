@@ -6,7 +6,7 @@ task :default do
     puts "test\t\trun rspec"
     puts "datatypes\trun datatypes rspec"
 end
-
+ 
 task :build do
     source = (Dir["./lib/**/*.rb"] - [RUN_PATH]).join(" ")
     params = [
@@ -15,7 +15,9 @@ task :build do
         "--console",
         "--gemfile", "Gemfile"
     ]
-    puts `ocra #{params.flatten.join(" ")}`
+    command = "ocra #{params.flatten.join(" ")}"
+    puts command
+    puts `#{command}`
 end
 
 task :test do
@@ -37,14 +39,7 @@ task :datatypes do
 end
 
 task :debug do
-    hash = {
-        "2" => { "a" => 1 },
-        "1" => { "b" => 2 },
-        "12" => { "c" => 3 },
-        "7" => { "c" => 3 }
-    }
-    arr = hash.map { |k, v| k.to_i }.sort.map { |i| "SG#{i}" }
-    puts arr.inspect
+    # ...
 end
 
 task :repr do

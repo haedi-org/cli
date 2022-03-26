@@ -19,8 +19,11 @@ GEM
     rspec-support (3.11.0)
 
 PLATFORMS
-  x64-mingw-ucrt
+  ruby
+  x64-mingw32
+  x64-unknown
   x86-mingw32
+  x86_64-linux
 
 DEPENDENCIES
   colorize (~> 0.8.1)
