@@ -9,6 +9,7 @@ require 'csv'
 require 'json'
 require 'time'
 require 'io/wait'
+require 'nokogiri'
 
 require 'colorize'
 

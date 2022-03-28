@@ -5,6 +5,11 @@ OPT_DATA = {
     :structure  => ["-s", "--structure"],
     :timeline   => ["-t", "--timeline"],
     :headless   => ["-l", "--headless"],
+    # TODO: Morph EDI data to different formats
+    :morph      => ["-m", "--morph"],
+    :xml        => ["--xml"],
+    :json       => ["--json"],
+    :csv        => ["--csv"],
     # TODO: Generalise to a visual output
     :bayplan    => ["--bayplan"],
     :collection => ["-c", "--collection"],
@@ -61,17 +66,26 @@ def process_paths(paths, dirs)
     # Routines on singular files
     for path in paths do
         arg = [path]
-        out << routine_info(*arg)          if opt?(:info) && no_opt?(:html)
-        out << routine_html_info(*arg)     if opt?(:info) && opt?(:html)
-        out << routine_parse(*arg)         if opt?(:parse) && no_opt?(:html)
-        out << routine_html_parse(*arg)    if opt?(:parse) && opt?(:html)
-        out << routine_debug(*arg)         if opt?(:debug) && no_opt?(:html)
-        out << routine_html_debug(*arg)    if opt?(:debug) && opt?(:html)
-        out << routine_structure(*arg)     if opt?(:structure)
-        out << routine_timeline(*arg)      if opt?(:timeline) && no_opt?(:html)
-        out << routine_html_timeline(*arg) if opt?(:timeline) && opt?(:html)
-        out << routine_bayplan(*arg)       if opt?(:bayplan) && no_opt?(:html)
-        out << routine_html_bayplan(*arg)  if opt?(:bayplan) && opt?(:html)
+        unless opt?(:html)
+            out << routine_info(*arg)       if opt?(:info)
+            out << routine_parse(*arg)      if opt?(:parse)
+            out << routine_debug(*arg)      if opt?(:debug)
+            out << routine_structure(*arg)  if opt?(:structure)
+            out << routine_timeline(*arg)   if opt?(:timeline)
+            out << routine_bayplan(*arg)    if opt?(:bayplan)
+            out << routine_morph_xml(*arg)  if opt?(:morph) && opt?(:xml)
+            out << routine_morph_json(*arg) if opt?(:morph) && opt?(:json)
+            out << routine_morph_csv(*arg)  if opt?(:morph) && opt?(:csv)
+        else
+            out << routine_html_info(*arg)       if opt?(:info)
+            out << routine_html_parse(*arg)      if opt?(:parse)
+            out << routine_html_debug(*arg)      if opt?(:debug)
+            out << routine_html_timeline(*arg)   if opt?(:timeline)
+            out << routine_html_bayplan(*arg)    if opt?(:bayplan)
+            out << routine_html_morph_xml(*arg)  if opt?(:morph) && opt?(:xml)
+            out << routine_html_morph_json(*arg) if opt?(:morph) && opt?(:json)
+            out << routine_html_morph_csv(*arg)  if opt?(:morph) && opt?(:csv)
+        end
     end
     return out
 end

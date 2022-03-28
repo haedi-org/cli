@@ -11,3 +11,5 @@ gem "colorize", "~> 0.8.1"
 gem "rspec", "~> 3.10"
 
 gem "csv", "~> 3.2"
+
+gem "nokogiri", "~> 1.13"

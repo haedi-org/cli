@@ -53,3 +53,53 @@ def routine_html_bayplan(path)
     out << html_bayplan(interchange)
     return out
 end
+
+def routine_morph_xml(path)
+    out = []
+    interchange = load_interchange(path)
+    out << Nokogiri::XML(edi_to_xml(interchange)).to_xml
+    return out
+end
+
+def routine_html_morph_xml(path)
+    out = []
+    interchange = load_interchange(path)
+    edi = interchange.segments.map { |segment| segment.raw }
+        .join("\n")
+        .html_sanitize
+        .html("span", :cl => "edi-span")
+        .html("div", 
+            :cl => "column scroller m-0 p-0 is-two-fifths",
+            :st => "background-color: #F5F5F5; border-right: 1px solid #E7EBED"
+        )
+    xml = Nokogiri::XML(edi_to_xml(interchange))
+        .to_xml
+        .html_sanitize
+        .html("span", :cl => "edi-span")
+        .html("div", 
+            :cl => "column scroller m-0 p-0",
+            :st => "background-color: #F5F5F5"
+        )
+    out << [edi, xml].join.html("div", :cl => "columns m-0 p-0")
+    return out
+end
+
+def routine_morph_json(path)
+    out = []
+    return out
+end
+
+def routine_html_morph_json(path)
+    out = []
+    return out
+end
+
+def routine_morph_csv(path)
+    out = []
+    return out
+end
+
+def routine_html_morph_csv(path)
+    out = []
+    return out
+end

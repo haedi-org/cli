@@ -23,7 +23,7 @@ end
 def edi_to_xml(document)
     xml = String.new
     for segment in document.segments do
-        unless segment.is_a?(UNASegment)
+        unless segment.is_a?(EDIFACT::UNASegment)
             seg_xml = String.new
             for element in segment.elements do
                 unless element.blank?
@@ -33,7 +33,7 @@ def edi_to_xml(document)
                             (i == 0 ? n : n + 1).to_s.rjust(2, '0')
                         }.join
                     )
-                    unless element.is_a?(Composite)
+                    unless element.is_a?(EDIFACT::Composite)
                         data_xml = String.new
                         # Name
                         unless element.name.blank?

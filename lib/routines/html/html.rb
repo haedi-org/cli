@@ -44,6 +44,10 @@ def html_info(interchange)
     ]
     # Buttons
     buttons = []
+    cl = "is-outlined is-link mb-2"
+    buttons << html_button("Convert to XML", :cl => cl, :onclick => "onXML()")
+    buttons << html_button("Convert to JSON", :cl => cl, :onclick => "onJSON()")
+    buttons << html_button("Convert to CSV", :cl => cl, :onclick => "onCSV()")
     if interchange.messages.first.type == "BAPLIE"
         buttons << html_button("Bayplan view", :onclick => "onBayplan()")
     end
@@ -54,14 +58,21 @@ def html_info(interchange)
     ]
     error_info += interchange.errors.map { |e, p| [p.join(":"), e.message] }
     classes = "table is-bordered is-narrow m-2"
-    return [
-        buttons.join.html("div", :cl => "buttons m-2"),
+    tables = [
         html_table(file_info, classes),
         html_table(document_info, classes),
         html_table(system_info, classes),
-        html_table(error_info, classes),
+        html_table(error_info, classes + " is-error-table"),
     ]
-    .join.html("div", :cl => "column scroller p-0")
+    return [
+        buttons.join
+            .html("div", 
+                :cl => "column p-2 p-0 is-narrow button-list",
+                :st => "border-right: 1px solid #E7EBED"
+            ),
+        tables.join
+            .html("div", :cl => "column scroller p-0"),
+    ].join.html("div", :cl => "columns m-0 p-0")
 end
 
 def html_debug(interchange)
