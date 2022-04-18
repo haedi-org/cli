@@ -56,9 +56,7 @@ def extract_json_paths(arr)
 end
 
 def opt?(key)
-    a, b = OPT_DATA[key]
-    return true if (a != nil) && $opts.include?(a)
-    return true if (b != nil) && $opts.include?(b)
+    OPT_DATA[key].compact.each { |k| return true if $opts.include?(k) }
     return false
 end
 
@@ -128,8 +126,8 @@ end
 
 $edi_paths = extract_edi_paths(ARGV)
 $json_paths = extract_json_paths(ARGV)
-$dirs  = extract_dirs(ARGV)
-$opts  = extract_tags(ARGV)
+$dirs = extract_dirs(ARGV)
+$opts = extract_tags(ARGV)
 #$opts << "--collection" unless $dirs.empty?
 
 VERBOSE = opt?(:verbose)

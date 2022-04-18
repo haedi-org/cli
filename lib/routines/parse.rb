@@ -26,7 +26,7 @@ def routine_parse(path)
         a += " [#{element.rule.m_c}, #{element.rule.repr}]"
         b = " " * (indent + 2) + element.data_value
         b += " [#{element.data_name}]" unless element.data_name.blank?
-        b += " \"#{element.errors[0][0].mesge}\"" unless element.is_valid?
+        b += " \"#{element.errors[0][0].message}\"" unless element.is_valid?
         clr = element.is_valid? ? :light_magenta : :light_red
         if element.has_integrity?
             clr = :light_green
