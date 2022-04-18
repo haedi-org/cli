@@ -50,10 +50,14 @@ module EDIFACT
 
         def apply_composite_spec
             index = -1
-            @elements = @spec["elements"].map do |code, data|
+            @elements = @spec["structure"].map do |code|
+                data = @spec["elements"][code]
                 index += 1
                 params = [
-                    code, @version, [@position, index], get_value(index), 
+                    code, 
+                    @version, 
+                    [@position, index], 
+                    get_value(index), 
                     @subset
                 ]
                 Element.new(*params).tap do |element|

@@ -7,6 +7,14 @@ module EDIFACT
             @reference_qualifier = get_elements_by_code("1153").first
             @reference_number = get_elements_by_code("1154").first
         end
+
+        def match(qualifier)
+            if @reference_qualifier.data_value == qualifier
+                return @reference_number
+            else
+                return nil
+            end
+        end
     end
 end
 

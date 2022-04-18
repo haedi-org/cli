@@ -107,7 +107,11 @@ module EDIFACT
 
         def set_critical_values()
             unless @header.blank?
-                @application_reference = @header.application_reference.value
+                begin
+                    @application_reference = @header.application_reference.value
+                rescue
+                    # ...
+                end
             end
             unless @footer.blank?
                 # ...
@@ -132,10 +136,10 @@ module EDIFACT
         end
 
         def set_messages()
-            @messages = group_lines_by_envelope('UNH', 'UNT').map! do |lines|
+            @messages = group_lines_by_envelope('UNH', 'UNT').map! { |lines|
                 params = [lines, @version, @chars, @application_reference]
                 MessageFactory.new(*params).message
-            end
+            }.compact
         end
 
         def segments()

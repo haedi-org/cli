@@ -1,10 +1,10 @@
-def edi_to_arr(document)
+def edi_to_arr(interchange)
     arr = []
-    for segment in document.segments do
-        unless segment.is_a?(UNASegment)
+    for segment in interchange.segments do
+        unless segment.is_a?(EDIFACT::UNASegment)
             seg_arr = [segment.tag.value]
             for element in segment.elements do
-                if element.is_a?(Composite)
+                if element.is_a?(EDIFACT::Composite)
                     sub_arr = []
                     for sub_element in element.elements do
                         sub_arr << sub_element.data_value
@@ -17,12 +17,21 @@ def edi_to_arr(document)
             arr << seg_arr
         end
     end
-    return arr.inspect
+    return arr
 end
 
-def edi_to_xml(document)
+def edi_to_json(interchange)
+    for message in interchange.messages do
+        for group in message.groups do
+            puts group.name
+        end
+    end
+    return ""
+end
+
+def edi_to_xml(interchange)
     xml = String.new
-    for segment in document.segments do
+    for segment in interchange.segments do
         unless segment.is_a?(EDIFACT::UNASegment)
             seg_xml = String.new
             for element in segment.elements do

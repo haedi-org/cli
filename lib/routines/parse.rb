@@ -12,6 +12,7 @@ def routine_parse(path)
     end
     def segment_desc(segment, indent = 0)
         a = " " * indent + "Segment #{segment.tag.value}"
+    #   a += " [#{segment.raw}]"
         a += " [#{segment.tag.name}]" unless segment.tag.name.blank?
         unless segment.is_valid?(false)
             a += " \"#{segment.errors(false)[0][0].message}\""
@@ -22,11 +23,15 @@ def routine_parse(path)
     def element_desc(element, indent = 0)
         a = " " * indent + element.name.titleize
         a += " (#{element.code})"
-        a += " [#{element.rule.m_c}]"
+        a += " [#{element.rule.m_c}, #{element.rule.repr}]"
         b = " " * (indent + 2) + element.data_value
         b += " [#{element.data_name}]" unless element.data_name.blank?
-        b += " \"#{element.errors[0][0].message}\"" unless element.is_valid?
+        b += " \"#{element.errors[0][0].mesge}\"" unless element.is_valid?
         clr = element.is_valid? ? :light_magenta : :light_red
+        if element.has_integrity?
+            clr = :light_green
+            b = "#{b} #{"\u2713".encode('utf-8')}"
+        end
         return a, b.colorize(clr)
     end
     out = []

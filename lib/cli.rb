@@ -1,20 +1,19 @@
 OPT_DATA = {
-    :info       => ["-i", "--info"],
-    :parse      => ["-p", "--parse"],
-    :debug      => ["-d", "--debug"],
-    :structure  => ["-s", "--structure"],
-    :timeline   => ["-t", "--timeline"],
-    :headless   => ["-l", "--headless"],
-    # TODO: Morph EDI data to different formats
-    :morph      => ["-m", "--morph"],
-    :xml        => ["--xml"],
-    :json       => ["--json"],
-    :csv        => ["--csv"],
+    :info      => ["-i", "--info"],
+    :parse     => ["-p", "--parse"],
+    :debug     => ["-d", "--debug"],
+    :structure => ["-s", "--structure"],
+    :timeline  => ["-t", "--timeline"],
+    :headless  => ["-l", "--headless"],
+    :xml       => ["--xml"],
+    :json      => ["--json"],
+    :csv       => ["--csv"],
     # TODO: Generalise to a visual output
-    :bayplan    => ["--bayplan"],
-    :collection => ["-c", "--collection"],
-    :help       => ["-h", "--help"],
-    :html       => ["--html"],
+    :bayplan   => ["--bayplan"],
+    :checklist => ["-c", "--checklist"],
+    :help      => ["-h", "--help"],
+    :html      => ["--html"],
+    :verbose   => ["-v", "--verbose"],
 }
 
 QUIT_COMMAND = "q"
@@ -44,6 +43,18 @@ def extract_tags(arr)
     return tags.compact
 end
 
+def extract_edi_paths(arr)
+    return extract_paths(arr).select do |path|
+        File.extname(path).upcase != ".JSON"
+    end
+end
+
+def extract_json_paths(arr)
+    return extract_paths(arr).select do |path|
+        File.extname(path).upcase == ".JSON"
+    end
+end
+
 def opt?(key)
     a, b = OPT_DATA[key]
     return true if (a != nil) && $opts.include?(a)
@@ -55,17 +66,29 @@ def no_opt?(key)
     return (!opt?(key))
 end
 
-def process_paths(paths, dirs)
+def process_paths(edi_paths, json_paths, dirs)
     out = []
     # Routines on multiple files
-    if opt?(:collection)
-        arg = dirs.empty? ? paths : dirs
-        return routine_collection(arg) if no_opt?(:html)
-        return routine_html_collection(arg) if opt?(:html)
-    end
+#   if opt?(:collection)
+#       arg = dirs.empty? ? paths : dirs
+#       return routine_collection(arg) if no_opt?(:html)
+#       return routine_html_collection(arg) if opt?(:html)
+#   end
     # Routines on singular files
-    for path in paths do
-        arg = [path]
+    for edi_path in edi_paths do
+        # Required JSON file
+        if opt?(:checklist)
+            unless json_paths.empty?
+                arg = [edi_path, json_paths.first]
+                unless opt?(:html)
+                    out << routine_checklist(*arg)
+                else
+                    out << routine_html_checklist(*arg)
+                end
+            end
+        end
+        # No required JSON file
+        arg = [edi_path]
         unless opt?(:html)
             out << routine_info(*arg)       if opt?(:info)
             out << routine_parse(*arg)      if opt?(:parse)
@@ -73,18 +96,18 @@ def process_paths(paths, dirs)
             out << routine_structure(*arg)  if opt?(:structure)
             out << routine_timeline(*arg)   if opt?(:timeline)
             out << routine_bayplan(*arg)    if opt?(:bayplan)
-            out << routine_morph_xml(*arg)  if opt?(:morph) && opt?(:xml)
-            out << routine_morph_json(*arg) if opt?(:morph) && opt?(:json)
-            out << routine_morph_csv(*arg)  if opt?(:morph) && opt?(:csv)
+            out << routine_morph_xml(*arg)  if opt?(:xml)
+            out << routine_morph_json(*arg) if opt?(:json)
+            out << routine_morph_csv(*arg)  if opt?(:csv)
         else
             out << routine_html_info(*arg)       if opt?(:info)
             out << routine_html_parse(*arg)      if opt?(:parse)
             out << routine_html_debug(*arg)      if opt?(:debug)
             out << routine_html_timeline(*arg)   if opt?(:timeline)
             out << routine_html_bayplan(*arg)    if opt?(:bayplan)
-            out << routine_html_morph_xml(*arg)  if opt?(:morph) && opt?(:xml)
-            out << routine_html_morph_json(*arg) if opt?(:morph) && opt?(:json)
-            out << routine_html_morph_csv(*arg)  if opt?(:morph) && opt?(:csv)
+            out << routine_html_morph_xml(*arg)  if opt?(:xml)
+            out << routine_html_morph_json(*arg) if opt?(:json)
+            out << routine_html_morph_csv(*arg)  if opt?(:csv)
         end
     end
     return out
@@ -99,47 +122,20 @@ def print_out(out)
     end
 end
 
-$paths = extract_paths(ARGV)
+def log(str, clr = :white, prefix = "INFO")
+    puts "[#{prefix}] #{str.colorize(clr == nil ? :white : clr)}" if VERBOSE
+end
+
+$edi_paths = extract_edi_paths(ARGV)
+$json_paths = extract_json_paths(ARGV)
 $dirs  = extract_dirs(ARGV)
 $opts  = extract_tags(ARGV)
 #$opts << "--collection" unless $dirs.empty?
 
-out = []
+VERBOSE = opt?(:verbose)
 
-if (opt?(:help) || ($paths.empty? && no_opt?(:headless)))
+def help_break(out = [])
     out << routine_help()
     print_out(out)
     exit
-end
-
-# Display info by default
-$opts << "--info" if $opts.empty?
-
-if opt?(:headless)
-    $stdout.sync = true
-    begin
-        until false
-            input = STDIN.gets.chomp
-            clear_stdin()
-            quit_notty() if input == QUIT_COMMAND
-            unless input == nil
-                $paths = extract_paths(input.words)
-                $dirs = extract_dirs(input.words)
-                $opts = extract_tags(input.words)
-                $opts << "--collection" unless $dirs.empty?
-                unless $paths.empty? && $dirs.empty?
-                    out << process_paths($paths, $dirs)
-                    print_out(out)
-                    out = []
-                end
-            end
-        end
-    rescue => exception
-        out += [exception.message, exception.backtrace]
-        print_out(out)
-        out = []
-    end
-else
-    out = process_paths($paths, $dirs)
-    print_out(out)
 end

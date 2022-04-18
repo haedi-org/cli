@@ -7,6 +7,88 @@ module EDIFACT
             @consignment = {}
         end
 
+        def bill_of_lading
+            for rff in get_segments_by_tag("RFF") do
+                rff.match('BM').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def delivery_quote
+            for rff in get_segments_by_tag("RFF") do
+                rff.match('DQ').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def asn_id
+            for bgm in get_segments_by_tag("BGM") do
+                if bgm.document_name.data_value == "351"
+                    return bgm.document_number
+                end
+            end
+            return nil
+        end
+
+        def shipped_date
+            for dtm in get_segments_by_tag("DTM") do
+                dtm.match('11').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def delivery_date
+            for dtm in get_segments_by_tag("DTM") do
+                dtm.match('132').tap { |d| d.blank? ? 0 : (return d) }
+                dtm.match('17' ).tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def carton_count
+            for pac in get_segments_by_tag("PAC") do
+                pac.match('PK').tap { |d| d.blank? ? 0 : (return d) }
+                pac.match('CT').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def pallet_count
+            for pac in get_segments_by_tag("PAC") do
+                pac.match('201').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def ship_to
+            for nad in get_segments_by_tag("NAD") do
+                nad.match('DP').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def supplier_id
+            for nad in get_segments_by_tag("NAD") do
+                nad.match('SU').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def ship_from
+            for nad in get_segments_by_tag("NAD") do
+                nad.match('SF').tap { |d| d.blank? ? 0 : (return d) }
+                nad.match('SH').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
+        def po_number
+            for rff in get_segments_by_tag("RFF") do
+                rff.match('ON').tap { |d| d.blank? ? 0 : (return d) }
+            end
+            return nil
+        end
+
         def pallet_label
             for root in stowage_roots do
                 form = Form::Page.new("Pallet label") # TODO: pass length
@@ -17,8 +99,7 @@ module EDIFACT
         def debug
             out = []
             # NAME AND ADDRESS GLN
-            nads = groups.map { |g| g.get_segments_by_tag("NAD") }.compact
-            out << nads.flatten.map do |nad|
+            out << get_segments_by_tag("NAD").map do |nad|
                 gln = nad.party_identification.readable
                 [
                     nad.party_qualifier.readable,
@@ -26,8 +107,7 @@ module EDIFACT
                 ].join(":\n- ")
             end
             # REFERENCE
-            rffs = groups.map { |g| g.get_segments_by_tag("RFF") }.compact
-            out << rffs.flatten.map do |rff|
+            out << get_segments_by_tag("RFF").map do |rff|
                 [
                     rff.reference_qualifier.readable,
                     rff.reference_number.readable,

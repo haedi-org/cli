@@ -34,7 +34,7 @@ def routine_info(path, interchange = nil)
     errs = interchange.errors.map { |e, l| "[#{l.join(":")}] #{e.message}" }
     unless errs.length == 0
         out << "Errors (#{errs.length})\n- #{errs.first(10).join("\n- ")}"
-            .colorize(:light_red)
+            .colorize(:red)
         out << ""
     end
     return out

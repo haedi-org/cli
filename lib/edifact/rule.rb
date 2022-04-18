@@ -1,6 +1,7 @@
 module EDIFACT
     DEFAULT_LENGTH = 512
     DEFAULT_M_C = "C"
+    DEFAULT_REPR = "an..#{DEFAULT_LENGTH}"
 
     class Rule
         def initialize(data, inherited_m_c = DEFAULT_M_C)
@@ -60,6 +61,11 @@ module EDIFACT
             return @data["m/c"] if @data.key?("m/c")
             return @data["m_c"] if @data.key?("m_c")
             return @inherited_m_c
+        end
+
+        def repr
+            return @data["repr"] if @data.key?("repr")
+            return DEFAULT_REPR
         end
 
         def mandatory?

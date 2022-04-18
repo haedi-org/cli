@@ -19,6 +19,14 @@ module EDIFACT
             end
         end
 
+        def match(qualifier)
+            if @party_qualifier.data_value == qualifier
+                return @party_identification
+            else
+                return nil
+            end
+        end
+
         def validate_party_id
             # EAN / GS1
             if @party_responsible_agency.value == "9"

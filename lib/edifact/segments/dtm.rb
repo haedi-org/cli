@@ -15,6 +15,14 @@ module EDIFACT
                 )
             end
         end
+
+        def match(qualifier)
+            if @date_time_qualifier.data_value == qualifier
+                return @date_time
+            else
+                return nil
+            end
+        end
     end
 end
 

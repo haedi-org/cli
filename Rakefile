@@ -16,7 +16,7 @@ task :build do
         "--gemfile", "Gemfile"
     ]
     command = "ocra #{params.flatten.join(" ")}"
-    puts command
+#   puts command
     puts `#{command}`
 end
 

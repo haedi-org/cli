@@ -213,5 +213,17 @@ module EDIFACT
             end
             return events
         end
+
+        def get_segments_by_tag(tag)
+            return groups.map { |g| g.get_segments_by_tag(tag) }.compact.flatten
+        end
+
+        def get_segment_by_tag_qualifier(tag, qualifier)
+            segments = get_segments_by_tag(tag)
+            for segment in segments do
+                return segment if segment.data.dig(1, 0) == qualifier
+            end
+            return nil
+        end
     end
 end

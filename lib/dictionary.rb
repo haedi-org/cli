@@ -10,6 +10,8 @@
 #   se/    "service element specs"            (e.g. SE_40000.json)
 #   unas/  "UNA segment specs"                (e.g. UNAS.json)
 
+API_BASE_URL = 'https://haedi.org/api'
+
 FALLBACK_VERSION = "D97A"
 FALLBACK_SERVICE_VERSION = "40000"
 DEFAULT_CODE_LIST = "UNCL"
@@ -47,13 +49,37 @@ EDIFACT_DATATYPE = {
 }
 
 class Dictionary
-    attr_reader :read_count
+    attr_reader :read_count, :valid_urls, :invalid_urls, :cache
 
     def initialize(dir = DATA_PATH)
         @dir = dir
         @read_count = 0
         @code_lists_used = []
+        @valid_urls, @invalid_urls = [], []
         @cache = DEFAULT_CACHE
+        @offline = !ping_api()
+    end
+
+    def ping_api
+        begin
+            url = API_BASE_URL + "/ping"
+            uri = URI.parse(url)
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+            request = Net::HTTP::Get.new(url)
+            response = http.request(request)
+            if response.code == "200"
+                log("Successfully pinged '#{url}'!", :light_green, "API")
+                return true
+            else
+                log("Could not ping '#{url}'!", :red, "API")
+                return false
+            end
+        rescue
+            log("Could not ping '#{url}'!", :red, "API")
+            return false
+        end
     end
 
     def code_lists_used_count
@@ -100,13 +126,19 @@ class Dictionary
         begin
             if AGENCY_CODELIST_MAP.key?(agency)
                 name, path = AGENCY_CODELIST_MAP[agency]
-                data = retrieve_hash(name, path, true)
+                data = @cache.dig(name, 'cl')
+                if data.blank?
+                    data = retrieve_api_ref(name, 'cl')
+                    @cache[name] = {} unless @cache.key?(name)
+                    @cache[name]['cl'] = data.blank? ? { 0 => 1 } : data
+                end
+                # data = retrieve_hash(name, path, true)
                 if qualifier == nil
                     add_code_list_used(name.unkey.upcase)
                     return data
                 end
                #puts "AGENCY=#{agency}; QUALIFIER=#{qualifier}; CODE=#{code}"
-                unless data.dig(qualifier, code).blank?
+                unless data&.dig(qualifier, code).blank?
                     add_code_list_used(name.unkey.upcase, qualifier)
                     return data[qualifier][code]
                 else
@@ -116,6 +148,7 @@ class Dictionary
                 end
             end
         rescue => e
+            puts e.backtrace
             puts e.message
         end
         return {}
@@ -242,6 +275,7 @@ class Dictionary
 
     def retrieve_edi_data(datatype, subset, version, message = nil, 
         fallback_version = nil)
+    #   puts ["retrieve_edi_data", datatype, subset, version, message].inspect
         # TODO: if version given is nil, find fallback version from the 
         #       root directory of the subset (normal and service)
         # Default to fallback_version if version given is nil
@@ -252,8 +286,8 @@ class Dictionary
         subset = subset.downcase
         version = version.upcase unless version == nil
         message = message.upcase unless message == nil
-       #puts @cache.keys.inspect
-       #@cache.keys.each { |key| puts @cache[key].keys.inspect }
+    #   puts @cache.keys.inspect
+    #   @cache.keys.each { |key| puts @cache[key].keys.inspect }
         @cache[subset] = {} unless @cache.key?(subset)
         if @cache.dig(subset, datatype).blank?
             @cache[subset][datatype] = {}
@@ -261,13 +295,14 @@ class Dictionary
         # Return cached version if it exists
         key = message.blank? ? version : message + "_" + version
         if @cache[subset][datatype].key?(key)
-           #puts "Returning cache entry"
+    #       puts "Returning cache entry"
             return @cache[subset][datatype][key]
         end
         # Otherwise load, store, and return
-        basename = "#{datatype.upcase}_#{key}"
-        path = "/agencies/#{subset.downcase}/#{datatype}/#{basename}.json"
-        data = load_json(path)
+    #   basename = "#{datatype.upcase}_#{key}"
+    #   path = "/agencies/#{subset.downcase}/#{datatype}/#{basename}.json"
+    #   data = load_json(path)
+        data = retrieve_api_ref(subset, datatype, version, message)
         if data.blank? and (version != fallback_version)
             data = retrieve_edi_data(
                 datatype, subset, fallback_version, message
@@ -275,6 +310,33 @@ class Dictionary
         end
         @cache[subset][datatype][key] = data unless data.blank?
         return data
+    end
+
+    def retrieve_api_ref(subset, datatype, version = nil, message = nil)
+        return {} if @offline
+        url = "#{API_BASE_URL}/ref/#{subset}/#{datatype}".downcase
+        params = [["version", version], ["message", message]]
+        params = params.map { |a, b| b == nil ? nil : [a, b].join("=") }.compact
+        url = "#{url}?#{params.join("&")}".downcase unless params.empty?
+        return {} if (@valid_urls + @invalid_urls).include?(url)
+        log("Querying '#{url}'...", nil, "API")
+    #   puts @invalid_urls.map { |u| "\t#{u}" }
+        begin
+            uri = URI.parse(url)
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+            request = Net::HTTP::Get.new(url)
+            response = http.request(request)
+            data = JSON.parse(response.body).dig("data")
+            data.blank? ? (@invalid_urls << url) : (@valid_urls << url)
+            log("Could not retrieve data", :red, "API") if data.blank?
+            return data
+        rescue
+            log("Could not connect to API", :red, "API")
+            @invalid_urls << url
+            return {}
+        end
     end
 
     def retrieve_hash(key, path, codelist = false)
@@ -319,6 +381,7 @@ class Dictionary
         # Return no data if path doesn't exist
         return {} unless File.file?(path)
         # Otherwise load in file to JSON data
+    #   puts "Loading '#{path}'..."
         file = File.open(path, encoding: "UTF-8")
         json = JSON.load(file)
         # Close file before returning JSON data

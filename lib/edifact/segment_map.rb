@@ -8,6 +8,7 @@ module EDIFACT
         "UNH" => UNHSegment,
         "UNT" => UNTSegment,
         "ALI" => ALISegment,
+        "BGM" => BGMSegment,
         "CPS" => CPSSegment,
         "DOC" => DOCSegment,
         "DTM" => DTMSegment,

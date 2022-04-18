@@ -8,16 +8,18 @@ module EDIFACT
             @message = nil
             for line_no, line_data in lines do
                 if line_data.first(3) == 'UNH'
-                    params = [line_data, line_no, interchange_version, chars]
-                    header = SegmentFactory.new(*params).segment
-                    type = header.message_type.data_value
-                    params = [
-                        lines, 
-                        interchange_version, 
-                        chars, 
-                        application_reference
-                    ]
                     begin
+                        params = [
+                            line_data, line_no, interchange_version, chars
+                        ]
+                        header = SegmentFactory.new(*params).segment
+                        type = header.message_type.data_value
+                        params = [
+                            lines, 
+                            interchange_version, 
+                            chars, 
+                            application_reference
+                        ]
                         if MESSAGE_MAP.include?(type)
                             @message = MESSAGE_MAP[type].new(*params)
                         else

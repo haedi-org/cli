@@ -1,10 +1,11 @@
 haedi - CLI for EDI parsing, validation, and manipulation [version VERSION]
 
 Usage:
- ./haedi.exe [options] <path>...
+ .\haedi.exe [options] <path>...
 
 Arguments:
- path               One or more path to an EDI file
+ edi_path           One or more path to an EDI file
+ json_path          One or more path to a JSON file
 
 Options:
  -u  --unit         Parse and display unit test results
@@ -14,4 +15,6 @@ Options:
  -s  --structure    Parse and display EDI document structure
  -t  --timeline     Parse and display chronological information
  -l  --headless     Continually read-in paths without terminal
+ -c  --checklist    Validate interchange against JSON-formatted checklist
  --html             HTML output compatible with EDI client
+ 

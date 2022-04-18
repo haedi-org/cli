@@ -40,6 +40,7 @@ def html_info(interchange)
     system_info = [
         ["Dictionary version", used_version],
         ["Dictionary read count", $dictionary.read_count],
+        ["API endpoint count", $dictionary.valid_urls.length],
         ["Third party code lists (#{code_lists_used_count})", code_lists_used],
     ]
     # Buttons
@@ -48,6 +49,11 @@ def html_info(interchange)
     buttons << html_button("Convert to XML", :cl => cl, :onclick => "onXML()")
     buttons << html_button("Convert to JSON", :cl => cl, :onclick => "onJSON()")
     buttons << html_button("Convert to CSV", :cl => cl, :onclick => "onCSV()")
+    # Test
+    buttons << html_button("Amazon ASN test", 
+        :cl => "is-warning mb-2", 
+        :onclick => 'onChecklist("../cli/amazon_asn_checklist.json")'
+    )
     if interchange.messages.first.type == "BAPLIE"
         buttons << html_button("Bayplan view", :onclick => "onBayplan()")
     end

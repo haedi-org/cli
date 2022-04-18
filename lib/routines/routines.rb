@@ -67,16 +67,19 @@ def routine_html_morph_xml(path)
     edi = interchange.segments.map { |segment| segment.raw }
         .join("\n")
         .html_sanitize
-        .html("span", :cl => "edi-span")
-        .html("div", 
+        .html("pre")
+        .html("span", :cl => "edi-span m-0 p-0")
+        .html("div",
             :cl => "column scroller m-0 p-0 is-two-fifths",
             :st => "background-color: #F5F5F5; border-right: 1px solid #E7EBED"
         )
     xml = Nokogiri::XML(edi_to_xml(interchange))
         .to_xml
         .html_sanitize
-        .html("span", :cl => "edi-span")
-        .html("div", 
+        .html("code", :cl => "language-xml m-0 p-0")
+        .html("pre m-0 p-0")
+        .html("span", :cl => "edi-span m-0 p-0")
+        .html("div",
             :cl => "column scroller m-0 p-0",
             :st => "background-color: #F5F5F5"
         )
@@ -86,6 +89,8 @@ end
 
 def routine_morph_json(path)
     out = []
+    interchange = load_interchange(path)
+    out << edi_to_json(interchange)
     return out
 end
 
@@ -96,6 +101,8 @@ end
 
 def routine_morph_csv(path)
     out = []
+    interchange = load_interchange(path)
+    out << edi_to_arr(interchange).map { |line| line.join(",") }
     return out
 end
 
@@ -103,3 +110,41 @@ def routine_html_morph_csv(path)
     out = []
     return out
 end
+
+def routine_checklist(edi_path, json_path)
+    out = []
+    interchange = load_interchange(edi_path)
+    data = JSON.load(File.read(json_path))
+    requirements = EDIFACT::Requirements.new(interchange, data)
+    out << requirements.debug
+    return out
+end
+
+def routine_html_checklist(edi_path, json_path)
+    interchange = load_interchange(edi_path)
+    data = JSON.load(File.read(json_path))
+    requirements = EDIFACT::Requirements.new(interchange, data)
+    return [
+        requirements.results.map { |name, data, status, error|
+            v = status == 0
+            caption = ["Success", "Warning", "Error"][status]
+            tag = ["is-success", "is-warning", "is-danger"][status]
+            [
+                name.html("span", 
+                    :cl => "tag",
+                    :st => "min-width: 320px; justify-content: left"
+                ),
+                caption.html("span", 
+                    :cl => "tag #{tag}", 
+                    :st => "min-width: 72px"
+                ),
+                (v ? data : error).html("span", :cl => "tag is-light #{tag}"),
+            ].join.html("div", :cl => "tags has-addons m-0")
+        }
+    ].flatten.join.html("div", :cl => "scroller p-4")
+end
+
+# <div class="tags has-addons">
+#   <span class="tag">Package</span>
+#   <span class="tag is-primary">Bulma</span>
+# </div>

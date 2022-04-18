@@ -10,10 +10,14 @@ require 'json'
 require 'time'
 require 'io/wait'
 require 'nokogiri'
+require 'net/http'
+require 'uri'
 
 require 'colorize'
 
 #require_relative './test.rb'
+
+require_relative './cli.rb' unless WITHOUT_CLI
 
 require_relative './generics.rb'
 require_relative './paths.rb'
@@ -51,6 +55,7 @@ require_relative './edifact/group.rb'
 require_relative './edifact/group_factory.rb'
 require_relative './edifact/curator.rb'
 require_relative './edifact/morph.rb'
+require_relative './edifact/requirements.rb'
 
 require_relative './edifact/segments/uci.rb'
 require_relative './edifact/segments/ucm.rb'
@@ -61,6 +66,7 @@ require_relative './edifact/segments/unh.rb'
 require_relative './edifact/segments/unt.rb'
 
 require_relative './edifact/segments/ali.rb'
+require_relative './edifact/segments/bgm.rb'
 require_relative './edifact/segments/cps.rb'
 require_relative './edifact/segments/doc.rb'
 require_relative './edifact/segments/dtm.rb'
@@ -94,6 +100,8 @@ require_relative './edifact/associations.rb'
 require_relative './edifact/segment_map.rb'
 require_relative './edifact/message_map.rb'
 
+require_relative './edifact/amazon_asn.rb'
+
 require_relative './forms/form.rb'
 
-require_relative './cli.rb' unless WITHOUT_CLI
+require_relative './process.rb' unless WITHOUT_CLI

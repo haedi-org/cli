@@ -1,0 +1,75 @@
+{
+    "name": "Amazon ASN requirements",
+    "checklist": [
+        {
+            "name": "Bill of lading or delivery quote",
+            "m_c": "M",
+            "qualifiers": ["RFF+BM", "RFF+DQ"],
+            "codes": ["1154"]
+        },
+        {
+            "name": "Shipment ID",
+            "m_c": "M",
+            "qualifiers": ["BGM+351"],
+            "codes": ["1004"]
+        },
+        {
+            "name": "Shipped date",
+            "m_c": "M",
+            "qualifiers": ["DTM+11"],
+            "codes": ["2380"]
+        },
+        {
+            "name": "Estimated delivery date",
+            "m_c": "M",
+            "qualifiers": ["DTM+132", "DTM+17"],
+            "codes": ["2380"]
+        },
+        {
+            "name": "Carton count",
+            "m_c": "M",
+            "qualifiers": ["PAC+PK", "PAC+CT"],
+            "codes": ["7224"]
+        },
+        {
+            "name": "Pallet count",
+            "m_c": "M",
+            "qualifiers": ["PAC+201"],
+            "codes": ["7224"]
+        },
+        {
+            "name": "Ship to",
+            "m_c": "M",
+            "qualifiers": ["NAD+DP"],
+            "codes": ["3039"],
+            "datatype": "GLN"
+        },
+        {
+            "name": "Supplier",
+            "m_c": "M",
+            "qualifiers": ["NAD+SU"],
+            "codes": ["3039"],
+            "datatype": "GLN"
+        },
+        {
+            "name": "Ship from",
+            "m_c": "M",
+            "qualifiers": ["NAD+SF"],
+            "codes": ["3039"],
+            "datatype": "GLN"
+        },
+        {
+            "name": "Purchase order number",
+            "m_c": "M",
+            "qualifiers": ["RFF+ON"],
+            "codes": ["1154"]
+        },
+        {
+            "name": "Serial shipping container code",
+            "m_c": "M",
+            "qualifiers": ["GIN+BJ"],
+            "codes": ["7402"],
+            "datatype": "SSCC"
+        }
+    ]
+}
